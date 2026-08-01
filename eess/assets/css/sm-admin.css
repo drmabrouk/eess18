@@ -309,3 +309,40 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Smooth Enterprise Transitions & Animations */
+.sm-btn, .sm-sidebar-link, .sm-tab-btn, .sm-stat-card, .sm-input, .sm-select, .sm-textarea, .sm-modal-content {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Accessibility & Focus States (WCAG Compliance) */
+.sm-input:focus, .sm-select:focus, .sm-textarea:focus {
+    outline: 2px solid var(--sm-accent-color) !important;
+    outline-offset: 1px;
+    border-color: transparent !important;
+}
+
+.sm-btn:focus, .sm-sidebar-link:focus, .sm-tab-btn:focus {
+    outline: 2px solid var(--sm-accent-color) !important;
+    outline-offset: 2px;
+}
+
+/* Hover lift and card transitions */
+.sm-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04) !important;
+    border-color: var(--sm-accent-color) !important;
+}
+
+/* Consistent icon alignment and layout spacing */
+.sm-sidebar-link span.dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+}
+
+.sm-sidebar-link:hover span.dashicons {
+    transform: scale(1.1);
+}
