@@ -25,10 +25,10 @@ class SM_Settings {
 
     public static function get_appearance() {
         $default = array(
-            'primary_color' => '#F63049',
-            'secondary_color' => '#D02752',
-            'accent_color' => '#8A244B',
-            'dark_color' => '#111F35',
+            'primary_color' => '#334155',
+            'secondary_color' => '#475569',
+            'accent_color' => '#64748B',
+            'dark_color' => '#1E293B',
             'font_size' => '15px',
             'border_radius' => '12px',
             'table_style' => 'modern',
@@ -57,11 +57,11 @@ class SM_Settings {
 
     public static function get_school_info() {
         $default = array(
-            'school_name' => 'مدرستي النموذجية',
+            'school_name' => 'لوحة الإدارة',
             'school_principal_name' => 'أحمد علي',
             'school_logo' => '',
             'address' => 'الرياض، المملكة العربية السعودية',
-            'email' => 'info@school.edu',
+            'email' => 'info@eess.online',
             'phone' => '0123456789',
             'working_schedule' => array(
                 'staff' => array('mon', 'tue', 'wed', 'thu', 'fri'),

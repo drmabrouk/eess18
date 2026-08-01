@@ -1,25 +1,25 @@
 :root {
-    --sm-primary-color: #F63049;
-    --sm-secondary-color: #D02752;
-    --sm-accent-color: #8A244B;
-    --sm-dark-color: #111F35;
+    --sm-primary-color: #334155;
+    --sm-secondary-color: #475569;
+    --sm-accent-color: #64748B;
+    --sm-dark-color: #1E293B;
     --sm-white-color: #FFFFFF;
 
     /* Pastel Shades */
     --sm-bg-light: #F8FAFC;
     --sm-border-color: #E2E8F0;
-    --sm-text-gray: #718096;
-    --sm-pastel-red: #FFF5F5;
-    --sm-pastel-pink: #FFF0F3;
+    --sm-text-gray: #64748B;
+    --sm-pastel-red: #F1F5F9;
+    --sm-pastel-pink: #F8FAFC;
 
     /* System Globals */
     --sm-radius: 12px;
-    --sm-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --sm-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
 .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-    font-family: 'Rubik', sans-serif !important;
+    font-family: 'Almarai', sans-serif !important;
     color: var(--sm-dark-color);
 }
 
@@ -43,7 +43,7 @@
 .sm-container select,
 .sm-container textarea,
 .sm-container button {
-    font-family: 'Rubik', sans-serif !important;
+    font-family: 'Almarai', sans-serif !important;
 }
 
 /* Unified Table Design */
@@ -64,14 +64,15 @@
 
 .sm-table th {
     background: var(--sm-bg-light);
-    padding: 15px 20px;
+    padding: 10px 15px;
     font-weight: 700;
     color: var(--sm-dark-color);
     border-bottom: 2px solid var(--sm-border-color);
+    text-align: right;
 }
 
 .sm-table td {
-    padding: 15px 20px;
+    padding: 10px 15px;
     border-bottom: 1px solid var(--sm-border-color);
     vertical-align: middle;
 }
@@ -105,7 +106,7 @@
 .sm-btn:hover {
     opacity: 0.9;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(246, 48, 73, 0.2);
+    box-shadow: 0 4px 12px rgba(51, 65, 85, 0.15);
     color: white;
 }
 
@@ -139,18 +140,19 @@
 
 .sm-input, .sm-select, .sm-textarea {
     width: 100%;
-    padding: 12px 15px;
+    padding: 10px 12px;
     border: 1px solid var(--sm-border-color);
     border-radius: 8px;
     background: white;
     font-size: 14px;
     transition: border-color 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .sm-input:focus, .sm-select:focus, .sm-textarea:focus {
     outline: none;
     border-color: var(--sm-primary-color);
-    box-shadow: 0 0 0 3px rgba(246, 48, 73, 0.1);
+    box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.15);
 }
 
 .sm-form-group {
@@ -236,7 +238,7 @@
 .sm-main-header {
     background: var(--sm-bg-light);
     color: var(--sm-dark-color);
-    padding: 15px 40px;
+    padding: 8px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;

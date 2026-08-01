@@ -11,8 +11,8 @@ class SM_Admin {
 
     public function add_menu_pages() {
         add_menu_page(
-            'إدارة المدرسة',
-            'إدارة المدرسة',
+            'لوحة الإدارة',
+            'لوحة الإدارة',
             'read', // Allow all roles to see top level
             'sm-dashboard',
             array($this, 'display_dashboard'),
@@ -67,7 +67,7 @@ class SM_Admin {
     }
 
     public function enqueue_styles() {
-        wp_enqueue_style('google-font-rubik', 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;800;900&display=swap', array(), null);
+        wp_enqueue_style('google-font-almarai', 'https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap', array(), null);
         wp_enqueue_style($this->plugin_name, SM_PLUGIN_URL . 'assets/css/sm-admin.css', array(), $this->version, 'all');
 
         $appearance = SM_Settings::get_appearance();
@@ -81,7 +81,7 @@ class SM_Admin {
             }
             .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
             .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-                font-family: 'Rubik', sans-serif !important;
+                font-family: 'Almarai', sans-serif !important;
             }
             .sm-content-wrapper { font-size: {$appearance['font_size']}; }
         ";

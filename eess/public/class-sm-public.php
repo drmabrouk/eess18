@@ -41,7 +41,7 @@ class SM_Public {
         wp_enqueue_media();
         wp_enqueue_script('jquery');
         wp_enqueue_style('dashicons');
-        wp_enqueue_style('google-font-rubik', 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;800;900&display=swap', array(), null);
+        wp_enqueue_style('google-font-almarai', 'https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap', array(), null);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '4.4.1', true);
         wp_enqueue_script('html5-qrcode', 'https://unpkg.com/html5-qrcode', array(), '2.3.8', true);
         wp_enqueue_style($this->plugin_name, SM_PLUGIN_URL . 'assets/css/sm-public.css', array('dashicons'), $this->version, 'all');
@@ -57,7 +57,7 @@ class SM_Public {
             }
             .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
             .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-                font-family: 'Rubik', sans-serif !important;
+                font-family: 'Almarai', sans-serif !important;
             }
             .sm-admin-dashboard { font-size: {$appearance['font_size']}; }
         ";
