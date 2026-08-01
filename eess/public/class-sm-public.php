@@ -471,19 +471,15 @@ class SM_Public {
     public function ajax_refresh_dashboard() {
         if (!is_user_logged_in()) wp_send_json_error('Unauthorized');
         
-        $user_id = get_current_user_id();
         $stats = SM_DB::get_statistics();
         $records = SM_DB::get_records();
         $logs = SM_Logger::get_logs(50);
         
-        global $wpdb;
-        $unread_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}sm_messages WHERE receiver_id = %d AND is_read = 0", $user_id));
-
         wp_send_json_success(array(
             'stats' => $stats,
             'records' => $records,
             'logs' => $logs,
-            'unread_messages' => intval($unread_count),
+            'unread_messages' => 0,
             'violation_labels' => SM_Settings::get_violation_types(),
             'severity_labels' => SM_Settings::get_severities()
         ));
@@ -557,48 +553,6 @@ class SM_Public {
         wp_send_json_success(array('photo_url' => $photo_url));
     }
 
-    public function ajax_send_message() {
-        if (!is_user_logged_in()) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['sm_message_nonce'], 'sm_message_action')) wp_send_json_error('Security check failed');
-
-        $sender_id = get_current_user_id();
-        $receiver_id = intval($_POST['receiver_id']);
-        $message = sanitize_textarea_field($_POST['message']);
-        $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : null;
-
-        if (SM_DB::send_message($sender_id, $receiver_id, $message, $student_id)) {
-            wp_send_json_success('Message sent');
-        } else {
-            wp_send_json_error('Failed to send message');
-        }
-    }
-
-    public function ajax_get_conversation() {
-        if (!is_user_logged_in()) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_message_action')) wp_send_json_error('Security check');
-
-        $my_id = get_current_user_id();
-        $other_id = intval($_POST['other_user_id']);
-
-        $messages = SM_DB::get_conversation_messages($my_id, $other_id);
-        wp_send_json_success($messages);
-    }
-
-    public function ajax_mark_read() {
-        if (!is_user_logged_in()) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_message_action')) wp_send_json_error('Security check');
-
-        $my_id = get_current_user_id();
-        $other_id = intval($_POST['other_user_id']);
-
-        global $wpdb;
-        $wpdb->update(
-            "{$wpdb->prefix}sm_messages",
-            array('is_read' => 1),
-            array('receiver_id' => $my_id, 'sender_id' => $other_id)
-        );
-        wp_send_json_success();
-    }
 
 
     public function ajax_update_record_status() {
@@ -615,17 +569,6 @@ class SM_Public {
         }
     }
 
-    public function ajax_send_group_message() {
-        if (!is_user_logged_in() || !current_user_can('إدارة_المستخدمين')) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_message_action')) wp_send_json_error('Security check');
-
-        $role = sanitize_text_field($_POST['target_role']);
-        $subject = "رسالة جماعية من إدارة المدرسة";
-        $message = sanitize_textarea_field($_POST['message']);
-
-        SM_Notifications::send_group_notification($role, $subject, $message);
-        wp_send_json_success('Group messages sent');
-    }
 
     public function ajax_add_student() {
         if (!current_user_can('إدارة_الطلاب')) wp_send_json_error('Unauthorized');
@@ -688,61 +631,6 @@ class SM_Public {
         }
     }
 
-    public function ajax_add_confiscated() {
-        if (!current_user_can('إدارة_المخالفات')) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_confiscated_action')) wp_send_json_error('Security check failed');
-
-        $data = $_POST;
-        if ($data['item_name'] === 'other' && !empty($data['item_name_other'])) {
-            $data['item_name'] = $data['item_name_other'];
-        }
-
-        if (SM_DB::add_confiscated_item($data)) {
-            // Optional violation linking
-            if (!empty($data['link_violation']) && $data['link_violation'] == '1') {
-                $violation_code = sanitize_text_field($data['violation_code'] ?? '');
-                $reg = SM_Settings::get_regulation_by_code($violation_code);
-
-                $violation_data = array(
-                    'student_id' => intval($data['student_id']),
-                    'type' => 'behavior',
-                    'severity' => 'medium',
-                    'degree' => 1,
-                    'violation_code' => $violation_code,
-                    'points' => $reg ? $reg['points'] : 0,
-                    'details' => 'تم تسجيل مخالفة مرتبطة بمصادرة مادة: ' . $data['item_name'],
-                    'action_taken' => $reg ? $reg['action'] : 'مصادرة المادة'
-                );
-
-                SM_DB::add_record($violation_data);
-            }
-            wp_send_json_success('Added');
-        } else {
-            wp_send_json_error('Failed to add');
-        }
-    }
-
-    public function ajax_update_confiscated() {
-        if (!current_user_can('إدارة_المخالفات')) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_confiscated_action')) wp_send_json_error('Security check failed');
-
-        if (SM_DB::update_confiscated_item_status(intval($_POST['item_id']), sanitize_text_field($_POST['status']))) {
-            wp_send_json_success('Updated');
-        } else {
-            wp_send_json_error('Failed to update');
-        }
-    }
-
-    public function ajax_delete_confiscated() {
-        if (!current_user_can('إدارة_المخالفات')) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_confiscated_action')) wp_send_json_error('Security check failed');
-
-        if (SM_DB::delete_confiscated_item(intval($_POST['item_id']))) {
-            wp_send_json_success('Deleted');
-        } else {
-            wp_send_json_error('Failed to delete');
-        }
-    }
 
     public function ajax_delete_record() {
         if (!current_user_can('إدارة_المخالفات')) wp_send_json_error('Unauthorized');
@@ -1641,139 +1529,6 @@ class SM_Public {
         wp_send_json_success($count);
     }
 
-    public function ajax_add_survey() {
-        if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles) && !in_array('sm_supervisor', (array)wp_get_current_user()->roles)) {
-            wp_send_json_error('Unauthorized');
-        }
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_admin_action')) wp_send_json_error('Security');
-
-        $title = sanitize_text_field($_POST['title']);
-        $questions = json_decode(stripslashes($_POST['questions']), true);
-        $recipients = sanitize_text_field($_POST['recipients']); // role or 'all'
-
-        $survey_id = SM_DB::add_survey($title, $questions, $recipients, get_current_user_id());
-        if ($survey_id) wp_send_json_success($survey_id);
-        else wp_send_json_error('Failed to add survey');
-    }
-
-    public function ajax_cancel_survey() {
-        if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles) && !in_array('sm_supervisor', (array)wp_get_current_user()->roles)) {
-            wp_send_json_error('Unauthorized');
-        }
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_admin_action')) wp_send_json_error('Security');
-
-        $survey_id = intval($_POST['id']);
-        global $wpdb;
-        $wpdb->update("{$wpdb->prefix}sm_surveys", array('status' => 'cancelled'), array('id' => $survey_id));
-        wp_send_json_success();
-    }
-
-    public function ajax_submit_survey_response() {
-        if (!is_user_logged_in()) wp_send_json_error('Unauthorized');
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_attendance_action')) wp_send_json_error('Security');
-
-        $survey_id = intval($_POST['survey_id']);
-        $responses = json_decode(stripslashes($_POST['responses']), true);
-        $user_id = get_current_user_id();
-
-        if (SM_DB::save_survey_response($survey_id, $user_id, $responses)) {
-            wp_send_json_success();
-        } else {
-            wp_send_json_error('Failed to save response');
-        }
-    }
-
-    public function ajax_get_survey_results() {
-        if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles) && !in_array('sm_supervisor', (array)wp_get_current_user()->roles)) {
-            wp_send_json_error('Unauthorized');
-        }
-        $survey_id = intval($_GET['id']);
-        $results = SM_DB::get_survey_results($survey_id);
-        wp_send_json_success($results);
-    }
-
-    public function ajax_export_survey_results() {
-         if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles) && !in_array('sm_supervisor', (array)wp_get_current_user()->roles)) {
-            wp_send_json_error('Unauthorized');
-        }
-        $survey_id = intval($_GET['id']);
-        $survey = SM_DB::get_survey($survey_id);
-        if (!$survey) wp_send_json_error('Survey not found');
-
-        $responses = SM_DB::get_survey_responses($survey_id);
-
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=survey_results_'.$survey_id.'.csv');
-        $output = fopen('php://output', 'w');
-        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM
-
-        $questions = json_decode($survey->questions, true);
-        $header = array('المجيب', 'الدور');
-        foreach($questions as $q) $header[] = $q;
-        fputcsv($output, $header);
-
-        foreach ($responses as $r) {
-            $user = get_userdata($r->user_id);
-            $role = !empty($user->roles) ? $user->roles[0] : '';
-            $row = array($user->display_name, $role);
-            $res_data = json_decode($r->responses, true);
-            foreach($questions as $index => $q) {
-                $row[] = $res_data[$index] ?? '';
-            }
-            fputcsv($output, $row);
-        }
-        fclose($output);
-        exit;
-    }
-
-    public function ajax_update_timetable_entry() {
-        if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles) && !in_array('sm_supervisor', (array)wp_get_current_user()->roles)) {
-            wp_send_json_error('Unauthorized');
-        }
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_admin_action')) wp_send_json_error('Security');
-
-        $classes_json = $_POST['classes'] ?? '';
-        $classes = json_decode(stripslashes($classes_json), true);
-
-        if (empty($classes) && !empty($_POST['class_name'])) {
-            $classes = array(array('class_name' => $_POST['class_name'], 'section' => $_POST['section']));
-        }
-
-        $day = sanitize_text_field($_POST['day']);
-        $period = intval($_POST['period']);
-        $subject_id = intval($_POST['subject_id']);
-        $teacher_id = intval($_POST['teacher_id']);
-
-        $success_count = 0;
-        foreach ($classes as $c) {
-            if (SM_DB::update_timetable($c['class_name'], $c['section'], $day, $period, $subject_id, $teacher_id)) {
-                $success_count++;
-            }
-        }
-
-        if ($success_count > 0) {
-            wp_send_json_success($success_count);
-        } else {
-            wp_send_json_error('Failed');
-        }
-    }
-
-    public function ajax_save_timetable_settings() {
-        if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles)) {
-            wp_send_json_error('Unauthorized');
-        }
-        if (!wp_verify_nonce($_POST['nonce'], 'sm_admin_action')) wp_send_json_error('Security');
-
-        $periods = intval($_POST['periods']);
-        $days = isset($_POST['days']) ? array_map('sanitize_text_field', $_POST['days']) : array();
-
-        SM_Settings::save_timetable_settings(array(
-            'periods' => $periods,
-            'days' => $days
-        ));
-
-        wp_send_json_success();
-    }
 
     public function ajax_download_plans_zip() {
         if (!current_user_can('manage_options') && !in_array('sm_principal', (array)wp_get_current_user()->roles) && !in_array('sm_coordinator', (array)wp_get_current_user()->roles)) {

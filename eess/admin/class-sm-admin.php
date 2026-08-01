@@ -11,8 +11,8 @@ class SM_Admin {
 
     public function add_menu_pages() {
         add_menu_page(
-            'لوحة الإدارة',
-            'لوحة الإدارة',
+            'خدمات الأنظمة الإلكترونية التعليمية (EESS)',
+            'خدمات الأنظمة الإلكترونية التعليمية (EESS)',
             'read', // Allow all roles to see top level
             'sm-dashboard',
             array($this, 'display_dashboard'),

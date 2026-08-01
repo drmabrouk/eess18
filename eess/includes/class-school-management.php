@@ -32,7 +32,6 @@ class School_Management {
 
     private function define_public_hooks() {
         $plugin_public = new SM_Public($this->get_plugin_name(), $this->get_version());
-        $this->loader->add_action('init', 'SM_DB', 'cleanup_old_messages');
         $this->loader->add_filter('show_admin_bar', $plugin_public, 'hide_admin_bar_for_non_admins');
         $this->loader->add_action('admin_init', $plugin_public, 'restrict_admin_access');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
@@ -46,18 +45,11 @@ class School_Management {
         $this->loader->add_action('wp_ajax_sm_refresh_dashboard', $plugin_public, 'ajax_refresh_dashboard');
         $this->loader->add_action('wp_ajax_sm_save_record_ajax', $plugin_public, 'ajax_save_record');
         $this->loader->add_action('wp_ajax_sm_update_student_photo', $plugin_public, 'ajax_update_student_photo');
-        $this->loader->add_action('wp_ajax_sm_send_message_ajax', $plugin_public, 'ajax_send_message');
-        $this->loader->add_action('wp_ajax_sm_get_conversation_ajax', $plugin_public, 'ajax_get_conversation');
-        $this->loader->add_action('wp_ajax_sm_mark_read', $plugin_public, 'ajax_mark_read');
         $this->loader->add_action('wp_ajax_sm_update_record_status', $plugin_public, 'ajax_update_record_status');
-        $this->loader->add_action('wp_ajax_sm_send_group_message_ajax', $plugin_public, 'ajax_send_group_message');
         $this->loader->add_action('wp_ajax_sm_print', $plugin_public, 'handle_print');
         $this->loader->add_action('wp_ajax_sm_add_student_ajax', $plugin_public, 'ajax_add_student');
         $this->loader->add_action('wp_ajax_sm_update_student_ajax', $plugin_public, 'ajax_update_student');
         $this->loader->add_action('wp_ajax_sm_delete_student_ajax', $plugin_public, 'ajax_delete_student');
-        $this->loader->add_action('wp_ajax_sm_add_confiscated_ajax', $plugin_public, 'ajax_add_confiscated');
-        $this->loader->add_action('wp_ajax_sm_update_confiscated_ajax', $plugin_public, 'ajax_update_confiscated');
-        $this->loader->add_action('wp_ajax_sm_delete_confiscated_ajax', $plugin_public, 'ajax_delete_confiscated');
         $this->loader->add_action('wp_ajax_sm_delete_record_ajax', $plugin_public, 'ajax_delete_record');
         $this->loader->add_action('wp_ajax_sm_get_counts_ajax', $plugin_public, 'ajax_get_counts');
         $this->loader->add_action('wp_ajax_sm_add_user_ajax', $plugin_public, 'ajax_add_user');
@@ -104,13 +96,6 @@ class School_Management {
         $this->loader->add_action('wp_ajax_sm_get_subjects', $plugin_public, 'ajax_get_subjects');
         $this->loader->add_action('wp_ajax_sm_save_class_grades', $plugin_public, 'ajax_save_class_grades');
         $this->loader->add_action('wp_ajax_sm_bulk_delete_students_ajax', $plugin_public, 'ajax_bulk_delete_students');
-        $this->loader->add_action('wp_ajax_sm_add_survey', $plugin_public, 'ajax_add_survey');
-        $this->loader->add_action('wp_ajax_sm_cancel_survey', $plugin_public, 'ajax_cancel_survey');
-        $this->loader->add_action('wp_ajax_sm_submit_survey_response', $plugin_public, 'ajax_submit_survey_response');
-        $this->loader->add_action('wp_ajax_sm_get_survey_results', $plugin_public, 'ajax_get_survey_results');
-        $this->loader->add_action('wp_ajax_sm_export_survey_results', $plugin_public, 'ajax_export_survey_results');
-        $this->loader->add_action('wp_ajax_sm_update_timetable_entry', $plugin_public, 'ajax_update_timetable_entry');
-        $this->loader->add_action('wp_ajax_sm_save_timetable_settings', $plugin_public, 'ajax_save_timetable_settings');
         $this->loader->add_action('wp_ajax_sm_download_plans_zip', $plugin_public, 'ajax_download_plans_zip');
     }
 

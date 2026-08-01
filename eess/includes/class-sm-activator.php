@@ -9,7 +9,6 @@ class SM_Activator {
         $table_students = $wpdb->prefix . 'sm_students';
         $table_records = $wpdb->prefix . 'sm_records';
         $table_logs = $wpdb->prefix . 'sm_logs';
-        $table_messages = $wpdb->prefix . 'sm_messages';
 
         $sql = "CREATE TABLE $table_students (
             id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -67,31 +66,6 @@ class SM_Activator {
             details text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id)
-        ) $charset_collate;
-
-        CREATE TABLE $table_messages (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            sender_id bigint(20) NOT NULL,
-            receiver_id bigint(20) NOT NULL,
-            student_id bigint(20) DEFAULT NULL,
-            message text NOT NULL,
-            is_read tinyint(1) DEFAULT 0 NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id),
-            KEY sender_id (sender_id),
-            KEY receiver_id (receiver_id)
-        ) $charset_collate;
-
-        CREATE TABLE {$wpdb->prefix}sm_confiscated_items (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            student_id bigint(20) NOT NULL,
-            item_name varchar(255) NOT NULL,
-            holding_period int(11) DEFAULT 30,
-            status varchar(50) DEFAULT 'held',
-            is_returnable tinyint(1) DEFAULT 1,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id),
-            KEY student_id (student_id)
         ) $charset_collate;
 
         CREATE TABLE {$wpdb->prefix}sm_attendance (
@@ -152,41 +126,6 @@ class SM_Activator {
             name varchar(255) NOT NULL,
             grade_id int(11) NOT NULL,
             PRIMARY KEY  (id)
-        ) $charset_collate;
-
-        CREATE TABLE {$wpdb->prefix}sm_surveys (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            title varchar(255) NOT NULL,
-            description text,
-            target_roles varchar(255) NOT NULL,
-            questions text NOT NULL,
-            status varchar(20) DEFAULT 'active',
-            created_by bigint(20) NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id)
-        ) $charset_collate;
-
-        CREATE TABLE {$wpdb->prefix}sm_survey_responses (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            survey_id bigint(20) NOT NULL,
-            user_id bigint(20) NOT NULL,
-            answers text NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id),
-            KEY survey_id (survey_id),
-            KEY user_id (user_id)
-        ) $charset_collate;
-
-        CREATE TABLE {$wpdb->prefix}sm_timetables (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            class_name varchar(100) NOT NULL,
-            section varchar(50) NOT NULL,
-            day varchar(20) NOT NULL,
-            period int(11) NOT NULL,
-            subject_id bigint(20) NOT NULL,
-            teacher_id bigint(20) NOT NULL,
-            PRIMARY KEY  (id),
-            KEY class_section (class_name, section)
         ) $charset_collate;
 
         CREATE TABLE {$wpdb->prefix}sm_student_meta (

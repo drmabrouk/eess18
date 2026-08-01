@@ -143,45 +143,45 @@ function smSubmitSurveyResponse(surveyId, questionsCount) {
 
 
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 40px;">
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px;">
     <!-- Trends and Categories Charts -->
-    <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid var(--sm-border-color); position: relative; max-height: 350px; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-            <h3 style="margin:0; font-size: 1.1em;">اتجاهات المخالفات (آخر 30 يوم)</h3>
+    <div style="background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); position: relative; max-height: 300px; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <h3 style="margin:0; font-size: 1.0em;">اتجاهات المخالفات (آخر 30 يوم)</h3>
             <button onclick="smDownloadChart('violationTrendsChart', 'اتجاهات_المخالفات')" class="sm-action-btn" title="تحميل كصورة" style="background:none; border:none; color:var(--sm-text-gray); cursor:pointer;"><span class="dashicons dashicons-download"></span></button>
         </div>
-        <div style="height: 200px;"><canvas id="violationTrendsChart"></canvas></div>
+        <div style="height: 180px;"><canvas id="violationTrendsChart"></canvas></div>
     </div>
-    <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid var(--sm-border-color); position: relative; max-height: 350px; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-            <h3 style="margin:0; font-size: 1.1em;">توزيع الأنواع</h3>
+    <div style="background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); position: relative; max-height: 300px; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <h3 style="margin:0; font-size: 1.0em;">توزيع الأنواع</h3>
             <button onclick="smDownloadChart('violationCategoriesChart', 'توزيع_الأنواع')" class="sm-action-btn" title="تحميل كصورة" style="background:none; border:none; color:var(--sm-text-gray); cursor:pointer;"><span class="dashicons dashicons-download"></span></button>
         </div>
-        <div style="height: 200px;"><canvas id="violationCategoriesChart"></canvas></div>
+        <div style="height: 180px;"><canvas id="violationCategoriesChart"></canvas></div>
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px;">
-    <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid var(--sm-border-color); position: relative; max-height: 380px; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-            <h3 style="margin:0; font-size: 1.1em;">توزيع المخالفات حسب الحدة</h3>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div style="background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); position: relative; max-height: 320px; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <h3 style="margin:0; font-size: 1.0em;">توزيع المخالفات حسب الحدة</h3>
             <button onclick="smDownloadChart('severityChart', 'توزيع_الحدة')" class="sm-action-btn" title="تحميل كصورة" style="background:none; border:none; color:var(--sm-text-gray); cursor:pointer;"><span class="dashicons dashicons-download"></span></button>
         </div>
-        <div style="height: 250px;"><canvas id="severityChart"></canvas></div>
+        <div style="height: 200px;"><canvas id="severityChart"></canvas></div>
     </div>
-    <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid var(--sm-border-color); position: relative; max-height: 380px; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-            <h3 style="margin:0; font-size: 1.1em;">أكثر الطلاب مخالفة (تكرار)</h3>
+    <div style="background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); position: relative; max-height: 320px; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <h3 style="margin:0; font-size: 1.0em;">أكثر الطلاب مخالفة (تكرار)</h3>
             <button onclick="smDownloadChart('topStudentsChart', 'أكثر_الطلاب_مخالفة')" class="sm-action-btn" title="تحميل كصورة" style="background:none; border:none; color:var(--sm-text-gray); cursor:pointer;"><span class="dashicons dashicons-download"></span></button>
         </div>
-        <div style="height: 250px;"><canvas id="topStudentsChart"></canvas></div>
+        <div style="height: 200px;"><canvas id="topStudentsChart"></canvas></div>
     </div>
-    <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid var(--sm-border-color); position: relative; max-height: 380px; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-            <h3 style="margin:0; font-size: 1.1em;">توزيع المخالفات حسب الدرجة</h3>
+    <div style="background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); position: relative; max-height: 320px; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <h3 style="margin:0; font-size: 1.0em;">توزيع المخالفات حسب الدرجة</h3>
             <button onclick="smDownloadChart('degreeChart', 'توزيع_الدرجة')" class="sm-action-btn" title="تحميل كصورة" style="background:none; border:none; color:var(--sm-text-gray); cursor:pointer;"><span class="dashicons dashicons-download"></span></button>
         </div>
-        <div style="height: 250px;"><canvas id="degreeChart"></canvas></div>
+        <div style="height: 200px;"><canvas id="degreeChart"></canvas></div>
     </div>
 </div>
 
