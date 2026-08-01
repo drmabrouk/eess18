@@ -710,7 +710,6 @@ class SM_Public {
         if ($active_tab === 'teachers' && !current_user_can('إدارة_المستخدمين')) $active_tab = 'summary';
         if ($active_tab === 'teacher-reports' && !current_user_can('إدارة_المخالفات')) $active_tab = 'summary';
         if ($active_tab === 'confiscated' && !current_user_can('إدارة_المخالفات')) $active_tab = 'summary';
-        if ($active_tab === 'printing' && !current_user_can('طباعة_التقارير')) $active_tab = 'summary';
         if ($active_tab === 'attendance' && !current_user_can('إدارة_الطلاب')) $active_tab = 'summary';
         if ($active_tab === 'clinic' && !current_user_can('إدارة_العيادة')) $active_tab = 'summary';
         if ($active_tab === 'global-settings' && !current_user_can('إدارة_النظام')) $active_tab = 'summary';
@@ -814,180 +813,6 @@ class SM_Public {
 
     public function log_successful_login($user_login, $user) {
         SM_Logger::log('تسجيل دخول ناجح', "المستخدم: $user_login (ID: {$user->ID})");
-    }
-
-    public function handle_print() {
-        $user = wp_get_current_user();
-        $student_id = isset($_GET['student_id']) ? intval($_GET['student_id']) : 0;
-
-        if (in_array('sm_parent', (array) $user->roles)) {
-            $my_students = SM_DB::get_students_by_parent($user->ID);
-            $is_mine = false;
-            foreach ($my_students as $ms) {
-                if ($ms->id == $student_id) $is_mine = true;
-            }
-            if (!$is_mine) wp_die('Unauthorized');
-        } elseif (!current_user_can('طباعة_التقارير')) {
-            wp_die('Unauthorized');
-        }
-
-        $type = sanitize_text_field($_GET['print_type']);
-        $student_id = isset($_GET['student_id']) ? intval($_GET['student_id']) : 0;
-
-        if ($type === 'id_card') {
-            if ($student_id) {
-                $students = array(SM_DB::get_student_by_id($student_id));
-            } else {
-                $filters = array();
-                if (!empty($_GET['class_name'])) {
-                    $filters['class_name'] = sanitize_text_field($_GET['class_name']);
-                }
-                $students = SM_DB::get_students($filters);
-            }
-            include SM_PLUGIN_DIR . 'templates/print-id-cards.php';
-        } elseif ($type === 'disciplinary_report') {
-            if (!$student_id) wp_die('Student ID missing');
-            $student = SM_DB::get_student_by_id($student_id);
-            $records = SM_DB::get_records(array('student_id' => $student_id));
-            $stats = SM_DB::get_student_stats($student_id);
-            include SM_PLUGIN_DIR . 'templates/print-student-report.php';
-        } elseif ($type === 'single_violation') {
-            $record_id = isset($_GET['record_id']) ? intval($_GET['record_id']) : 0;
-            if (!$record_id) wp_die('Record ID missing');
-            $record = SM_DB::get_record_by_id($record_id);
-            if (!$record) wp_die('Record not found');
-            
-            // Security check for parents
-            if (in_array('sm_parent', (array) $user->roles)) {
-                $student = SM_DB::get_student_by_parent($user->ID);
-                if (!$student || $record->student_id != $student->id) wp_die('Unauthorized');
-            }
-
-            include SM_PLUGIN_DIR . 'templates/print-single-violation.php';
-        } elseif ($type === 'general_log') {
-            $filters = array(
-                'start_date' => $_GET['start_date'] ?? '',
-                'end_date' => $_GET['end_date'] ?? ''
-            );
-            $records = SM_DB::get_records($filters);
-            include SM_PLUGIN_DIR . 'templates/print-general-log.php';
-        } elseif ($type === 'attendance_sheet') {
-            $date = sanitize_text_field($_GET['date']);
-            $scope = sanitize_text_field($_GET['scope']); // all, grade, section
-            $grade = sanitize_text_field($_GET['grade'] ?? '');
-            $section = sanitize_text_field($_GET['section'] ?? '');
-
-            global $wpdb;
-            $query = "SELECT s.id, s.name, s.student_code, s.class_name, s.section, a.status
-                      FROM {$wpdb->prefix}sm_students s
-                      LEFT JOIN {$wpdb->prefix}sm_attendance a ON s.id = a.student_id AND a.date = %s
-                      WHERE 1=1";
-            $params = array($date);
-
-            if ($scope === 'grade' && $grade) {
-                $query .= " AND s.class_name = %s";
-                $params[] = $grade;
-            } elseif ($scope === 'section' && $grade && $section) {
-                $query .= " AND s.class_name = %s AND s.section = %s";
-                $params[] = $grade;
-                $params[] = $section;
-            }
-
-            $query .= " ORDER BY s.class_name ASC, s.section ASC, s.name ASC";
-            $all_students = $wpdb->get_results($wpdb->prepare($query, $params));
-
-            $grouped_data = array();
-            foreach ($all_students as $s) {
-                $key = $s->class_name . '|' . $s->section;
-                $grouped_data[$key][] = $s;
-            }
-
-            include SM_PLUGIN_DIR . 'templates/print-attendance.php';
-        } elseif ($type === 'absence_report') {
-            $report_type = sanitize_text_field($_GET['type']); // daily or term
-            $date = sanitize_text_field($_GET['date'] ?? current_time('Y-m-d'));
-
-            global $wpdb;
-            $data = array();
-            $title = '';
-            $subtitle = '';
-
-            if ($report_type === 'daily') {
-                $title = 'تقرير الغياب اليومي - ' . $date;
-                $data = $wpdb->get_results($wpdb->prepare(
-                    "SELECT s.id, s.name, s.student_code, s.class_name, s.section,
-                     (SELECT COUNT(*) FROM {$wpdb->prefix}sm_attendance WHERE student_id = s.id AND status = 'absent') as total_absences
-                     FROM {$wpdb->prefix}sm_students s
-                     JOIN {$wpdb->prefix}sm_attendance a ON s.id = a.student_id
-                     WHERE a.date = %s AND a.status = 'absent'
-                     ORDER BY s.class_name ASC, s.section ASC, s.name ASC",
-                    $date
-                ));
-            } else {
-                $academic = SM_Settings::get_academic_structure();
-                $current_term = null;
-                $today = current_time('Y-m-d');
-                foreach ($academic['term_dates'] as $t_key => $t_dates) {
-                    if (!empty($t_dates['start']) && !empty($t_dates['end'])) {
-                        if ($today >= $t_dates['start'] && $today <= $t_dates['end']) {
-                            $current_term = $t_dates;
-                            $subtitle = 'الفصل الدراسي: ' . $t_key . ' (من ' . $t_dates['start'] . ' إلى ' . $t_dates['end'] . ')';
-                            break;
-                        }
-                    }
-                }
-
-                if ($current_term) {
-                    $title = 'أكثر الطلاب غياباً خلال الفصل الدراسي';
-                    $data = $wpdb->get_results($wpdb->prepare(
-                        "SELECT s.id, s.name, s.student_code, s.class_name, s.section, COUNT(a.id) as absence_count
-                         FROM {$wpdb->prefix}sm_students s
-                         JOIN {$wpdb->prefix}sm_attendance a ON s.id = a.student_id
-                         WHERE a.status = 'absent' AND a.date >= %s AND a.date <= %s
-                         GROUP BY s.id
-                         HAVING absence_count > 0
-                         ORDER BY absence_count DESC, s.name ASC
-                         LIMIT 50",
-                        $current_term['start'], $current_term['end']
-                    ));
-                } else {
-                    $title = 'لا يوجد فصل دراسي حالي محدد في الإعدادات';
-                }
-            }
-
-            include SM_PLUGIN_DIR . 'templates/print-absence-report.php';
-        } elseif ($type === 'student_credentials') {
-            $filters = array();
-            if (!empty($_GET['class_name'])) {
-                $filters['class_name'] = sanitize_text_field($_GET['class_name']);
-            }
-            $students = SM_DB::get_students($filters);
-            include SM_PLUGIN_DIR . 'templates/print-student-credentials.php';
-        } elseif ($type === 'student_credentials_card') {
-            include SM_PLUGIN_DIR . 'templates/print-student-credentials-card.php';
-        } elseif ($type === 'violation_report') {
-            $filters = array();
-            if (!empty($_GET['search'])) $filters['search'] = sanitize_text_field($_GET['search']);
-            if (!empty($_GET['class_filter'])) $filters['class_name'] = sanitize_text_field($_GET['class_filter']);
-            if (!empty($_GET['section_filter'])) $filters['section'] = sanitize_text_field($_GET['section_filter']);
-            if (!empty($_GET['type_filter'])) $filters['type'] = sanitize_text_field($_GET['type_filter']);
-
-            $range = $_GET['range'] ?? '';
-            if ($range === 'today') {
-                $filters['start_date'] = current_time('Y-m-d');
-                $filters['end_date'] = current_time('Y-m-d');
-            } elseif ($range === 'week') {
-                $filters['start_date'] = date('Y-m-d', strtotime('-7 days'));
-                $filters['end_date'] = current_time('Y-m-d');
-            } elseif ($range === 'month') {
-                $filters['start_date'] = date('Y-m-d', strtotime('-30 days'));
-                $filters['end_date'] = current_time('Y-m-d');
-            }
-
-            $records = SM_DB::get_records($filters);
-            include SM_PLUGIN_DIR . 'templates/print-violation-report.php';
-        }
-        exit;
     }
 
     public function ajax_get_student() {
@@ -2453,16 +2278,17 @@ class SM_Public {
         // Handle Unified Settings Save (School Info)
         if (isset($_POST['sm_save_settings_unified']) && wp_verify_nonce($_POST['sm_admin_nonce'], 'sm_admin_action')) {
             if (current_user_can('إدارة_النظام')) {
+                $existing = SM_Settings::get_school_info();
                 SM_Settings::save_school_info(array(
                     'school_name' => sanitize_text_field($_POST['school_name']),
-                    'school_principal_name' => sanitize_text_field($_POST['school_principal_name']),
+                    'school_principal_name' => isset($_POST['school_principal_name']) ? sanitize_text_field($_POST['school_principal_name']) : ($existing['school_principal_name'] ?? ''),
                     'school_logo' => esc_url_raw($_POST['school_logo']),
-                    'address' => sanitize_text_field($_POST['school_address']),
+                    'address' => isset($_POST['school_address']) ? sanitize_text_field($_POST['school_address']) : ($existing['address'] ?? ''),
                     'email' => sanitize_email($_POST['school_email']),
                     'phone' => sanitize_text_field($_POST['school_phone']),
                     'working_schedule' => array(
-                        'staff' => isset($_POST['work_staff']) ? array_map('sanitize_text_field', $_POST['work_staff']) : array(),
-                        'students' => isset($_POST['work_students']) ? array_map('sanitize_text_field', $_POST['work_students']) : array()
+                        'staff' => isset($_POST['work_staff']) ? array_map('sanitize_text_field', $_POST['work_staff']) : ($existing['working_schedule']['staff'] ?? array()),
+                        'students' => isset($_POST['work_students']) ? array_map('sanitize_text_field', $_POST['work_students']) : ($existing['working_schedule']['students'] ?? array())
                     )
                 ));
                 SM_Logger::log('تحديث بيانات السلطة', "تم تحديث بيانات المدرسة والمدير: {$_POST['school_name']}");
@@ -2527,23 +2353,11 @@ class SM_Public {
         }
 
         // Handle Print Templates Save
-        if (isset($_POST['sm_save_print_templates']) && wp_verify_nonce($_POST['sm_admin_nonce'], 'sm_admin_action')) {
-            if (current_user_can('إدارة_النظام')) {
-                update_option('sm_print_settings', array(
-                    'header' => $_POST['print_header'], // Allowing HTML as requested for customization
-                    'footer' => $_POST['print_footer'],
-                    'custom_css' => $_POST['print_css']
-                ));
-                wp_redirect(add_query_arg('sm_admin_msg', 'settings_saved', $_SERVER['REQUEST_URI']));
-                exit;
-            }
-        }
-
         // Handle Sidebar Visibility Settings Save
         if (isset($_POST['sm_save_sidebar_visibility']) && wp_verify_nonce($_POST['sm_admin_nonce'], 'sm_admin_action')) {
             if (current_user_can('إدارة_النظام')) {
                 $roles_to_process = array('sm_system_admin', 'sm_principal', 'sm_supervisor', 'sm_coordinator', 'sm_teacher', 'sm_student', 'sm_parent');
-                $sections_to_process = array('stats', 'students', 'teachers', 'parents', 'grades', 'teacher-reports', 'confiscated', 'printing', 'surveys', 'timetables', 'attendance', 'lesson-plans', 'assignments', 'clinic', 'messaging');
+                $sections_to_process = array('stats', 'students', 'teachers', 'parents', 'grades', 'teacher-reports', 'attendance', 'lesson-plans', 'assignments', 'clinic', 'documents');
 
                 $visibility = array();
                 $input = isset($_POST['sidebar_visibility']) ? $_POST['sidebar_visibility'] : array();

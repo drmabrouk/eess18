@@ -317,7 +317,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <h1 style="margin:0; border: none; padding: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.05em; text-decoration: none; line-height: 1;">
                     <?php echo esc_html($school['school_name']); ?>
                 </h1>
-                <div style="display: inline-block; padding: 1px 6px; background: #f1f5f9; color: #475569; border-radius: 50px; font-size: 9px; font-weight: 700; margin-top: 1px; border: 1px solid #cbd5e1; line-height: 1;">
+                <div style="display: inline-block; padding: 1px 6px; background: #fee2e2; color: #991b1b; border-radius: 50px; font-size: 9px; font-weight: 700; margin-top: 2px; border: 1px solid #fca5a5; line-height: 1;">
                     <?php 
                     if ($is_admin) echo 'مدير النظام';
                     elseif ($is_sys_admin) echo 'مدير النظام التقني';
@@ -333,10 +333,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
-            <div class="sm-header-info-box" style="text-align: right; border-left: 1px solid var(--sm-border-color); padding-left: 12px; display: flex; align-items: center;">
-                <div style="font-size: 0.8em; font-weight: 700; color: var(--sm-dark-color);"><?php echo date_i18n('l j F Y'); ?></div>
-            </div>
-
             <?php if (($is_wp_admin || !empty($my_visibility['attendance'])) && ($is_admin || current_user_can('إدارة_الطلاب'))): ?>
                 <a href="<?php echo add_query_arg('sm_tab', 'attendance'); ?>" class="sm-btn sm-btn-secondary" style="height: 32px; padding: 0 12px; font-size: 11px; color: white !important; text-decoration: none; display: inline-flex; align-items: center;">سجل الحضور والغياب</a>
             <?php endif; ?>
@@ -464,11 +460,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </li>
                 <?php endif; ?>
 
-                <?php if (($is_wp_admin || !empty($my_visibility['printing'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor)): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'printing' ? 'sm-active' : ''; ?>">
-                        <a href="<?php echo add_query_arg('sm_tab', 'printing'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-printer"></span> مركز الطباعة</a>
-                    </li>
-                <?php endif; ?>
 
                 <?php if (($is_wp_admin || !empty($my_visibility['clinic'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_clinic)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'clinic' ? 'sm-active' : ''; ?>">
@@ -532,11 +523,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     }
                     break;
 
-                case 'printing':
-                    if ($is_admin || current_user_can('طباعة_التقارير')) {
-                        include SM_PLUGIN_DIR . 'templates/printing-cards.php';
-                    }
-                    break;
 
 
                 case 'teacher-reports':
@@ -595,53 +581,14 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                                             <div>الدعم الفني والبريد الرسمي: <a href="mailto:info@eess.online" style="color: var(--sm-primary-color); text-decoration: none;">info@eess.online</a></div>
                                         </div>
                                     </div>
-                                    <div class="sm-form-group"><label class="sm-label">اسم المدرسة:</label><input type="text" name="school_name" value="<?php echo esc_attr($school['school_name']); ?>" class="sm-input"></div>
-                                    <div class="sm-form-group"><label class="sm-label">اسم مدير المدرسة:</label><input type="text" name="school_principal_name" value="<?php echo esc_attr($school['school_principal_name'] ?? ''); ?>" class="sm-input"></div>
+                                    <div class="sm-form-group" style="grid-column: span 2;"><label class="sm-label">اسم المدرسة:</label><input type="text" name="school_name" value="<?php echo esc_attr($school['school_name']); ?>" class="sm-input"></div>
                                     <div class="sm-form-group"><label class="sm-label">رقم الهاتف:</label><input type="text" name="school_phone" value="<?php echo esc_attr($school['phone']); ?>" class="sm-input"></div>
                                     <div class="sm-form-group"><label class="sm-label">البريد الإلكتروني:</label><input type="email" name="school_email" value="<?php echo esc_attr($school['email']); ?>" class="sm-input"></div>
-                                    <div class="sm-form-group">
+                                    <div class="sm-form-group" style="grid-column: span 2;">
                                         <label class="sm-label">شعار المدرسة:</label>
                                         <div style="display:flex; gap:10px;">
                                             <input type="text" name="school_logo" id="sm_school_logo_url" value="<?php echo esc_attr($school['school_logo']); ?>" class="sm-input">
                                             <button type="button" onclick="smOpenMediaUploader('sm_school_logo_url')" class="sm-btn" style="width:auto; font-size:12px; background:var(--sm-secondary-color);">رفع/اختيار</button>
-                                        </div>
-                                    </div>
-                                    <div class="sm-form-group" style="grid-column: span 2;"><label class="sm-label">العنوان:</label><input type="text" name="school_address" value="<?php echo esc_attr($school['address']); ?>" class="sm-input"></div>
-
-                                    <div class="sm-form-group" style="grid-column: span 2; background: #fffaf0; padding: 20px; border-radius: 8px; border: 1px solid #feebc8; margin-top: 10px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <div>
-                                                <h4 style="margin:0; color: #744210;">قسم تصميم النظام</h4>
-                                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #975a16;">يمكنك التحكم في الألوان والخطوط والمظهر العام للنظام من خلال تبويب "تصميم النظام".</p>
-                                            </div>
-                                            <button type="button" onclick="smOpenInternalTab('design-settings', document.querySelector('[onclick*=\"design-settings\"]'))" class="sm-btn" style="width:auto; background:#d69e2e;">انتقل للتصميم</button>
-                                        </div>
-                                    </div>
-
-                                    <div class="sm-form-group" style="grid-column: span 2;">
-                                        <label class="sm-label">أيام العمل الأسبوعية (الجدول الرسمي):</label>
-                                        <div style="display: flex; gap: 40px; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                            <div>
-                                                <div style="font-weight: 800; margin-bottom: 10px; color: var(--sm-primary-color);">المعلمين والطلاب:</div>
-                                                <?php
-                                                $days = array('sun' => 'الأحد', 'mon' => 'الاثنين', 'tue' => 'الثلاثاء', 'wed' => 'الأربعاء', 'thu' => 'الخميس', 'fri' => 'الجمعة', 'sat' => 'السبت');
-                                                $work_students = $school['working_schedule']['students'] ?? array();
-                                                foreach ($days as $key => $label): ?>
-                                                    <label style="display: block; font-size: 13px; margin-bottom: 5px;">
-                                                        <input type="checkbox" name="work_students[]" value="<?php echo $key; ?>" <?php checked(in_array($key, $work_students)); ?>> <?php echo $label; ?>
-                                                    </label>
-                                                <?php endforeach; ?>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 800; margin-bottom: 10px; color: var(--sm-secondary-color);">الكادر الإداري:</div>
-                                                <?php
-                                                $work_staff = $school['working_schedule']['staff'] ?? array();
-                                                foreach ($days as $key => $label): ?>
-                                                    <label style="display: block; font-size: 13px; margin-bottom: 5px;">
-                                                        <input type="checkbox" name="work_staff[]" value="<?php echo $key; ?>" <?php checked(in_array($key, $work_staff)); ?>> <?php echo $label; ?>
-                                                    </label>
-                                                <?php endforeach; ?>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -704,7 +651,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                                     'parents' => 'إدارة أولياء الأمور',
                                     'grades' => 'إدارة الدرجات والنتائج',
                                     'teacher-reports' => 'بلاغات المعلمين',
-                                    'printing' => 'مركز الطباعة',
                                     'attendance' => 'سجل الحضور والغياب',
                                     'lesson-plans' => 'تحضير الدروس',
                                     'assignments' => 'الواجبات المدرسية',

@@ -309,13 +309,13 @@ class SM_Settings {
 
     public static function get_sidebar_visibility() {
         $default = array(
-            'sm_system_admin' => array('stats' => true, 'students' => true, 'teachers' => true, 'parents' => true, 'grades' => true, 'teacher-reports' => true, 'printing' => true, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => true, 'documents' => true),
-            'sm_principal' => array('stats' => true, 'students' => true, 'teachers' => true, 'parents' => true, 'grades' => true, 'teacher-reports' => true, 'printing' => true, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => true, 'documents' => true),
-            'sm_supervisor' => array('stats' => true, 'students' => true, 'teachers' => true, 'parents' => true, 'grades' => true, 'teacher-reports' => true, 'printing' => true, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => true, 'documents' => true),
-            'sm_coordinator' => array('stats' => false, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'printing' => false, 'attendance' => false, 'lesson-plans' => true, 'assignments' => false, 'clinic' => false, 'documents' => true),
-            'sm_teacher' => array('stats' => true, 'students' => true, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'printing' => false, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => false, 'documents' => true),
-            'sm_student' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'printing' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => true, 'clinic' => false, 'documents' => false),
-            'sm_parent' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'printing' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => false),
+            'sm_system_admin' => array('stats' => true, 'students' => true, 'teachers' => true, 'parents' => true, 'grades' => true, 'teacher-reports' => true, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => true, 'documents' => true),
+            'sm_principal' => array('stats' => true, 'students' => true, 'teachers' => true, 'parents' => true, 'grades' => true, 'teacher-reports' => true, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => true, 'documents' => true),
+            'sm_supervisor' => array('stats' => true, 'students' => true, 'teachers' => true, 'parents' => true, 'grades' => true, 'teacher-reports' => true, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => true, 'documents' => true),
+            'sm_coordinator' => array('stats' => false, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => true, 'assignments' => false, 'clinic' => false, 'documents' => true),
+            'sm_teacher' => array('stats' => true, 'students' => true, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => false, 'documents' => true),
+            'sm_student' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => true, 'clinic' => false, 'documents' => false),
+            'sm_parent' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => false),
         );
         $saved = get_option('sm_sidebar_visibility');
         if ($saved === false) return $default;
