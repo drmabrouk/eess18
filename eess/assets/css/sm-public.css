@@ -23,6 +23,36 @@
     color: var(--sm-dark-color);
 }
 
+/* Compact layout optimizations */
+.sm-main-header {
+    height: 52px !important;
+    padding: 4px 16px !important;
+    box-sizing: border-box;
+}
+
+.sm-user-profile-nav img {
+    border-radius: 50% !important;
+}
+
+.sm-sidebar-link {
+    padding: 6px 16px !important;
+}
+
+.sm-sidebar-item {
+    margin-bottom: 2px !important;
+}
+
+/* Strictly reserve colors for high-priority or destructive administrative buttons */
+.sm-btn-destructive, .sm-btn-danger, .sm-btn-critical {
+    background: #8B1E1E !important;
+    color: #FFFFFF !important;
+}
+
+.sm-btn-black, .sm-btn-dark-admin {
+    background: #1E1E1E !important;
+    color: #FFFFFF !important;
+}
+
 .sm-btn, .sm-btn * {
     color: white !important;
 }

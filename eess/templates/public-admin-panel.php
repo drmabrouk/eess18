@@ -41,12 +41,6 @@
                     badgeReports.innerText = count;
                     badgeReports.style.display = count > 0 ? 'block' : 'none';
                 }
-                const badgeItems = document.getElementById('expired-items-badge');
-                if (badgeItems) {
-                    const count = parseInt(res.data.expired_items);
-                    badgeItems.innerText = count;
-                    badgeItems.style.display = count > 0 ? 'block' : 'none';
-                }
             }
         });
     }
@@ -308,22 +302,22 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
 <div class="sm-admin-dashboard" dir="rtl" style="font-family: 'Almarai', sans-serif; background: #fff; border: 1px solid var(--sm-border-color); border-radius: 12px; overflow: hidden;">
     <!-- OFFICIAL SYSTEM HEADER -->
-    <div class="sm-main-header" style="padding: 8px 20px;">
-        <div style="display: flex; align-items: center; gap: 15px;">
+    <div class="sm-main-header" style="height: 52px; padding: 4px 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
             <?php if (!empty($school['school_logo'])): ?>
-                <div style="background: white; padding: 3px; border: 1px solid var(--sm-border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                    <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 35px; width: auto; object-fit: contain; display: block;">
+                <div style="background: white; padding: 2px; border: 1px solid var(--sm-border-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 28px; width: auto; object-fit: contain; display: block;">
                 </div>
             <?php else: ?>
-                <div style="background: #f1f5f9; padding: 3px; border: 1px solid var(--sm-border-color); border-radius: 8px; height: 35px; width: 35px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
-                    <span class="dashicons dashicons-building" style="font-size: 18px; width: 18px; height: 18px;"></span>
+                <div style="background: #f1f5f9; padding: 2px; border: 1px solid var(--sm-border-color); border-radius: 6px; height: 28px; width: 28px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <span class="dashicons dashicons-building" style="font-size: 14px; width: 14px; height: 14px;"></span>
                 </div>
             <?php endif; ?>
             <div>
-                <h1 style="margin:0; border: none; padding: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.15em; text-decoration: none; line-height: 1;">
+                <h1 style="margin:0; border: none; padding: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.05em; text-decoration: none; line-height: 1;">
                     <?php echo esc_html($school['school_name']); ?>
                 </h1>
-                <div style="display: inline-block; padding: 2px 10px; background: #f1f5f9; color: #475569; border-radius: 50px; font-size: 10px; font-weight: 700; margin-top: 3px; border: 1px solid #cbd5e1;">
+                <div style="display: inline-block; padding: 1px 6px; background: #f1f5f9; color: #475569; border-radius: 50px; font-size: 9px; font-weight: 700; margin-top: 1px; border: 1px solid #cbd5e1; line-height: 1;">
                     <?php 
                     if ($is_admin) echo 'مدير النظام';
                     elseif ($is_sys_admin) echo 'مدير النظام التقني';
@@ -338,26 +332,26 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="sm-header-info-box" style="text-align: right; border-left: 1px solid var(--sm-border-color); padding-left: 15px;">
-                <div style="font-size: 0.85em; font-weight: 700; color: var(--sm-dark-color);"><?php echo date_i18n('l j F Y'); ?></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="sm-header-info-box" style="text-align: right; border-left: 1px solid var(--sm-border-color); padding-left: 12px; display: flex; align-items: center;">
+                <div style="font-size: 0.8em; font-weight: 700; color: var(--sm-dark-color);"><?php echo date_i18n('l j F Y'); ?></div>
             </div>
 
             <?php if (($is_wp_admin || !empty($my_visibility['attendance'])) && ($is_admin || current_user_can('إدارة_الطلاب'))): ?>
-                <a href="<?php echo add_query_arg('sm_tab', 'attendance'); ?>" class="sm-btn sm-btn-secondary" style="height: 38px; font-size: 12px; color: white !important; text-decoration: none;">سجل الحضور والغياب</a>
+                <a href="<?php echo add_query_arg('sm_tab', 'attendance'); ?>" class="sm-btn sm-btn-secondary" style="height: 32px; padding: 0 12px; font-size: 11px; color: white !important; text-decoration: none; display: inline-flex; align-items: center;">سجل الحضور والغياب</a>
             <?php endif; ?>
 
             <?php if ($active_tab !== 'attendance' && ($is_admin || current_user_can('تسجيل_مخالفة'))): ?>
-                <button onclick="smOpenViolationModal()" class="sm-btn" style="background: var(--sm-primary-color); height: 38px; font-size: 12px; color: white !important;">+ تسجيل مخالفة</button>
+                <button onclick="smOpenViolationModal()" class="sm-btn" style="background: var(--sm-primary-color); height: 32px; padding: 0 12px; font-size: 11px; color: white !important;">+ تسجيل مخالفة</button>
             <?php endif; ?>
 
             <div class="sm-user-dropdown" style="position: relative;">
-                <div class="sm-user-profile-nav" onclick="smToggleUserDropdown()" style="display: flex; align-items: center; gap: 12px; background: white; padding: 6px 12px; border-radius: 50px; border: 1px solid var(--sm-border-color); cursor: pointer;">
+                <div class="sm-user-profile-nav" onclick="smToggleUserDropdown()" style="display: flex; align-items: center; gap: 8px; background: white; padding: 4px 10px; border-radius: 50px; border: 1px solid var(--sm-border-color); cursor: pointer;">
                     <div style="text-align: right;">
-                        <div style="font-size: 0.85em; font-weight: 700; color: var(--sm-dark-color);"><?php echo $greeting . '، ' . $user->display_name; ?></div>
-                        <div style="font-size: 0.7em; color: #38a169;">متصل الآن <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 10px; width: 10px; height: 10px;"></span></div>
+                        <div style="font-size: 0.8em; font-weight: 700; color: var(--sm-dark-color); line-height: 1.1;"><?php echo $greeting . '، ' . $user->display_name; ?></div>
+                        <div style="font-size: 0.65em; color: #38a169; line-height: 1;">متصل الآن <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 8px; width: 8px; height: 8px;"></span></div>
                     </div>
-                    <?php echo get_avatar($user->ID, 32, '', '', array('style' => 'border-radius: 50%; border: 2px solid var(--sm-primary-color);')); ?>
+                    <?php echo get_avatar($user->ID, 28, '', '', array('style' => 'border-radius: 50% !important; border: 1.5px solid var(--sm-primary-color); width: 28px; height: 28px; display: block;')); ?>
                 </div>
                 <div id="sm-user-dropdown-menu" style="display: none; position: absolute; top: 110%; left: 0; background: white; border: 1px solid var(--sm-border-color); border-radius: 8px; width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; animation: smFadeIn 0.2s ease-out; padding: 10px 0;">
                     <div id="sm-profile-view">
@@ -452,15 +446,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </li>
                 <?php endif; ?>
 
-                <?php if (($is_wp_admin || !empty($my_visibility['confiscated'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor)): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'confiscated' ? 'sm-active' : ''; ?>" style="position:relative;">
-                        <a href="<?php echo add_query_arg('sm_tab', 'confiscated'); ?>" class="sm-sidebar-link">
-                            <span class="dashicons dashicons-lock"></span> المواد المصادرة
-                            <span id="expired-items-badge" class="sm-sidebar-badge" style="display:none;">0</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-
                 <?php if (($is_wp_admin || !empty($my_visibility['lesson-plans'])) && ($is_coordinator || $is_teacher)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'lesson-plans' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'lesson-plans'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-welcome-write-blog"></span> تحضير الدروس</a>
@@ -470,12 +455,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <?php if (($is_wp_admin || !empty($my_visibility['assignments'])) && ($is_teacher || $is_student)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'assignments' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'assignments'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-portfolio"></span> الواجبات المدرسية</a>
-                    </li>
-                <?php endif; ?>
-
-                <?php if (($is_wp_admin || !empty($my_visibility['messaging']))): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'messaging' ? 'sm-active' : ''; ?>">
-                        <a href="<?php echo add_query_arg('sm_tab', 'messaging'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-email"></span> مركز المراسلة</a>
                     </li>
                 <?php endif; ?>
 
@@ -497,17 +476,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </li>
                 <?php endif; ?>
 
-                <?php if (($is_wp_admin || !empty($my_visibility['surveys'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor)): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'surveys' ? 'sm-active' : ''; ?>">
-                        <a href="<?php echo add_query_arg('sm_tab', 'surveys'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-clipboard"></span> استطلاعات الرأي</a>
-                    </li>
-                <?php endif; ?>
-
-                <?php if (($is_wp_admin || !empty($my_visibility['timetables'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor)): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'timetables' ? 'sm-active' : ''; ?>">
-                        <a href="<?php echo add_query_arg('sm_tab', 'timetables'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-calendar-alt"></span> الجداول المدرسية</a>
-                    </li>
-                <?php endif; ?>
 
                 <?php if ($is_admin || $is_sys_admin): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'global-settings' ? 'sm-active' : ''; ?>">
@@ -548,10 +516,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     }
                     break;
 
-                case 'messaging':
-                    include SM_PLUGIN_DIR . 'templates/messaging-center.php';
-                    break;
-
                 case 'documents':
                     include SM_PLUGIN_DIR . 'templates/admin-documents.php';
                     break;
@@ -579,10 +543,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     include SM_PLUGIN_DIR . 'templates/admin-teacher-reports.php';
                     break;
 
-                case 'confiscated':
-                    include SM_PLUGIN_DIR . 'templates/admin-confiscated.php';
-                    break;
-
                 case 'attendance':
                     include SM_PLUGIN_DIR . 'templates/admin-attendance.php';
                     break;
@@ -597,18 +557,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
                 case 'clinic':
                     include SM_PLUGIN_DIR . 'templates/admin-clinic.php';
-                    break;
-
-                case 'surveys':
-                    if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor) {
-                        include SM_PLUGIN_DIR . 'templates/admin-surveys.php';
-                    }
-                    break;
-
-                case 'timetables':
-                    if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor) {
-                        include SM_PLUGIN_DIR . 'templates/admin-timetables.php';
-                    }
                     break;
 
                 case 'grades':
@@ -756,15 +704,11 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                                     'parents' => 'إدارة أولياء الأمور',
                                     'grades' => 'إدارة الدرجات والنتائج',
                                     'teacher-reports' => 'بلاغات المعلمين',
-                                    'confiscated' => 'المواد المصادرة',
                                     'printing' => 'مركز الطباعة',
-                                    'surveys' => 'استطلاعات الرأي',
-                                    'timetables' => 'الجداول المدرسية',
                                     'attendance' => 'سجل الحضور والغياب',
                                     'lesson-plans' => 'تحضير الدروس',
                                     'assignments' => 'الواجبات المدرسية',
                                     'clinic' => 'العيادة المدرسية',
-                                    'messaging' => 'مركز المراسلة',
                                     'documents' => 'مكتبة الوثائق والتقارير'
                                 );
                                 ?>

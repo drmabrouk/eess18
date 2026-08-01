@@ -430,8 +430,7 @@ class SM_DB {
         $data = array(
             'students' => $wpdb->get_results("SELECT * FROM {$wpdb->prefix}sm_students", ARRAY_A),
             'records' => $wpdb->get_results("SELECT r.*, s.student_code FROM {$wpdb->prefix}sm_records r JOIN {$wpdb->prefix}sm_students s ON r.student_id = s.id", ARRAY_A),
-            'attendance' => $wpdb->get_results("SELECT a.*, s.student_code FROM {$wpdb->prefix}sm_attendance a JOIN {$wpdb->prefix}sm_students s ON a.student_id = s.id", ARRAY_A),
-            'confiscated_items' => $wpdb->get_results("SELECT c.*, s.student_code FROM {$wpdb->prefix}sm_confiscated_items c JOIN {$wpdb->prefix}sm_students s ON c.student_id = s.id", ARRAY_A)
+            'attendance' => $wpdb->get_results("SELECT a.*, s.student_code FROM {$wpdb->prefix}sm_attendance a JOIN {$wpdb->prefix}sm_students s ON a.student_id = s.id", ARRAY_A)
         );
         return json_encode($data);
     }
@@ -505,28 +504,6 @@ class SM_DB {
                     $wpdb->update("{$wpdb->prefix}sm_attendance", $att, array('id' => $exists));
                 } else {
                     $wpdb->insert("{$wpdb->prefix}sm_attendance", $att);
-                }
-            }
-        }
-
-        // 4. Process Confiscated Items
-        if (isset($data['confiscated_items'])) {
-            foreach ($data['confiscated_items'] as $item) {
-                $local_sid = $get_sid($item['student_code'] ?? '');
-                if (!$local_sid) continue;
-
-                unset($item['id'], $item['student_code']);
-                $item['student_id'] = $local_sid;
-
-                $exists = $wpdb->get_var($wpdb->prepare(
-                    "SELECT id FROM {$wpdb->prefix}sm_confiscated_items WHERE student_id = %d AND created_at = %s AND item_name = %s",
-                    $local_sid, $item['created_at'], $item['item_name']
-                ));
-
-                if ($exists) {
-                    $wpdb->update("{$wpdb->prefix}sm_confiscated_items", $item, array('id' => $exists));
-                } else {
-                    $wpdb->insert("{$wpdb->prefix}sm_confiscated_items", $item);
                 }
             }
         }
@@ -679,102 +656,6 @@ class SM_DB {
         ));
     }
 
-    public static function send_message($sender_id, $receiver_id, $message, $student_id = null) {
-        global $wpdb;
-        return $wpdb->insert("{$wpdb->prefix}sm_messages", array(
-            'sender_id' => $sender_id,
-            'receiver_id' => $receiver_id,
-            'student_id' => $student_id,
-            'message' => sanitize_textarea_field($message)
-        ));
-    }
-
-    public static function get_messages($user_id) {
-        global $wpdb;
-        return $wpdb->get_results($wpdb->prepare(
-            "SELECT m.*, u.display_name as sender_name FROM {$wpdb->prefix}sm_messages m 
-             JOIN {$wpdb->prefix}users u ON m.sender_id = u.ID 
-             WHERE receiver_id = %d ORDER BY created_at DESC", 
-            $user_id
-        ));
-    }
-
-    public static function get_conversations($user_id) {
-        global $wpdb;
-        // Get unique users who have messaged the current user or been messaged by them
-        $query = $wpdb->prepare(
-            "SELECT DISTINCT IF(sender_id = %d, receiver_id, sender_id) as other_user_id 
-             FROM {$wpdb->prefix}sm_messages 
-             WHERE sender_id = %d OR receiver_id = %d",
-            $user_id, $user_id, $user_id
-        );
-        $user_ids = $wpdb->get_col($query);
-        
-        $conversations = array();
-        foreach ($user_ids as $other_id) {
-            $other_user = get_userdata($other_id);
-            if (!$other_user) continue;
-
-            $last_message = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$wpdb->prefix}sm_messages 
-                 WHERE (sender_id = %d AND receiver_id = %d) OR (sender_id = %d AND receiver_id = %d) 
-                 ORDER BY created_at DESC LIMIT 1",
-                $user_id, $other_id, $other_id, $user_id
-            ));
-
-            $conversations[] = array(
-                'user' => $other_user,
-                'last_message' => $last_message
-            );
-        }
-
-        // Sort conversations by last message date
-        usort($conversations, function($a, $b) {
-            return strtotime($b['last_message']->created_at) - strtotime($a['last_message']->created_at);
-        });
-
-        return $conversations;
-    }
-
-    public static function get_conversation_messages($user1, $user2) {
-        global $wpdb;
-        return $wpdb->get_results($wpdb->prepare(
-            "SELECT m.*, u.display_name as sender_name FROM {$wpdb->prefix}sm_messages m 
-             JOIN {$wpdb->prefix}users u ON m.sender_id = u.ID 
-             WHERE (sender_id = %d AND receiver_id = %d) OR (sender_id = %d AND receiver_id = %d) 
-             ORDER BY created_at ASC",
-            $user1, $user2, $user2, $user1
-        ));
-    }
-
-    public static function cleanup_old_messages() {
-        if (get_transient('sm_daily_cleanup_run')) {
-            return;
-        }
-
-        global $wpdb;
-        $settings = SM_Settings::get_retention_settings();
-        $days = intval($settings['message_retention_days']);
-        
-        if ($days > 0) {
-            $wpdb->query($wpdb->prepare(
-                "DELETE FROM {$wpdb->prefix}sm_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
-                $days
-            ));
-        }
-
-        set_transient('sm_daily_cleanup_run', true, DAY_IN_SECONDS);
-    }
-
-    public static function get_sent_messages($user_id) {
-        global $wpdb;
-        return $wpdb->get_results($wpdb->prepare(
-            "SELECT m.*, u.display_name as receiver_name FROM {$wpdb->prefix}sm_messages m 
-             JOIN {$wpdb->prefix}users u ON m.receiver_id = u.ID 
-             WHERE sender_id = %d ORDER BY created_at DESC", 
-            $user_id
-        ));
-    }
 
     public static function normalize_arabic($str) {
         $search = array(
@@ -866,65 +747,9 @@ class SM_DB {
         return wp_delete_user($user_id);
     }
 
-    public static function get_confiscated_items($filters = array()) {
-        global $wpdb;
-        $query = "SELECT c.*, s.name as student_name, s.class_name, s.section FROM {$wpdb->prefix}sm_confiscated_items c
-                  JOIN {$wpdb->prefix}sm_students s ON c.student_id = s.id WHERE 1=1";
-        if (!empty($filters['student_id'])) {
-            $query .= $wpdb->prepare(" AND c.student_id = %d", $filters['student_id']);
-        }
-        if (!empty($filters['status'])) {
-            $query .= $wpdb->prepare(" AND c.status = %s", $filters['status']);
-        }
-        $query .= " ORDER BY c.created_at DESC";
-        return $wpdb->get_results($query);
-    }
-
-    public static function add_confiscated_item($data) {
-        global $wpdb;
-        SM_Logger::log('تسجيل مادة مصادرة', "الطالب: {$data['student_id']}، المادة: {$data['item_name']}");
-        return $wpdb->insert(
-            "{$wpdb->prefix}sm_confiscated_items",
-            array(
-                'student_id' => intval($data['student_id']),
-                'item_name' => sanitize_text_field($data['item_name']),
-                'holding_period' => intval($data['holding_period']),
-                'is_returnable' => isset($data['is_returnable']) ? 1 : 0,
-                'status' => 'held'
-            )
-        );
-    }
-
-    public static function update_confiscated_item_status($id, $status) {
-        global $wpdb;
-        SM_Logger::log('تحديث حالة مادة مصادرة', "المعرف: $id، الحالة: $status");
-        return $wpdb->update(
-            "{$wpdb->prefix}sm_confiscated_items",
-            array('status' => $status),
-            array('id' => $id)
-        );
-    }
-
-    public static function delete_confiscated_item($id) {
-        global $wpdb;
-        SM_Logger::log('حذف مادة مصادرة', "المعرف: $id");
-        return $wpdb->delete("{$wpdb->prefix}sm_confiscated_items", array('id' => $id));
-    }
-
     public static function get_pending_reports_count() {
         global $wpdb;
         return $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_records WHERE status = 'pending'");
-    }
-
-    public static function get_expired_items_count() {
-        global $wpdb;
-        $items = $wpdb->get_results("SELECT created_at, holding_period FROM {$wpdb->prefix}sm_confiscated_items WHERE status = 'held'");
-        $count = 0;
-        foreach ($items as $item) {
-            $expires = strtotime($item->created_at) + ($item->holding_period * 24 * 60 * 60);
-            if ($expires <= time()) $count++;
-        }
-        return $count;
     }
 
     // Subject Management
@@ -952,102 +777,6 @@ class SM_DB {
     public static function delete_subject($id) {
         global $wpdb;
         return $wpdb->delete("{$wpdb->prefix}sm_subjects", array('id' => $id));
-    }
-
-    // Survey Management
-    public static function add_survey($title, $questions, $target_roles, $user_id) {
-        global $wpdb;
-        $success = $wpdb->insert("{$wpdb->prefix}sm_surveys", array(
-            'title' => sanitize_text_field($title),
-            'target_roles' => sanitize_text_field($target_roles),
-            'questions' => is_array($questions) ? json_encode($questions) : $questions,
-            'created_by' => $user_id,
-            'status' => 'active'
-        ));
-        return $success ? $wpdb->insert_id : false;
-    }
-
-    public static function get_surveys($role = null) {
-        global $wpdb;
-        $query = "SELECT * FROM {$wpdb->prefix}sm_surveys WHERE status = 'active'";
-        if ($role) {
-            if ($role === 'all') {
-                $query .= " AND target_roles = 'all'";
-            } else {
-                $query .= $wpdb->prepare(" AND (target_roles = 'all' OR target_roles LIKE %s)", '%' . $wpdb->esc_like($role) . '%');
-            }
-        }
-        $query .= " ORDER BY created_at DESC";
-        return $wpdb->get_results($query);
-    }
-
-    public static function get_survey($id) {
-        global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}sm_surveys WHERE id = %d", $id));
-    }
-
-    public static function save_survey_response($survey_id, $user_id, $responses) {
-        global $wpdb;
-        // Check if already responded
-        $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}sm_survey_responses WHERE survey_id = %d AND user_id = %d", $survey_id, $user_id));
-        if ($exists) return false;
-
-        return $wpdb->insert("{$wpdb->prefix}sm_survey_responses", array(
-            'survey_id' => $survey_id,
-            'user_id' => $user_id,
-            'responses' => is_array($responses) ? json_encode($responses) : $responses
-        ));
-    }
-
-    public static function get_survey_responses($survey_id) {
-        global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT r.*, u.display_name FROM {$wpdb->prefix}sm_survey_responses r JOIN {$wpdb->prefix}users u ON r.user_id = u.ID WHERE r.survey_id = %d", $survey_id));
-    }
-
-    public static function get_survey_results($survey_id) {
-        $responses = self::get_survey_responses($survey_id);
-        $survey = self::get_survey($survey_id);
-        if (!$survey) return array();
-
-        $questions = json_decode($survey->questions, true);
-        $results = array();
-        foreach($questions as $index => $q) {
-            $results[$index] = array('question' => $q, 'answers' => array());
-        }
-
-        foreach ($responses as $r) {
-            $ans_data = json_decode($r->responses, true);
-            foreach ($ans_data as $index => $val) {
-                if (isset($results[$index])) {
-                    if (!isset($results[$index]['answers'][$val])) $results[$index]['answers'][$val] = 0;
-                    $results[$index]['answers'][$val]++;
-                }
-            }
-        }
-        return $results;
-    }
-
-    // Timetable Management
-    public static function update_timetable($class, $section, $day, $period, $subject_id, $teacher_id) {
-        global $wpdb;
-        $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}sm_timetables WHERE class_name = %s AND section = %s AND day = %s AND period = %d", $class, $section, $day, $period));
-        if ($exists) {
-            return $wpdb->update("{$wpdb->prefix}sm_timetables", array('subject_id' => $subject_id, 'teacher_id' => $teacher_id), array('id' => $exists));
-        } else {
-            return $wpdb->insert("{$wpdb->prefix}sm_timetables", array(
-                'class_name' => $class,
-                'section' => $section,
-                'day' => $day,
-                'period' => $period,
-                'subject_id' => $subject_id,
-                'teacher_id' => $teacher_id
-            ));
-        }
-    }
-
-    public static function get_timetable($class, $section) {
-        global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT t.*, s.name as subject_name, u.display_name as teacher_name FROM {$wpdb->prefix}sm_timetables t JOIN {$wpdb->prefix}sm_subjects s ON t.subject_id = s.id JOIN {$wpdb->prefix}users u ON t.teacher_id = u.ID WHERE t.class_name = %s AND t.section = %s ORDER BY t.day, t.period", $class, $section));
     }
 
     // Attendance Management

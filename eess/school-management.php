@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: Educational Electronic Systems Services EESS
+ * Plugin Name: Educational Electronic Systems Services (EESS)
  * Plugin URI: https://eess.online
- * Description: نظام شامل لإدارة السلوك، المخالفات، والتقارير المدرسية.
- * Version: 97.0.0
- * Author: EESS
+ * Description: خدمات الأنظمة الإلكترونية التعليمية (EESS) - نظام شامل لإدارة السلوك، المخالفات، والتقارير المدرسية.
+ * Version: 98.0.0
+ * Author: Educational Electronic Systems Services (EESS)
  * Author URI: https://eess.online
  * Language: ar
  * Text Domain: school-management
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('SM_VERSION', '97.0.0');
+define('SM_VERSION', '98.0.0');
 define('SM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
