@@ -534,7 +534,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     break;
 
                 case 'lesson-plans':
-                    include SM_PLUGIN_DIR . 'templates/admin-lesson-plans.php';
+                    include SM_PLUGIN_DIR . 'templates/admin-lesson-prep.php';
                     break;
 
                 case 'assignments':

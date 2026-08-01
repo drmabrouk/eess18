@@ -68,6 +68,68 @@ class SM_Public {
         add_shortcode('sm_login', array($this, 'shortcode_login'));
         add_shortcode('sm_admin', array($this, 'shortcode_admin_dashboard'));
         add_shortcode('sm_class_attendance', array($this, 'shortcode_class_attendance'));
+        add_shortcode('sm_lesson_prep', array($this, 'shortcode_lesson_prep'));
+    }
+
+    public function shortcode_lesson_prep() {
+        if (!is_user_logged_in()) {
+            wp_redirect(add_query_arg('redirect_to', home_url('/lesson-prep'), home_url('/sm-login')));
+            exit;
+        }
+
+        // Runtime DB table presence check and automatic creation
+        global $wpdb;
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}sm_lesson_preps'");
+        if (!$table_exists) {
+            $charset_collate = $wpdb->get_charset_collate();
+            $sql = "CREATE TABLE {$wpdb->prefix}sm_lesson_preps (
+                id bigint(20) NOT NULL AUTO_INCREMENT,
+                teacher_id bigint(20) NOT NULL,
+                supervisor_id bigint(20) NOT NULL,
+                title varchar(255) NOT NULL,
+                subject varchar(100) NOT NULL,
+                grade_level varchar(50) NOT NULL,
+                class_section varchar(50) NOT NULL,
+                lesson_date date NOT NULL,
+                submission_time datetime DEFAULT NULL,
+                status varchar(50) DEFAULT 'draft' NOT NULL,
+                delay_seconds int(11) DEFAULT 0 NOT NULL,
+                lesson_data longtext,
+                version int(11) DEFAULT 1 NOT NULL,
+                parent_id bigint(20) DEFAULT 0 NOT NULL,
+                created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+                PRIMARY KEY  (id),
+                KEY teacher_id (teacher_id),
+                KEY status (status)
+            ) $charset_collate;
+
+            CREATE TABLE {$wpdb->prefix}sm_lesson_comments (
+                id bigint(20) NOT NULL AUTO_INCREMENT,
+                prep_id bigint(20) NOT NULL,
+                user_id bigint(20) NOT NULL,
+                comment_text text NOT NULL,
+                created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                PRIMARY KEY  (id),
+                KEY prep_id (prep_id)
+            ) $charset_collate;";
+
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
+        }
+
+        $user = wp_get_current_user();
+        $roles = (array) $user->roles;
+        $is_admin = in_array('administrator', $roles) || current_user_can('manage_options');
+        $is_sys_admin = in_array('sm_system_admin', $roles);
+        $is_principal = in_array('sm_principal', $roles);
+        $is_supervisor = in_array('sm_supervisor', $roles);
+        $is_coordinator = in_array('sm_coordinator', $roles);
+        $is_teacher = in_array('sm_teacher', $roles);
+
+        ob_start();
+        include SM_PLUGIN_DIR . 'templates/admin-lesson-prep.php';
+        return ob_get_clean();
     }
 
     public function shortcode_login() {
@@ -651,7 +713,7 @@ class SM_Public {
                                 </button>
                             </div>
 
-                            <input type="hidden" name="redirect_to" value="' . esc_url(home_url('/sm-admin')) . '">
+                            <input type="hidden" name="redirect_to" value="' . esc_url(isset($_GET['redirect_to']) ? $_GET['redirect_to'] : home_url('/sm-admin')) . '">
                         </form>
 
                         <!-- Password Reset Card -->

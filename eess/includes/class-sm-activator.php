@@ -147,6 +147,38 @@ class SM_Activator {
             created_by bigint(20) NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}sm_lesson_preps (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            teacher_id bigint(20) NOT NULL,
+            supervisor_id bigint(20) NOT NULL,
+            title varchar(255) NOT NULL,
+            subject varchar(100) NOT NULL,
+            grade_level varchar(50) NOT NULL,
+            class_section varchar(50) NOT NULL,
+            lesson_date date NOT NULL,
+            submission_time datetime DEFAULT NULL,
+            status varchar(50) DEFAULT 'draft' NOT NULL,
+            delay_seconds int(11) DEFAULT 0 NOT NULL,
+            lesson_data longtext,
+            version int(11) DEFAULT 1 NOT NULL,
+            parent_id bigint(20) DEFAULT 0 NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY teacher_id (teacher_id),
+            KEY status (status)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}sm_lesson_comments (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            prep_id bigint(20) NOT NULL,
+            user_id bigint(20) NOT NULL,
+            comment_text text NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY prep_id (prep_id)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -179,6 +211,10 @@ class SM_Activator {
             'attendance' => array(
                 'title'   => 'تسجيل حضور الفصول',
                 'content' => '[sm_class_attendance]',
+            ),
+            'lesson-prep' => array(
+                'title'   => 'تحضير الدروس',
+                'content' => '[sm_lesson_prep]',
             ),
         );
 
