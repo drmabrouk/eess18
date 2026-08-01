@@ -101,13 +101,15 @@ class SM_Admin {
     public function display_settings() {
         if (isset($_POST['sm_save_settings_unified'])) {
             check_admin_referer('sm_admin_action', 'sm_admin_nonce');
+            $existing = SM_Settings::get_school_info();
             SM_Settings::save_school_info(array(
                 'school_name' => sanitize_text_field($_POST['school_name']),
-                'school_principal_name' => sanitize_text_field($_POST['school_principal_name']),
+                'school_principal_name' => isset($_POST['school_principal_name']) ? sanitize_text_field($_POST['school_principal_name']) : ($existing['school_principal_name'] ?? ''),
                 'phone' => sanitize_text_field($_POST['school_phone']),
                 'email' => sanitize_email($_POST['school_email']),
                 'school_logo' => esc_url_raw($_POST['school_logo']),
-                'address' => sanitize_text_field($_POST['school_address'])
+                'address' => isset($_POST['school_address']) ? sanitize_text_field($_POST['school_address']) : ($existing['address'] ?? ''),
+                'working_schedule' => $existing['working_schedule'] ?? array()
             ));
             echo '<div class="updated"><p>تم حفظ بيانات المدرسة بنجاح.</p></div>';
         }
