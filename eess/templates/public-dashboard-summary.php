@@ -100,26 +100,26 @@ function smSubmitSurveyResponse(surveyId, questionsCount) {
 </script>
 
 <div class="sm-card-grid" style="margin-bottom: 40px;">
-    <div class="sm-stat-card">
-        <div style="font-size: 0.85em; color: var(--sm-text-gray); margin-bottom: 10px; font-weight: 700;">إجمالي الطلاب</div>
-        <div style="font-size: 2.5em; font-weight: 900; color: var(--sm-primary-color);"><?php echo esc_html($stats['total_students'] ?? 0); ?></div>
+    <div class="sm-stat-card" style="border-top: 4px solid var(--sm-primary-color); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">إجمالي الطلاب</div>
+        <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-primary-color); line-height: 1.2;"><?php echo esc_html($stats['total_students'] ?? 0); ?></div>
     </div>
-    <div class="sm-stat-card">
-        <div style="font-size: 0.85em; color: var(--sm-text-gray); margin-bottom: 10px; font-weight: 700;">إجمالي المعلمين</div>
-        <div style="font-size: 2.5em; font-weight: 900; color: var(--sm-secondary-color);"><?php echo esc_html($stats['total_teachers'] ?? 0); ?></div>
+    <div class="sm-stat-card" style="border-top: 4px solid var(--sm-secondary-color); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">إجمالي المعلمين</div>
+        <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-secondary-color); line-height: 1.2;"><?php echo esc_html($stats['total_teachers'] ?? 0); ?></div>
     </div>
-    <div class="sm-stat-card">
-        <div style="font-size: 0.85em; color: var(--sm-text-gray); margin-bottom: 10px; font-weight: 700;">مخالفات اليوم</div>
-        <div style="font-size: 2.5em; font-weight: 900; color: var(--sm-accent-color);"><?php echo esc_html($stats['violations_today'] ?? 0); ?></div>
+    <div class="sm-stat-card" style="border-top: 4px solid var(--sm-accent-color); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">مخالفات اليوم</div>
+        <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-accent-color); line-height: 1.2;"><?php echo esc_html($stats['violations_today'] ?? 0); ?></div>
     </div>
-    <div class="sm-stat-card">
-        <div style="font-size: 0.85em; color: var(--sm-text-gray); margin-bottom: 10px; font-weight: 700;">الإجراءات المتخذة</div>
-        <div style="font-size: 2.5em; font-weight: 900; color: var(--sm-dark-color);"><?php echo esc_html($stats['total_actions'] ?? 0); ?></div>
+    <div class="sm-stat-card" style="border-top: 4px solid var(--sm-dark-color); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">الإجراءات المتخذة</div>
+        <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-dark-color); line-height: 1.2;"><?php echo esc_html($stats['total_actions'] ?? 0); ?></div>
     </div>
     <?php if ($is_wp_admin || !empty($my_visibility['attendance'])): ?>
-    <div class="sm-stat-card" style="border-right: 4px solid #e53e3e;">
-        <div style="font-size: 0.85em; color: var(--sm-text-gray); margin-bottom: 10px; font-weight: 700;">غياب الطلاب (اليوم)</div>
-        <div style="font-size: 2.5em; font-weight: 900; color: #e53e3e;"><?php echo esc_html($stats['absent_today'] ?? 0); ?></div>
+    <div class="sm-stat-card" style="border-top: 4px solid var(--sm-accent-color); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">غياب الطلاب (اليوم)</div>
+        <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-accent-color); line-height: 1.2;"><?php echo esc_html($stats['absent_today'] ?? 0); ?></div>
     </div>
     <?php endif; ?>
 </div>
@@ -228,8 +228,8 @@ function smDownloadChart(chartId, fileName) {
                 datasets: [{
                     label: 'المخالفات',
                     data: <?php echo json_encode(array_map(function($t){ return $t->count; }, $stats['trends'] ?? [])); ?>,
-                    borderColor: '#F63049',
-                    backgroundColor: 'rgba(246, 48, 73, 0.1)',
+                    borderColor: '#334155',
+                    backgroundColor: 'rgba(51, 65, 85, 0.08)',
                     fill: true,
                     tension: 0.4
                 }]
@@ -250,7 +250,7 @@ function smDownloadChart(chartId, fileName) {
                 labels: <?php echo json_encode(array_map(function($t) use ($typeLabels){ return $typeLabels[$t->type] ?? $t->type; }, $stats['by_type'] ?? [])); ?>,
                 datasets: [{
                     data: <?php echo json_encode(array_map(function($t){ return $t->count; }, $stats['by_type'] ?? [])); ?>,
-                    backgroundColor: ['#F63049', '#D02752', '#8A244B', '#111F35', '#718096']
+                    backgroundColor: ['#334155', '#475569', '#64748B', '#1E293B', '#94A3B8']
                 }]
             },
             options: chartOptions
@@ -263,7 +263,7 @@ function smDownloadChart(chartId, fileName) {
                 labels: <?php echo json_encode(array_map(function($s) use ($severityLabels){ return $severityLabels[$s->severity] ?? $s->severity; }, $stats['by_severity'] ?? [])); ?>,
                 datasets: [{
                     data: <?php echo json_encode(array_map(function($s){ return $s->count; }, $stats['by_severity'] ?? [])); ?>,
-                    backgroundColor: ['#111F35', '#D02752', '#F63049']
+                    backgroundColor: ['#1E293B', '#475569', '#334155']
                 }]
             },
             options: chartOptions
@@ -277,7 +277,7 @@ function smDownloadChart(chartId, fileName) {
                 datasets: [{
                     label: 'عدد المخالفات',
                     data: <?php echo json_encode(array_map(function($s){ return $s->count; }, $stats['top_students'] ?? [])); ?>,
-                    backgroundColor: '#F63049'
+                    backgroundColor: '#334155'
                 }]
             },
             options: { ...chartOptions, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
@@ -291,7 +291,7 @@ function smDownloadChart(chartId, fileName) {
                 datasets: [{
                     label: 'عدد الحالات',
                     data: <?php echo json_encode(array_map(function($s){ return $s->count; }, $stats['by_degree'] ?? [])); ?>,
-                    backgroundColor: '#111F35'
+                    backgroundColor: '#1E293B'
                 }]
             },
             options: { ...chartOptions, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }

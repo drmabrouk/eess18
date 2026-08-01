@@ -1,9 +1,11 @@
 <?php
 /**
- * Plugin Name: School Management (إدارة المدرسة)
+ * Plugin Name: Educational Electronic Systems Services EESS
+ * Plugin URI: https://eess.online
  * Description: نظام شامل لإدارة السلوك، المخالفات، والتقارير المدرسية.
  * Version: 97.0.0
- * Author: AHMED MABROUK
+ * Author: EESS
+ * Author URI: https://eess.online
  * Language: ar
  * Text Domain: school-management
  * Domain Path: /languages

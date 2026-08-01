@@ -306,24 +306,24 @@ $hour = (int)current_time('G');
 $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء الخير';
 ?>
 
-<div class="sm-admin-dashboard" dir="rtl" style="font-family: 'Rubik', sans-serif; background: #fff; border: 1px solid var(--sm-border-color); border-radius: 12px; overflow: hidden;">
+<div class="sm-admin-dashboard" dir="rtl" style="font-family: 'Almarai', sans-serif; background: #fff; border: 1px solid var(--sm-border-color); border-radius: 12px; overflow: hidden;">
     <!-- OFFICIAL SYSTEM HEADER -->
-    <div class="sm-main-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
+    <div class="sm-main-header" style="padding: 8px 20px;">
+        <div style="display: flex; align-items: center; gap: 15px;">
             <?php if (!empty($school['school_logo'])): ?>
-                <div style="background: white; padding: 5px; border: 1px solid var(--sm-border-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 45px; width: auto; object-fit: contain; display: block;">
+                <div style="background: white; padding: 3px; border: 1px solid var(--sm-border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 35px; width: auto; object-fit: contain; display: block;">
                 </div>
             <?php else: ?>
-                <div style="background: #f1f5f9; padding: 5px; border: 1px solid var(--sm-border-color); border-radius: 10px; height: 45px; width: 45px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
-                    <span class="dashicons dashicons-building" style="font-size: 24px; width: 24px; height: 24px;"></span>
+                <div style="background: #f1f5f9; padding: 3px; border: 1px solid var(--sm-border-color); border-radius: 8px; height: 35px; width: 35px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <span class="dashicons dashicons-building" style="font-size: 18px; width: 18px; height: 18px;"></span>
                 </div>
             <?php endif; ?>
             <div>
-                <h1 style="margin:0; border: none; padding: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.3em; text-decoration: none; line-height: 1;">
+                <h1 style="margin:0; border: none; padding: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.15em; text-decoration: none; line-height: 1;">
                     <?php echo esc_html($school['school_name']); ?>
                 </h1>
-                <div style="display: inline-block; padding: 3px 12px; background: #fff5f5; color: #F63049; border-radius: 50px; font-size: 11px; font-weight: 700; margin-top: 6px; border: 1px solid #fed7d7;">
+                <div style="display: inline-block; padding: 2px 10px; background: #f1f5f9; color: #475569; border-radius: 50px; font-size: 10px; font-weight: 700; margin-top: 3px; border: 1px solid #cbd5e1;">
                     <?php 
                     if ($is_admin) echo 'مدير النظام';
                     elseif ($is_sys_admin) echo 'مدير النظام التقني';
@@ -633,6 +633,20 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                             <form method="post">
                                 <?php wp_nonce_field('sm_admin_action', 'sm_admin_nonce'); ?>
                                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                                    <!-- Creator Entity & System Information Section (EESS) -->
+                                    <div class="sm-form-group" style="grid-column: span 2; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                                            <span class="dashicons dashicons-external" style="color: var(--sm-accent-color); font-size: 24px; width: 24px; height: 24px;"></span>
+                                            <h4 style="margin: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.1em;">الجهة المطورة: خدمات الأنظمة الإلكترونية التعليمية (EESS)</h4>
+                                        </div>
+                                        <p style="margin: 5px 0; font-size: 13px; color: var(--sm-text-gray); line-height: 1.6;">
+                                            تم تصميم وتطوير لوحة الإدارة هذه بواسطة <strong>خدمات الأنظمة الإلكترونية التعليمية (Educational Electronic Systems Services - EESS)</strong> كجزء من الأنظمة التعليمية الإلكترونية المتكاملة التي تدعم المؤسسات التعليمية بفعالية واحترافية.
+                                        </p>
+                                        <div style="margin-top: 15px; display: flex; gap: 20px; font-size: 13px; font-weight: 700;">
+                                            <div>الموقع الرسمي للجهة المطورة: <a href="https://eess.online" target="_blank" style="color: var(--sm-primary-color); text-decoration: none;">eess.online</a></div>
+                                            <div>الدعم الفني والبريد الرسمي: <a href="mailto:info@eess.online" style="color: var(--sm-primary-color); text-decoration: none;">info@eess.online</a></div>
+                                        </div>
+                                    </div>
                                     <div class="sm-form-group"><label class="sm-label">اسم المدرسة:</label><input type="text" name="school_name" value="<?php echo esc_attr($school['school_name']); ?>" class="sm-input"></div>
                                     <div class="sm-form-group"><label class="sm-label">اسم مدير المدرسة:</label><input type="text" name="school_principal_name" value="<?php echo esc_attr($school['school_principal_name'] ?? ''); ?>" class="sm-input"></div>
                                     <div class="sm-form-group"><label class="sm-label">رقم الهاتف:</label><input type="text" name="school_phone" value="<?php echo esc_attr($school['phone']); ?>" class="sm-input"></div>
