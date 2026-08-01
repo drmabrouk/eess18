@@ -75,40 +75,612 @@ class SM_Public {
             wp_redirect(home_url('/sm-admin'));
             exit;
         }
-        $school = SM_Settings::get_school_info();
-        $output = '<div class="sm-login-wrapper" style="max-width: 450px; margin: 60px auto; padding: 40px; background: #fff; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;" dir="rtl">';
 
-        // Logo & Name
-        $output .= '<div style="text-align: center; margin-bottom: 35px;">';
-        if (!empty($school['school_logo'])) {
-            $output .= '<img src="'.esc_url($school['school_logo']).'" style="max-height: 80px; margin-bottom: 15px;">';
+        $output = '
+        <style>
+        @import url(\'https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap\');
+
+        .eess-login-page-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99999;
+            overflow-y: auto;
+            background: #ffffff;
+            font-family: \'Cairo\', \'Almarai\', \'Tajawal\', sans-serif !important;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        $output .= '<h2 style="margin: 0; font-weight: 900; color: #111F35; font-size: 1.6em;">'.esc_html($school['school_name']).'</h2>';
-        $output .= '<p style="margin-top: 5px; color: #718096; font-size: 0.9em;">نظام إدارة السلوك والنتائج الأكاديمية</p>';
-        $output .= '</div>';
 
-        if (isset($_GET['login']) && $_GET['login'] == 'failed') {
-            $output .= '<div style="background: #fff5f5; color: #c53030; padding: 12px; border-radius: 8px; border: 1px solid #feb2b2; margin-bottom: 20px; font-size: 0.9em; text-align: center;">خطأ في اسم المستخدم أو كلمة المرور.</div>';
+        .eess-login-split-layout {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
 
-        $args = array(
-            'echo' => false,
-            'redirect' => home_url('/sm-admin'),
-            'form_id' => 'sm_login_form',
-            'label_username' => 'اسم المستخدم أو الكود',
-            'label_password' => 'كلمة المرور',
-            'label_remember' => 'تذكرني على هذا الجهاز',
-            'label_log_in' => 'دخول النظام الآمن',
-            'remember' => true
-        );
-        $output .= wp_login_form($args);
+        /* Left Panel (Branding) */
+        .eess-login-left-panel {
+            width: 50%;
+            background-color: #0d0d0d;
+            background-image: linear-gradient(135deg, #0d0d0d 0%, #16161a 100%);
+            color: #ffffff;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
 
-        // Notice
-        $output .= '<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #edf2f7; text-align: center;">';
-        $output .= '<p style="font-size: 0.85em; color: #718096; line-height: 1.6;">في حال نسيان بيانات الدخول، يرجى التواصل مع إدارة المدرسة أو المشرف التربوي لإعادة تعيين كلمة المرور الخاصة بك.</p>';
-        $output .= '</div>';
+        /* Official Website Badge */
+        .eess-official-badge-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .eess-official-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50px;
+            padding: 6px 14px;
+            color: #e2e8f0;
+            text-decoration: none !important;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .eess-official-badge:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .eess-official-badge .badge-icon-globe {
+            margin-left: 8px;
+            font-size: 0.9rem;
+            color: #ef4444;
+        }
+        .eess-official-badge .badge-text-main {
+            opacity: 0.8;
+            margin-left: 5px;
+        }
+        .eess-official-badge .badge-text-domain {
+            font-weight: bold;
+            color: #ffffff;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+            margin-left: 5px;
+        }
 
-        $output .= '</div>';
+        /* Branding Logo */
+        .eess-branding-header {
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        .eess-branding-logo-box {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+        .eess-logo-text-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+        .eess-logo-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1;
+            color: #ffffff;
+            font-family: sans-serif;
+        }
+        .eess-logo-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            font-family: sans-serif;
+            color: #cbd5e1;
+        }
+        .eess-logo-icon-col {
+            background-color: #8b1e1e;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mortarboard-svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+        }
+        .eess-branding-divider {
+            height: 4px;
+            width: 60px;
+            background-color: #8b1e1e;
+            margin-top: 15px;
+            margin-right: 0;
+        }
+
+        /* Main Headline */
+        .eess-main-headline {
+            font-size: 2.3rem;
+            font-weight: 800;
+            line-height: 1.45;
+            margin: 40px 0;
+            z-index: 2;
+            color: #ffffff;
+        }
+        .underline-red {
+            border-bottom: 3px solid #8b1e1e;
+            padding-bottom: 2px;
+        }
+
+        /* About Box */
+        .eess-about-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: auto;
+            position: relative;
+            z-index: 2;
+        }
+        .eess-about-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .eess-about-desc {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin: 0;
+        }
+        .eess-about-desc a {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* Giant Watermark */
+        .eess-watermark {
+            position: absolute;
+            bottom: -30px;
+            left: -20px;
+            font-size: 11rem;
+            font-weight: 900;
+            font-family: sans-serif;
+            color: #ffffff;
+            opacity: 0.03;
+            pointer-events: none;
+            line-height: 1;
+            user-select: none;
+        }
+
+        /* Right Panel (Form) */
+        .eess-login-right-panel {
+            width: 50%;
+            background: #ffffff;
+            padding: 40px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .eess-login-form-inner {
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .eess-login-form-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 8px 0;
+        }
+        .eess-login-form-subtitle {
+            font-size: 0.88rem;
+            color: #64748b;
+            margin: 0 0 25px 0;
+            font-weight: 400;
+        }
+
+        /* Compact Forms spacing as per prompt request */
+        .eess-form-group {
+            margin-bottom: 12px;
+        }
+        .eess-field-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+        .eess-form-input {
+            width: 100%;
+            height: 42px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0 14px;
+            font-size: 0.9rem;
+            color: #0f172a;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .eess-form-input:focus {
+            outline: none;
+            border-color: #334155;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.1);
+        }
+
+        .eess-lost-pwd-link {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #8b1e1e !important;
+            text-decoration: underline !important;
+        }
+        .eess-lost-pwd-link:hover {
+            color: #b91c1c !important;
+        }
+
+        /* Remember me styling */
+        .eess-form-row-remember {
+            margin: 10px 0 15px 0;
+        }
+        .eess-remember-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .eess-remember-checkbox-label input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .eess-checkbox-custom {
+            height: 18px;
+            width: 18px;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            margin-left: 8px;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+        .eess-remember-checkbox-label:hover input ~ .eess-checkbox-custom {
+            border-color: #94a3b8;
+        }
+        .eess-remember-checkbox-label input:checked ~ .eess-checkbox-custom {
+            background-color: #000000;
+            border-color: #000000;
+        }
+        .eess-checkbox-custom:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .eess-remember-checkbox-label input:checked ~ .eess-checkbox-custom:after {
+            display: block;
+        }
+        .eess-remember-checkbox-label .eess-checkbox-custom:after {
+            left: 6px;
+            top: 2px;
+            width: 4px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .eess-checkbox-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* Main Login Button (Dark Black background) */
+        .eess-btn-login {
+            width: 100%;
+            height: 44px;
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .eess-btn-login:hover {
+            background-color: #1e1e1e !important;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Password Reset Card */
+        .eess-reset-pwd-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+        .eess-reset-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .eess-reset-card-icon {
+            font-size: 1rem;
+            color: #8b1e1e;
+        }
+        .eess-reset-card-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .eess-reset-card-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin: 0 0 12px 0;
+        }
+        /* Reset Password button - Dark Red background */
+        .eess-btn-reset-pwd {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 38px;
+            background-color: #8b1e1e !important;
+            color: #ffffff !important;
+            text-decoration: none !important;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(139, 30, 30, 0.1);
+        }
+        .eess-btn-reset-pwd:hover {
+            background-color: #a82525 !important;
+            transform: translateY(-1px);
+        }
+
+        /* Error notice */
+        .eess-error-notice {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #feb2b2;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Footer elements */
+        .eess-login-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .eess-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .eess-footer-left .lock-icon {
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .eess-login-left-panel {
+                width: 40%;
+                padding: 30px 40px;
+            }
+            .eess-login-right-panel {
+                width: 60%;
+                padding: 30px 50px;
+            }
+            .eess-main-headline {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .eess-login-split-layout {
+                flex-direction: column;
+            }
+            .eess-login-left-panel {
+                width: 100%;
+                min-height: auto;
+                padding: 30px 24px;
+            }
+            .eess-login-right-panel {
+                width: 100%;
+                min-height: auto;
+                padding: 40px 24px;
+            }
+            .eess-main-headline {
+                font-size: 1.6rem;
+                margin: 20px 0;
+            }
+            .eess-about-box {
+                margin-top: 20px;
+            }
+            .eess-watermark {
+                display: none;
+            }
+        }
+        </style>
+
+        <div class="eess-login-page-container">
+            <div class="eess-login-split-layout">
+                <!-- Left Side (Branding - Dark) -->
+                <div class="eess-login-left-panel">
+                    <!-- Official website link badge -->
+                    <div class="eess-official-badge-container">
+                        <a href="https://eess.online" target="_blank" class="eess-official-badge">
+                            <span class="badge-icon-globe">
+                                <svg style="width: 14px; height: 14px; fill: currentColor; margin-left: 6px; display: inline-block; vertical-align: middle;" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.4z"/>
+                                </svg>
+                            </span>
+                            <span class="badge-text-main">الموقع الرسمي للنظام:</span>
+                            <span class="badge-text-domain">eess.online</span>
+                            <span class="badge-icon-link">
+                                <svg style="width: 12px; height: 12px; fill: currentColor; margin-right: 6px; display: inline-block; vertical-align: middle;" viewBox="0 0 24 24">
+                                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- Branding logo/icon/text -->
+                    <div class="eess-branding-header">
+                        <div class="eess-branding-logo-box">
+                            <div class="eess-logo-text-col">
+                                <span class="eess-logo-title">EESS</span>
+                                <span class="eess-logo-subtitle">Educational Electronic Systems Services</span>
+                            </div>
+                            <div class="eess-logo-icon-col">
+                                <svg class="mortarboard-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                                    <path d="M5 13.18v4c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-4l-7 3.82-7-3.82z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="eess-branding-divider"></div>
+                    </div>
+
+                    <!-- Big Title -->
+                    <div class="eess-main-headline">
+                        منظومة الخدمات <span class="underline-red">التعليمية</span><br>وإدارة الأنظمة <span class="underline-red">الإلكترونية</span>
+                    </div>
+
+                    <!-- About EESS box -->
+                    <div class="eess-about-box">
+                        <div class="eess-about-title">نبذة عن نظام EESS:</div>
+                        <p class="eess-about-desc">
+                            منظومة EESS هي البوابة الإلكترونية الموحدة لإدارة المناهج والخدمات التعليمية والأكاديمية، تهدف إلى توفير بيئة رقمية آمنة وموثوقة للوصول المباشر لكافة الأنظمة والأدوات المتاحة عبر الموقع الرسمي <a href="https://eess.online" target="_blank">eess.online</a>.
+                        </p>
+                    </div>
+
+                    <!-- Huge Watermark EESS -->
+                    <div class="eess-watermark">EESS</div>
+                </div>
+
+                <!-- Right Side (Form - Light) -->
+                <div class="eess-login-right-panel">
+                    <div class="eess-login-form-inner">
+                        <!-- Title & Subtitle -->
+                        <h1 class="eess-login-form-title">تسجيل الدخول</h1>
+                        <p class="eess-login-form-subtitle">أدخل بيانات الاعتماد الخاصة بك للوصول إلى لوحة التحكم.</p>
+
+                        <!-- Error notice if failed -->
+                        ';
+                        if (isset($_GET['login']) && $_GET['login'] == 'failed') {
+                            $output .= '<div class="eess-error-notice">خطأ في اسم المستخدم أو كلمة المرور. يرجى التحقق وإعادة المحاولة.</div>';
+                        }
+                        $output .= '
+
+                        <!-- Custom login form -->
+                        <form name="loginform" id="sm_login_form" action="' . esc_url(site_url('wp-login.php', 'login_post')) . '" method="post">
+                            <!-- Email / Acad ID field -->
+                            <div class="eess-form-group">
+                                <label for="user_login" class="eess-field-label">البريد الإلكتروني / الرقم الأكاديمي <span style="color:#ef4444;">*</span></label>
+                                <input type="text" name="log" id="user_login" class="eess-form-input" placeholder="name@company.com" required>
+                            </div>
+
+                            <!-- Password field with lost-password link inline -->
+                            <div class="eess-form-group">
+                                <div class="eess-field-label-wrapper" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                    <label for="user_pass" class="eess-field-label" style="margin: 0;">كلمة المرور <span style="color:#ef4444;">*</span></label>
+                                    <a href="' . esc_url(wp_lostpassword_url(home_url('/sm-login'))) . '" class="eess-lost-pwd-link">نسيت كلمة المرور؟</a>
+                                </div>
+                                <input type="password" name="pwd" id="user_pass" class="eess-form-input" placeholder="••••••" required style="margin-top: 5px;">
+                            </div>
+
+                            <!-- Remember me row -->
+                            <div class="eess-form-row-remember">
+                                <label class="eess-remember-checkbox-label">
+                                    <input type="checkbox" name="rememberme" id="rememberme" value="forever">
+                                    <span class="eess-checkbox-custom"></span>
+                                    <span class="eess-checkbox-text">تذكر بياناتي على هذا الجهاز</span>
+                                </label>
+                            </div>
+
+                            <!-- Login Submit Button -->
+                            <div class="eess-form-group" style="margin-top: 20px;">
+                                <button type="submit" name="wp-submit" id="wp-submit" class="eess-btn-login">
+                                    <span>دخول النظام</span>
+                                    <span style="margin-right: 8px;">[→</span>
+                                </button>
+                            </div>
+
+                            <input type="hidden" name="redirect_to" value="' . esc_url(home_url('/sm-admin')) . '">
+                        </form>
+
+                        <!-- Password Reset Card -->
+                        <div class="eess-reset-pwd-card">
+                            <div class="eess-reset-card-header">
+                                <span class="eess-reset-card-icon">🔑</span>
+                                <span class="eess-reset-card-title">إعادة تعيين كلمة المرور بدون تسجيل</span>
+                            </div>
+                            <p class="eess-reset-card-desc">يمكنك طلب رابط استعادة كلمة المرور مباشرة في حال فقدانها دون الحاجة لإنشاء حساب جديد.</p>
+                            <a href="' . esc_url(wp_lostpassword_url(home_url('/sm-login'))) . '" class="eess-btn-reset-pwd">
+                                الانتقال لإعادة تعيين كلمة المرور
+                            </a>
+                        </div>
+
+                        <!-- Footer under right panel -->
+                        <div class="eess-login-footer">
+                            <div class="eess-footer-left">
+                                <span class="lock-icon">🔒</span>
+                                <span>دخول مشفر bit-256</span>
+                            </div>
+                            <div class="eess-footer-right">
+                                <span>© 2026 EESS. جميع الحقوق محفوظة</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        ';
         return $output;
     }
 
