@@ -1059,13 +1059,19 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 <style>
 .sm-sidebar-item { border-bottom: 1px solid #e2e8f0; transition: 0.2s; }
 .sm-sidebar-link { 
-    padding: 15px 25px; 
+    padding: 6px 15px;
     cursor: pointer; font-weight: 600; color: #4a5568 !important;
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: center; gap: 10px;
     text-decoration: none !important;
     width: 100%;
 }
 .sm-sidebar-item:hover { background: #edf2f7; }
+
+/* Perfect Circle Avatar Mask */
+.sm-user-profile-nav img, .sm-user-profile-nav .avatar {
+    border-radius: 50% !important;
+    object-fit: cover !important;
+}
 .sm-sidebar-item.sm-active { 
     background: #fff !important; 
     border-right: 4px solid var(--sm-primary-color) !important; 
