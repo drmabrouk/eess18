@@ -189,6 +189,7 @@ class SM_Activator {
         self::create_default_pages();
         self::cleanup_legacy_pages();
         self::migrate_old_roles();
+        self::seed_default_subjects();
     }
 
     private static function cleanup_legacy_pages() {
@@ -284,8 +285,8 @@ class SM_Activator {
             }
         }
 
-        // 3. مشرف (Supervisor) - Same as Principal (filtered by classes in logic)
-        add_role('sm_supervisor', 'مشرف', array('read' => true));
+        // 3. مشرف تربوي (Educational Supervisor) - Same as Principal (filtered by classes in logic)
+        add_role('sm_supervisor', 'مشرف تربوي', array('read' => true));
         $supervisor = get_role('sm_supervisor');
         if ($supervisor) {
             foreach ($caps as $key => $cap) {
@@ -293,7 +294,7 @@ class SM_Activator {
             }
         }
 
-        // 4. منسق (Coordinator) - Review lesson plans
+        // 4. منسق المادة (Subject Coordinator) - Review lesson plans
         add_role('sm_coordinator', 'منسق المادة', array('read' => true));
         $coordinator = get_role('sm_coordinator');
         if ($coordinator) {
@@ -313,28 +314,91 @@ class SM_Activator {
             $teacher->add_cap($caps['manage_grades']);
         }
 
-        // 6. طالب (Student) - View own results/attendance, assignments, personal photo
+        // 6. ولي أمر (Parent) - View own children's data
+        add_role('sm_parent', 'ولي أمر', array('read' => true));
+        $parent = get_role('sm_parent');
+        if ($parent) {
+            $parent->add_cap($caps['view_own_data']);
+            $parent->add_cap('read');
+        }
+
+        // 7. مشرف سلوك / انضباط (Discipline Supervisor) *(New)*
+        add_role('sm_discipline_supervisor', 'مشرف سلوك / انضباط', array('read' => true));
+        $discipline_sup = get_role('sm_discipline_supervisor');
+        if ($discipline_sup) {
+            $discipline_sup->add_cap($caps['add_violation']);
+            $discipline_sup->add_cap($caps['manage_violations']);
+            $discipline_sup->add_cap($caps['manage_students']);
+            $discipline_sup->add_cap('read');
+        }
+
+        // 8. مشرف أنشطة (Activities Supervisor) *(New)*
+        add_role('sm_activities_supervisor', 'مشرف أنشطة', array('read' => true));
+        $activities_sup = get_role('sm_activities_supervisor');
+        if ($activities_sup) {
+            $activities_sup->add_cap($caps['view_own_data']);
+            $activities_sup->add_cap('read');
+        }
+
+        // 9. مشرف نقل ومواصلات (Transportation Supervisor) *(New)*
+        add_role('sm_transportation_supervisor', 'مشرف نقل ومواصلات', array('read' => true));
+        $trans_sup = get_role('sm_transportation_supervisor');
+        if ($trans_sup) {
+            $trans_sup->add_cap($caps['view_own_data']);
+            $trans_sup->add_cap('read');
+        }
+
+        // 10. مشرف حافلة (Bus Supervisor) *(New)*
+        add_role('sm_bus_supervisor', 'مشرف حافلة', array('read' => true));
+        $bus_sup = get_role('sm_bus_supervisor');
+        if ($bus_sup) {
+            $bus_sup->add_cap($caps['add_violation']);
+            $bus_sup->add_cap($caps['view_own_data']);
+            $bus_sup->add_cap('read');
+        }
+
+        // Keep fallback roles for compatibility
         add_role('sm_student', 'طالب', array('read' => true));
         $student = get_role('sm_student');
         if ($student) {
             $student->add_cap($caps['view_own_data']);
             $student->add_cap($caps['manage_assignments']);
         }
-
-        // 7. العيادة (Clinic) - Referral list and history
         add_role('sm_clinic', 'العيادة المدرسية', array('read' => true));
         $clinic = get_role('sm_clinic');
         if ($clinic) {
             $clinic->add_cap($caps['manage_clinic']);
             $clinic->add_cap('read');
         }
+    }
 
-        // 8. ولي أمر (Parent) - View own children's data
-        add_role('sm_parent', 'ولي أمر', array('read' => true));
-        $parent = get_role('sm_parent');
-        if ($parent) {
-            $parent->add_cap($caps['view_own_data']);
-            $parent->add_cap('read');
+    private static function seed_default_subjects() {
+        global $wpdb;
+        $table_subjects = $wpdb->prefix . 'sm_subjects';
+
+        $required_subjects = array(
+            'Physical Education & Health',
+            'Health Sciences',
+            'Chemistry',
+            'Mathematics',
+            'Islamic Studies',
+            'Arabic Language',
+            'English Language',
+            'Physics',
+            'Social Studies',
+            'Computer Science',
+            'General Science',
+            'Biology',
+            'Music Education',
+            'Visual Arts'
+        );
+
+        foreach ($required_subjects as $subject_name) {
+            $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_subjects WHERE name = %s", $subject_name));
+            if (!$exists) {
+                // Insert with a default grade ID of 1
+                $wpdb->insert($table_subjects, array('name' => $subject_name, 'grade_id' => 1));
+            }
         }
     }
 

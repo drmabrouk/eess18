@@ -126,7 +126,7 @@ class SM_DB {
                 $password = '';
                 for($i=0; $i<10; $i++) $password .= rand(0,9);
 
-                $email_addr = $code . '@school-system.local'; // Automated email generation
+                $email_addr = (!empty($email) && is_email($email)) ? $email : ($code . '@school-system.local'); // Automated email generation
 
                 $user_id = wp_create_user($username, $password, $email_addr);
                 if (!is_wp_error($user_id)) {

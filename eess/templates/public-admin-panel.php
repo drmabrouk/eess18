@@ -333,10 +333,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
-            <?php if (($is_wp_admin || !empty($my_visibility['attendance'])) && ($is_admin || current_user_can('إدارة_الطلاب'))): ?>
-                <a href="<?php echo add_query_arg('sm_tab', 'attendance'); ?>" class="sm-btn sm-btn-secondary" style="height: 32px; padding: 0 12px; font-size: 11px; color: white !important; text-decoration: none; display: inline-flex; align-items: center;">سجل الحضور والغياب</a>
-            <?php endif; ?>
-
             <?php if ($active_tab !== 'attendance' && ($is_admin || current_user_can('تسجيل_مخالفة'))): ?>
                 <button onclick="smOpenViolationModal()" class="sm-btn" style="background: var(--sm-primary-color); height: 32px; padding: 0 12px; font-size: 11px; color: white !important;">+ تسجيل مخالفة</button>
             <?php endif; ?>
@@ -429,6 +425,12 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <?php if (($is_wp_admin || !empty($my_visibility['grades'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher || $is_student || $is_parent)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'grades' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'grades'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-welcome-learn-more"></span> إدارة الدرجات والنتائج</a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (($is_wp_admin || !empty($my_visibility['attendance'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_teacher)): ?>
+                    <li class="sm-sidebar-item <?php echo $active_tab == 'attendance' ? 'sm-active' : ''; ?>">
+                        <a href="<?php echo add_query_arg('sm_tab', 'attendance'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-calendar-alt"></span> سجل الحضور والغياب</a>
                     </li>
                 <?php endif; ?>
 
@@ -642,7 +644,11 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                                     'sm_coordinator' => 'منسق مادة',
                                     'sm_teacher' => 'معلم',
                                     'sm_student' => 'طالب',
-                                    'sm_parent' => 'ولي أمر'
+                                    'sm_parent' => 'ولي أمر',
+                                    'sm_discipline_supervisor' => 'مشرف سلوك / انضباط',
+                                    'sm_activities_supervisor' => 'مشرف أنشطة',
+                                    'sm_transportation_supervisor' => 'مشرف نقل ومواصلات',
+                                    'sm_bus_supervisor' => 'مشرف حافلة'
                                 );
                                 $sections = array(
                                     'stats' => 'سجل المخالفات',

@@ -316,6 +316,10 @@ class SM_Settings {
             'sm_teacher' => array('stats' => true, 'students' => true, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => true, 'lesson-plans' => true, 'assignments' => true, 'clinic' => false, 'documents' => true),
             'sm_student' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => true, 'clinic' => false, 'documents' => false),
             'sm_parent' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => true, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => false),
+            'sm_discipline_supervisor' => array('stats' => true, 'students' => true, 'teachers' => false, 'parents' => false, 'grades' => false, 'teacher-reports' => true, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => true),
+            'sm_activities_supervisor' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => false, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => true),
+            'sm_transportation_supervisor' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => false, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => true),
+            'sm_bus_supervisor' => array('stats' => true, 'students' => false, 'teachers' => false, 'parents' => false, 'grades' => false, 'teacher-reports' => false, 'attendance' => false, 'lesson-plans' => false, 'assignments' => false, 'clinic' => false, 'documents' => true),
         );
         $saved = get_option('sm_sidebar_visibility');
         if ($saved === false) return $default;
