@@ -17,6 +17,35 @@ class SM_Public {
         return false;
     }
 
+    public function custom_user_avatar($avatar, $id_or_email, $args) {
+        $user_id = 0;
+        if (is_numeric($id_or_email)) {
+            $user_id = (int)$id_or_email;
+        } elseif (is_object($id_or_email) && isset($id_or_email->user_id)) {
+            $user_id = (int)$id_or_email->user_id;
+        } elseif (is_string($id_or_email)) {
+            $user = get_user_by('email', $id_or_email);
+            if ($user) $user_id = $user->ID;
+        }
+
+        if ($user_id) {
+            $custom_avatar = get_user_meta($user_id, 'eess_profile_photo', true);
+            if ($custom_avatar) {
+                $class = isset($args['class']) ? implode(' ', (array)$args['class']) : '';
+                $style = isset($args['style']) ? $args['style'] : '';
+                $avatar = sprintf(
+                    "<img src='%s' class='%s' style='%s' width='%d' height='%d' />",
+                    esc_url($custom_avatar),
+                    esc_attr($class),
+                    esc_attr($style),
+                    (int)$args['width'],
+                    (int)$args['height']
+                );
+            }
+        }
+        return $avatar;
+    }
+
     public function restrict_admin_access() {
         if (is_user_logged_in()) {
             $status = get_user_meta(get_current_user_id(), 'sm_account_status', true);
@@ -1384,7 +1413,7 @@ class SM_Public {
         if ($active_tab === 'attendance' && !current_user_can('إدارة_الطلاب')) $active_tab = 'summary';
         if ($active_tab === 'clinic' && !current_user_can('إدارة_العيادة')) $active_tab = 'summary';
         if ($active_tab === 'global-settings' && !current_user_can('إدارة_النظام')) $active_tab = 'summary';
-        if ($active_tab === 'lesson-plans' && !($is_coordinator || $is_teacher)) $active_tab = 'summary';
+        if ($active_tab === 'lesson-plans' && !($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher)) $active_tab = 'summary';
         if ($active_tab === 'assignments' && !($is_teacher || $is_student)) $active_tab = 'summary';
 
         // Fetch data based on tab
@@ -1766,6 +1795,19 @@ class SM_Public {
             if (!empty($_POST['specialization'])) {
                 update_user_meta($user_id, 'sm_specialization', sanitize_text_field($_POST['specialization']));
             }
+            if (!empty($_FILES['profile_photo']['name'])) {
+                require_once(ABSPATH . 'wp-admin/includes/file.php');
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+                $attachment_id = media_handle_upload('profile_photo', 0);
+                if (!is_wp_error($attachment_id)) {
+                    $photo_url = wp_get_attachment_url($attachment_id);
+                    update_user_meta($user_id, 'eess_profile_photo', $photo_url);
+                }
+            }
+            clean_user_cache($user_id);
+            wp_cache_flush();
             SM_Logger::log('إضافة مستخدم جديد', "تم إنشاء مستخدم باسم: {$_POST['display_name']} ورتبة: {$_POST['user_role']}");
             wp_send_json_success($user_id);
         }
@@ -1795,6 +1837,25 @@ class SM_Public {
 
         $u = new WP_User($user_id);
         $u->set_role(sanitize_text_field($_POST['user_role']));
+
+        if (isset($_POST['delete_photo_flag']) && $_POST['delete_photo_flag'] === '1') {
+            delete_user_meta($user_id, 'eess_profile_photo');
+        }
+
+        if (!empty($_FILES['profile_photo']['name'])) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $attachment_id = media_handle_upload('profile_photo', 0);
+            if (!is_wp_error($attachment_id)) {
+                $photo_url = wp_get_attachment_url($attachment_id);
+                update_user_meta($user_id, 'eess_profile_photo', $photo_url);
+            }
+        }
+
+        clean_user_cache($user_id);
+        wp_cache_flush();
         
         SM_Logger::log('تعديل بيانات مستخدم', "تم تحديث بيانات المستخدم: {$_POST['display_name']} (ID: $user_id)");
         wp_send_json_success('Updated');
@@ -2679,6 +2740,45 @@ class SM_Public {
         ));
     }
 
+    public function ajax_export_users_csv() {
+        if (!is_user_logged_in() || !current_user_can('إدارة_المستخدمين')) {
+            wp_send_json_error('Unauthorized');
+        }
+        if (!wp_verify_nonce($_GET['nonce'] ?? '', 'eess_admin_action')) {
+            wp_send_json_error('Security check failed');
+        }
+
+        $all_users = get_users();
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=users_export_'.date('Y-m-d').'.csv');
+        $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM for Excel
+
+        fputcsv($output, array('اسم المستخدم', 'البريد الإلكتروني', 'الاسم الكامل', 'الدور / الرتبة', 'رقم الهاتف', 'كلمة المرور', 'رابط الصورة الشخصية', 'المادة التخصصية'));
+
+        foreach ($all_users as $u) {
+            $role = reset($u->roles);
+            $phone = get_user_meta($u->ID, 'sm_phone', true);
+            $password = get_user_meta($u->ID, 'sm_temp_pass', true) ?: '';
+            $photo = get_user_meta($u->ID, 'eess_profile_photo', true) ?: '';
+            $specialization = get_user_meta($u->ID, 'sm_specialization', true) ?: '';
+
+            fputcsv($output, array(
+                $u->user_login,
+                $u->user_email,
+                $u->display_name,
+                $role,
+                $phone,
+                $password,
+                $photo,
+                $specialization
+            ));
+        }
+        fclose($output);
+        exit;
+    }
+
     public function ajax_export_violations_csv() {
         if (!is_user_logged_in() || !current_user_can('إدارة_المخالفات')) wp_send_json_error('Unauthorized');
         if (!wp_verify_nonce($_GET['nonce'] ?? '', 'sm_export_action')) wp_send_json_error('Security check failed');
@@ -3109,6 +3209,69 @@ class SM_Public {
             }
         }
 
+
+        // Handle Unified Users CSV Import
+        if (isset($_POST['sm_import_users_csv']) && wp_verify_nonce($_POST['sm_admin_nonce'], 'sm_admin_action')) {
+            if (current_user_can('إدارة_المستخدمين') && !empty($_FILES['csv_file']['tmp_name'])) {
+                $handle = fopen($_FILES['csv_file']['tmp_name'], "r");
+                $header = fgetcsv($handle); // skip header
+                $count = 0;
+                while (($data = fgetcsv($handle)) !== FALSE) {
+                    if (count($data) >= 3) {
+                        $username = sanitize_user($data[0]);
+                        $email = !empty($data[1]) ? sanitize_email($data[1]) : $username . '@school-system.local';
+                        $display_name = sanitize_text_field($data[2]);
+                        $role = isset($data[3]) ? sanitize_text_field($data[3]) : 'sm_teacher';
+                        $phone = isset($data[4]) ? sanitize_text_field($data[4]) : '';
+                        $password = !empty($data[5]) ? $data[5] : wp_generate_password();
+                        $photo_url = isset($data[6]) ? esc_url_raw($data[6]) : '';
+                        $specialization = isset($data[7]) ? sanitize_text_field($data[7]) : '';
+
+                        // If user exists, update them; otherwise, insert them!
+                        $user = get_user_by('login', $username);
+                        if ($user) {
+                            $user_id = $user->ID;
+                            wp_update_user(array(
+                                'ID' => $user_id,
+                                'user_email' => $email,
+                                'display_name' => $display_name,
+                                'user_pass' => $password
+                            ));
+                            $u_obj = new WP_User($user_id);
+                            $u_obj->set_role($role);
+                        } else {
+                            $user_id = wp_insert_user(array(
+                                'user_login' => $username,
+                                'user_email' => $email,
+                                'display_name' => $display_name,
+                                'user_pass' => $password,
+                                'role' => $role
+                            ));
+                        }
+
+                        if (!is_wp_error($user_id)) {
+                            $count++;
+                            update_user_meta($user_id, 'sm_temp_pass', $password);
+                            if (!empty($phone)) {
+                                update_user_meta($user_id, 'sm_phone', $phone);
+                            }
+                            if (!empty($photo_url)) {
+                                update_user_meta($user_id, 'eess_profile_photo', $photo_url);
+                            }
+                            if (!empty($specialization)) {
+                                update_user_meta($user_id, 'sm_specialization', $specialization);
+                            }
+                            clean_user_cache($user_id);
+                        }
+                    }
+                }
+                fclose($handle);
+                wp_cache_flush();
+                SM_Logger::log('استيراد مستخدمين (جماعي)', "تم استيراد ($count) مستخدم بنجاح من ملف CSV.");
+                wp_redirect(add_query_arg('sm_admin_msg', 'csv_imported', $_SERVER['REQUEST_URI']));
+                exit;
+            }
+        }
 
         // Handle Teacher CSV Upload
         if (isset($_POST['sm_import_teachers_csv']) && wp_verify_nonce($_POST['sm_admin_nonce'], 'sm_admin_action')) {
