@@ -34,6 +34,7 @@ class School_Management {
         $plugin_public = new SM_Public($this->get_plugin_name(), $this->get_version());
         $this->loader->add_filter('show_admin_bar', $plugin_public, 'hide_admin_bar_for_non_admins');
         $this->loader->add_filter('get_avatar', $plugin_public, 'custom_user_avatar', 10, 3);
+        $this->loader->add_action('phpmailer_init', $plugin_public, 'configure_smtp_delivery');
         $this->loader->add_action('admin_init', $plugin_public, 'restrict_admin_access');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('init', $plugin_public, 'register_shortcodes');
@@ -90,6 +91,9 @@ class School_Management {
         $this->loader->add_action('wp_ajax_sm_get_clinic_reports', $plugin_public, 'ajax_get_clinic_reports');
         $this->loader->add_action('wp_ajax_sm_export_violations_csv', $plugin_public, 'ajax_export_violations_csv');
         $this->loader->add_action('wp_ajax_sm_export_users_csv', $plugin_public, 'ajax_export_users_csv');
+        $this->loader->add_action('wp_ajax_sm_add_institution', $plugin_public, 'ajax_add_institution');
+        $this->loader->add_action('wp_ajax_sm_update_institution', $plugin_public, 'ajax_update_institution');
+        $this->loader->add_action('wp_ajax_sm_delete_institution', $plugin_public, 'ajax_delete_institution');
         $this->loader->add_action('wp_ajax_sm_save_grade_ajax', $plugin_public, 'ajax_save_grade_ajax');
         $this->loader->add_action('wp_ajax_sm_get_student_grades_ajax', $plugin_public, 'ajax_get_student_grades_ajax');
         $this->loader->add_action('wp_ajax_sm_delete_grade_ajax', $plugin_public, 'ajax_delete_grade_ajax');

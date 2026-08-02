@@ -179,6 +179,14 @@ class SM_Activator {
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id),
             KEY prep_id (prep_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}sm_institutions (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            status varchar(50) DEFAULT 'active' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -190,6 +198,7 @@ class SM_Activator {
         self::cleanup_legacy_pages();
         self::migrate_old_roles();
         self::seed_default_subjects();
+        self::seed_default_institutions();
     }
 
     private static function cleanup_legacy_pages() {
@@ -442,5 +451,19 @@ class SM_Activator {
         foreach ($demo_students as $student) {
             $wpdb->insert($table_students, $student);
         }
+    }
+
+    public static function seed_default_institutions() {
+        global $wpdb;
+        $table_institutions = $wpdb->prefix . 'sm_institutions';
+
+        $count = $wpdb->get_var("SELECT COUNT(*) FROM $table_institutions");
+        if ($count > 0) return;
+
+        $default_school = SM_Settings::get_school_info();
+        $wpdb->insert($table_institutions, array(
+            'name' => $default_school['school_name'] ?: 'خدمات الأنظمة الإلكترونية التعليمية (EESS)',
+            'status' => 'active'
+        ));
     }
 }

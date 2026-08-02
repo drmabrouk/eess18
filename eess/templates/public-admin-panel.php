@@ -508,7 +508,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </li>
                 <?php endif; ?>
 
-                <?php if (($is_wp_admin || !empty($my_visibility['lesson-plans'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher)): ?>
+                <?php if (($is_wp_admin || !empty($my_visibility['lesson-plans'])) && ($is_coordinator || $is_teacher)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'lesson-plans' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'lesson-plans'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-welcome-write-blog"></span> تحضير الدروس</a>
                     </li>
@@ -621,6 +621,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                         <div class="sm-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; overflow-x: auto; white-space: nowrap; padding-bottom: 10px;">
                             <button class="sm-tab-btn sm-active" onclick="smOpenInternalTab('school-settings', this)">السلطة</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('design-settings', this)">تصميم النظام</button>
+                            <button class="sm-tab-btn" onclick="smOpenInternalTab('institution-settings', this)">إدارة المؤسسات</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('sidebar-settings', this)">تخصيص القائمة</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('school-structure', this)">الهيكل المدرسي</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('backup-settings', this)">مركز النسخ الاحتياطي</button>
@@ -660,6 +661,175 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                                 <button type="submit" name="sm_save_settings_unified" class="sm-btn" style="width:auto;">حفظ الإعدادات</button>
                             </form>
                         </div>
+                        <div id="institution-settings" class="sm-internal-tab" style="display:none; background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid var(--sm-border-color); box-shadow: var(--sm-shadow);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                                <h4 style="margin:0; font-weight:800; color:var(--sm-dark-color);">إدارة الهيئات والمؤسسات التعليمية المنتسبة</h4>
+                                <button type="button" class="sm-btn" style="width:auto; font-size:12px;" onclick="document.getElementById('sm-add-inst-modal').style.display='flex'">+ إضافة مؤسسة جديدة</button>
+                            </div>
+
+                            <div class="sm-table-container">
+                                <table class="sm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>المعرف</th>
+                                            <th>اسم المؤسسة / الهيئة التعليمية</th>
+                                            <th>الحالة</th>
+                                            <th>تاريخ الإضافة</th>
+                                            <th style="text-align:left;">الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sm-institutions-list-rows">
+                                        <?php
+                                        $insts = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}sm_institutions ORDER BY id DESC");
+                                        if (empty($insts)):
+                                        ?>
+                                            <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--sm-text-gray);">لا يوجد مؤسسات مسجلة حالياً. يرجى إضافة مؤسسة جديدة.</td></tr>
+                                        <?php else: ?>
+                                            <?php foreach ($insts as $inst): ?>
+                                                <tr id="sm-inst-row-<?php echo $inst->id; ?>">
+                                                    <td style="font-weight:700;">#<?php echo $inst->id; ?></td>
+                                                    <td style="font-weight:800;" id="sm-inst-name-val-<?php echo $inst->id; ?>"><?php echo esc_html($inst->name); ?></td>
+                                                    <td>
+                                                        <span id="sm-inst-status-badge-<?php echo $inst->id; ?>" class="sm-badge <?php echo $inst->status === 'active' ? 'sm-badge-low' : 'sm-badge-high'; ?>" style="font-size:10px;">
+                                                            <?php echo $inst->status === 'active' ? 'نشط' : 'معطل'; ?>
+                                                        </span>
+                                                    </td>
+                                                    <td style="font-size:11px; color:var(--sm-text-gray);"><?php echo esc_html($inst->created_at); ?></td>
+                                                    <td>
+                                                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                                                            <button type="button" onclick="smEditInstitution(<?php echo $inst->id; ?>, '<?php echo esc_js($inst->name); ?>', '<?php echo esc_js($inst->status); ?>')" class="sm-btn sm-btn-outline" style="padding:4px 12px; font-size:11px;">تعديل</button>
+                                                            <button type="button" onclick="smDeleteInstitution(<?php echo $inst->id; ?>)" class="sm-btn sm-btn-outline" style="padding:4px 12px; font-size:11px; color:#e53e3e; border-color:#fca5a5;">حذف</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Add Institution Modal -->
+                        <div id="sm-add-inst-modal" class="sm-modal-overlay">
+                            <div class="sm-modal-content" style="max-width: 450px;">
+                                <div class="sm-modal-header">
+                                    <h3>إضافة مؤسسة جديدة</h3>
+                                    <button type="button" class="sm-modal-close" onclick="document.getElementById('sm-add-inst-modal').style.display='none'">&times;</button>
+                                </div>
+                                <form id="sm-add-inst-form" onsubmit="smSubmitAddInstitution(event)">
+                                    <div class="sm-form-group">
+                                        <label class="sm-label">اسم الهيئة / المؤسسة التعليمية:</label>
+                                        <input type="text" id="sm-add-inst-name" class="sm-input" required placeholder="مثال: مدرسة EESS النموذجية">
+                                    </div>
+                                    <button type="submit" class="sm-btn" style="width:100%; margin-top:15px;">إنشاء وحفظ المؤسسة</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Edit Institution Modal -->
+                        <div id="sm-edit-inst-modal" class="sm-modal-overlay">
+                            <div class="sm-modal-content" style="max-width: 450px;">
+                                <div class="sm-modal-header">
+                                    <h3>تعديل بيانات المؤسسة</h3>
+                                    <button type="button" class="sm-modal-close" onclick="document.getElementById('sm-edit-inst-modal').style.display='none'">&times;</button>
+                                </div>
+                                <form id="sm-edit-inst-form" onsubmit="smSubmitEditInstitution(event)">
+                                    <input type="hidden" id="sm-edit-inst-id">
+                                    <div class="sm-form-group">
+                                        <label class="sm-label">اسم الهيئة / المؤسسة:</label>
+                                        <input type="text" id="sm-edit-inst-name" class="sm-input" required>
+                                    </div>
+                                    <div class="sm-form-group" style="margin-top:10px;">
+                                        <label class="sm-label">حالة التفعيل:</label>
+                                        <select id="sm-edit-inst-status" class="sm-select">
+                                            <option value="active">نشط (تظهر في قائمة التسجيل)</option>
+                                            <option value="inactive">معطل (مخفية من قائمة التسجيل)</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="sm-btn" style="width:100%; margin-top:20px;">حفظ التغييرات</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <script>
+                        function smSubmitAddInstitution(e) {
+                            e.preventDefault();
+                            const name = document.getElementById('sm-add-inst-name').value;
+
+                            const data = new FormData();
+                            data.append('action', 'sm_add_institution');
+                            data.append('name', name);
+                            data.append('nonce', '<?php echo wp_create_nonce("sm_admin_action"); ?>');
+
+                            fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: data })
+                            .then(r => r.json())
+                            .then(res => {
+                                if (res.success) {
+                                    smShowNotification(res.data);
+                                    document.getElementById('sm-add-inst-modal').style.display = 'none';
+                                    document.getElementById('sm-add-inst-name').value = '';
+                                    setTimeout(() => location.reload(), 500);
+                                } else {
+                                    smShowNotification(res.data, true);
+                                }
+                            });
+                        }
+
+                        function smEditInstitution(id, name, status) {
+                            document.getElementById('sm-edit-inst-id').value = id;
+                            document.getElementById('sm-edit-inst-name').value = name;
+                            document.getElementById('sm-edit-inst-status').value = status;
+                            document.getElementById('sm-edit-inst-modal').style.display = 'flex';
+                        }
+
+                        function smSubmitEditInstitution(e) {
+                            e.preventDefault();
+                            const id = document.getElementById('sm-edit-inst-id').value;
+                            const name = document.getElementById('sm-edit-inst-name').value;
+                            const status = document.getElementById('sm-edit-inst-status').value;
+
+                            const data = new FormData();
+                            data.append('action', 'sm_update_institution');
+                            data.append('id', id);
+                            data.append('name', name);
+                            data.append('status', status);
+                            data.append('nonce', '<?php echo wp_create_nonce("sm_admin_action"); ?>');
+
+                            fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: data })
+                            .then(r => r.json())
+                            .then(res => {
+                                if (res.success) {
+                                    smShowNotification(res.data);
+                                    document.getElementById('sm-edit-inst-modal').style.display = 'none';
+                                    setTimeout(() => location.reload(), 500);
+                                } else {
+                                    smShowNotification(res.data, true);
+                                }
+                            });
+                        }
+
+                        function smDeleteInstitution(id) {
+                            if (!confirm('هل أنت متأكد من رغبتك في حذف هذه المؤسسة نهائياً؟')) return;
+
+                            const data = new FormData();
+                            data.append('action', 'sm_delete_institution');
+                            data.append('id', id);
+                            data.append('nonce', '<?php echo wp_create_nonce("sm_admin_action"); ?>');
+
+                            fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: data })
+                            .then(r => r.json())
+                            .then(res => {
+                                if (res.success) {
+                                    smShowNotification(res.data);
+                                    const row = document.getElementById('sm-inst-row-' + id);
+                                    if (row) row.remove();
+                                } else {
+                                    smShowNotification(res.data, true);
+                                }
+                            });
+                        }
+                        </script>
+
                         <div id="design-settings" class="sm-internal-tab" style="display:none;">
                             <form method="post">
                                 <?php wp_nonce_field('sm_admin_action', 'sm_admin_nonce'); $appearance = SM_Settings::get_appearance(); ?>
