@@ -40,7 +40,7 @@ class SM_Public {
         wp_enqueue_media();
         wp_enqueue_script('jquery');
         wp_enqueue_style('dashicons');
-        wp_enqueue_style('google-font-alexandria', 'https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap', array(), null);
+        wp_enqueue_style('google-font-cairo', 'https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap', array(), null);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '4.4.1', true);
         wp_enqueue_script('html5-qrcode', 'https://unpkg.com/html5-qrcode', array(), '2.3.8', true);
         wp_enqueue_style($this->plugin_name, SM_PLUGIN_URL . 'assets/css/sm-public.css', array('dashicons'), $this->version, 'all');
@@ -56,14 +56,20 @@ class SM_Public {
             }
             .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
             .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-                font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
+                font-family: 'Cairo', 'Noto Kufi Arabic', sans-serif !important;
             }
-            .sm-admin-dashboard { font-size: {$appearance['font_size']}; }
+            .sm-admin-dashboard { font-size: calc({$appearance['font_size']} * 0.93); }
         ";
         wp_add_inline_style($this->plugin_name, $custom_css);
     }
 
     public function register_shortcodes() {
+        if (isset($_GET['sm_action']) && $_GET['sm_action'] === 'logout') {
+            wp_logout();
+            wp_redirect(home_url('/sm-login'));
+            exit;
+        }
+
         add_shortcode('sm_login', array($this, 'shortcode_login'));
         add_shortcode('sm_admin', array($this, 'shortcode_admin_dashboard'));
         add_shortcode('sm_class_attendance', array($this, 'shortcode_class_attendance'));
@@ -139,7 +145,7 @@ class SM_Public {
 
         $output = '
         <style>
-        @import url(\'https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap\');
+        @import url(\'https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap\');
 
         .eess-login-page-container {
             position: fixed;
@@ -152,7 +158,7 @@ class SM_Public {
             z-index: 99999;
             overflow-y: auto;
             background: #ffffff;
-            font-family: \'Alexandria\', \'Noto Kufi Arabic\', sans-serif !important;
+            font-family: \'Cairo\', \'Noto Kufi Arabic\', sans-serif !important;
             direction: rtl;
             margin: 0;
             padding: 0;
@@ -180,6 +186,8 @@ class SM_Public {
             position: relative;
             overflow: hidden;
             box-sizing: border-box;
+            direction: ltr !important;
+            text-align: left !important;
         }
 
         /* Modal Overlays and dialogs */
@@ -425,7 +433,8 @@ class SM_Public {
             width: 60px;
             background-color: #8b1e1e;
             margin-top: 15px;
-            margin-right: 0;
+            margin-left: 0 !important;
+            margin-right: auto !important;
         }
 
         /* Main Headline */
@@ -801,42 +810,32 @@ class SM_Public {
                                 </label>
                             </div>
 
-                            <!-- Login Submit Button & Help Button -->
-                            <div class="eess-form-group" style="margin-top: 20px; display: flex; gap: 10px;">
-                                <button type="submit" name="wp-submit" id="wp-submit" class="eess-btn-login" style="flex: 1;">
+                            <!-- Login Submit Button -->
+                            <div class="eess-form-group" style="margin-top: 20px;">
+                                <button type="submit" name="wp-submit" id="wp-submit" class="eess-btn-login">
                                     <span>دخول النظام</span>
                                     <span style="margin-right: 8px;">[→</span>
-                                </button>
-                                <button type="button" onclick="eessOpenSupportModal()" class="eess-btn-reset-pwd" style="width: auto; padding: 0 15px; background-color: #475569 !important;">
-                                    <span>الدعم والمساعدة</span>
                                 </button>
                             </div>
 
                             <input type="hidden" name="redirect_to" value="' . esc_url(isset($_GET['redirect_to']) ? $_GET['redirect_to'] : home_url('/sm-admin')) . '">
                         </form>
 
-                        <!-- Password Reset Card -->
-                        <div class="eess-reset-pwd-card">
-                            <div class="eess-reset-card-header">
-                                <span class="eess-reset-card-icon">🔑</span>
-                                <span class="eess-reset-card-title">استعادة حسابي وكلمة المرور</span>
-                            </div>
-                            <p class="eess-reset-card-desc">إذا نسيت كلمة المرور الخاصة بك، يمكنك البدء فوراً في استعادتها وتحديثها دون مغادرة هذه الصفحة.</p>
-                            <button type="button" onclick="eessOpenForgotModal()" class="eess-btn-reset-pwd">
-                                البدء في استعادة كلمة المرور
-                            </button>
-                        </div>
-
-                        <!-- Registration Link Card -->
+                        <!-- Unified Helper Services Card -->
                         <div class="eess-reset-pwd-card" style="margin-top: 15px; border-color: #cbd5e1;">
-                            <div class="eess-reset-card-header">
-                                <span class="eess-reset-card-icon">👤</span>
-                                <span class="eess-reset-card-title">ليس لديك حساب؟ سجل الآن</span>
+                            <div class="eess-reset-card-header" style="margin-bottom: 10px;">
+                                <span class="eess-reset-card-icon">⚙️</span>
+                                <span class="eess-reset-card-title">إدارة الحساب والخدمات المساندة</span>
                             </div>
-                            <p class="eess-reset-card-desc">يمكنك تقديم طلب تسجيل حساب جديد في المنصة من خلال معالج التسجيل الذكي المكون من 4 خطوات.</p>
-                            <button type="button" onclick="eessOpenRegisterModal()" class="eess-btn-reset-pwd" style="background-color: #000000 !important; border: 1px solid #000000;">
-                                البدء في معالج التسجيل السريع
-                            </button>
+                            <p class="eess-reset-card-desc" style="margin-bottom: 12px; font-size: 12px; color: #64748b;">أختر إحدى الخدمات التالية لاستعادة كلمة المرور أو البدء في تسجيل حساب جديد بالمنصة:</p>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" onclick="eessOpenForgotModal()" class="eess-btn-reset-pwd" style="flex: 1; font-size: 11px; height: 36px; background-color: #8b1e1e !important;">
+                                    🔑 استعادة كلمة المرور
+                                </button>
+                                <button type="button" onclick="eessOpenRegisterModal()" class="eess-btn-reset-pwd" style="flex: 1; font-size: 11px; height: 36px; background-color: #000000 !important;">
+                                    👤 تسجيل حساب جديد
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Footer under right panel -->
@@ -844,6 +843,8 @@ class SM_Public {
                             <div class="eess-footer-left">
                                 <span class="lock-icon">🔒</span>
                                 <span>دخول مشفر bit-256</span>
+                                <span style="margin: 0 6px; color: #cbd5e1;">|</span>
+                                <a href="javascript:void(0)" onclick="eessOpenSupportModal()" style="color: #8b1e1e !important; text-decoration: underline !important; font-weight: bold; cursor: pointer;">المساعدة والدعم الفني</a>
                             </div>
                             <div class="eess-footer-right">
                                 <span>© 2026 EESS. جميع الحقوق محفوظة</span>
@@ -1352,7 +1353,7 @@ class SM_Public {
             if (isset($visibility[$user_role_key]) && empty($visibility[$user_role_key][$sec_key])) {
                 ob_start();
                 ?>
-                <div class="sm-container" style="padding:60px 20px; text-align:center; max-width:550px; margin: 0 auto; font-family: 'Alexandria', sans-serif;" dir="rtl">
+                <div class="sm-container" style="padding:60px 20px; text-align:center; max-width:550px; margin: 0 auto; font-family: 'Cairo', sans-serif;" dir="rtl">
                     <div style="background:#ffffff; padding:45px 30px; border-radius:12px; border:1px solid #cbd5e1; box-shadow:0 10px 15px -3px rgba(0,0,0,0.05);">
                         <div style="font-size:75px; color:#ea580c; line-height:1; margin-bottom:20px;">🔒</div>
                         <h2 style="margin:0 0 10px 0; font-weight:800; color:#0f172a; font-size:1.6rem;">عفواً، الدخول غير مصرح به</h2>
@@ -2648,6 +2649,36 @@ class SM_Public {
         }
     }
 
+    public function ajax_refresh_system() {
+        if (!is_user_logged_in()) {
+            wp_send_json_error('Unauthorized');
+        }
+
+        global $wpdb;
+        // 1. Delete all plugin transients from options table
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '_transient_sm_%' OR option_name LIKE '_transient_timeout_sm_%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '_transient_eess_%' OR option_name LIKE '_transient_timeout_eess_%'");
+
+        // 2. Clear general WordPress cache
+        wp_cache_flush();
+
+        // 3. Clear user capability transients or meta caches
+        $users = get_users(array('fields' => array('ID')));
+        foreach ($users as $u) {
+            clean_user_cache($u->ID);
+        }
+
+        // 4. Force reload settings & metrics
+        $school_info = SM_Settings::get_school_info();
+        $stats = SM_DB::get_statistics();
+
+        wp_send_json_success(array(
+            'message' => 'تم تحديث كافة الملفات المؤقتة والذاكرة المؤقتة للخدمات والنظام بنجاح مباشرة من قاعدة البيانات.',
+            'school_name' => $school_info['school_name'],
+            'stats' => $stats
+        ));
+    }
+
     public function ajax_export_violations_csv() {
         if (!is_user_logged_in() || !current_user_can('إدارة_المخالفات')) wp_send_json_error('Unauthorized');
         if (!wp_verify_nonce($_GET['nonce'] ?? '', 'sm_export_action')) wp_send_json_error('Security check failed');
@@ -3342,7 +3373,7 @@ class SM_Public {
         $headers = array('Content-Type: text/html; charset=UTF-8', 'From: EESS Platform <info@eess.online>');
 
         $html = '
-        <div dir="rtl" style="font-family: \'Alexandria\', \'Noto Kufi Arabic\', Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px; text-align: right; direction: rtl;">
+        <div dir="rtl" style="font-family: \'Cairo\', \'Noto Kufi Arabic\', Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px; text-align: right; direction: rtl;">
             <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
                 <div style="background: #0d0d0d; padding: 25px; text-align: center; border-bottom: 4px solid #8b1e1e;">
                     <h2 style="color: #ffffff; margin: 0; font-weight: 800; font-size: 1.5rem; letter-spacing: 1px;">EESS</h2>
@@ -3593,7 +3624,7 @@ class SM_Public {
         $title = 'اعتماد وتفعيل حسابك الإلكتروني - EESS Account Activation';
 
         $body = '
-        <table dir="rtl" style="text-align: right; width: 100%; font-family: \'Alexandria\', sans-serif; border-collapse: collapse; margin-bottom: 25px;">
+        <table dir="rtl" style="text-align: right; width: 100%; font-family: \'Cairo\', sans-serif; border-collapse: collapse; margin-bottom: 25px;">
             <tr>
                 <td>
                     <h3 style="color: #0f172a; font-size: 16px; margin: 0 0 10px 0; font-weight: bold;">أهلاً بك يا ' . esc_html($user->display_name ?: $user->user_email) . '،</h3>
@@ -3612,7 +3643,7 @@ class SM_Public {
 
         <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 25px 0;">
 
-        <table dir="ltr" style="text-align: left; width: 100%; font-family: \'Alexandria\', sans-serif; border-collapse: collapse;">
+        <table dir="ltr" style="text-align: left; width: 100%; font-family: \'Cairo\', sans-serif; border-collapse: collapse;">
             <tr>
                 <td>
                     <h3 style="color: #0f172a; font-size: 16px; margin: 0 0 10px 0; font-weight: bold;">Welcome, ' . esc_html($user->display_name ?: $user->user_email) . ',</h3>
@@ -3624,7 +3655,7 @@ class SM_Public {
         </table>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="' . home_url('/sm-login') . '" style="display:inline-block; background:#000000; color:#ffffff !important; text-decoration:none; padding:12px 35px; font-weight:bold; border-radius:6px; font-size:14px; font-family:\'Alexandria\', sans-serif;">تسجيل الدخول للمنصة / Login to Platform</a>
+            <a href="' . home_url('/sm-login') . '" style="display:inline-block; background:#000000; color:#ffffff !important; text-decoration:none; padding:12px 35px; font-weight:bold; border-radius:6px; font-size:14px; font-family:\'Cairo\', sans-serif;">تسجيل الدخول للمنصة / Login to Platform</a>
         </div>
         ';
 

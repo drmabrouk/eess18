@@ -257,6 +257,64 @@
             }
         });
     };
+
+    let smIsRefreshing = false;
+    window.smRefreshSystem = function() {
+        if (smIsRefreshing) return;
+        smIsRefreshing = true;
+
+        // Show loading indicator
+        const overlay = document.createElement('div');
+        overlay.id = 'sm-refresh-loading-overlay';
+        overlay.style.cssText = 'position:fixed; inset:0; background:rgba(255,255,255,0.7); backdrop-filter:blur(2px); z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; font-family:"Cairo", sans-serif;';
+        overlay.innerHTML = `
+            <div style="width: 40px; height: 40px; border: 3px solid #cbd5e1; border-top-color: #334155; border-radius: 50%; animation: smSpin 0.8s linear infinite;"></div>
+            <div style="font-weight:700; color:#1e293b; font-size:14px;">جاري تحديث وإعادة تهيئة النظام...</div>
+            <style>
+                @keyframes smSpin { to { transform: rotate(360deg); } }
+            </style>
+        `;
+        document.body.appendChild(overlay);
+
+        const btn = document.getElementById('sm-system-refresh-btn');
+        if (btn) btn.disabled = true;
+
+        fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=sm_refresh_system_cache_ajax')
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parserInstance = new DOMParser();
+                    const doc = parserInstance.parseFromString(html, 'text/html');
+                    const newPanel = doc.querySelector('.sm-admin-dashboard');
+                    const oldPanel = document.querySelector('.sm-admin-dashboard');
+                    if (newPanel && oldPanel) {
+                        oldPanel.innerHTML = newPanel.innerHTML;
+                    }
+                    const overlayEl = document.getElementById('sm-refresh-loading-overlay');
+                    if (overlayEl) overlayEl.remove();
+                    if (btn) btn.disabled = false;
+                    smIsRefreshing = false;
+                    smShowNotification(res.data.message);
+                });
+            } else {
+                const overlayEl = document.getElementById('sm-refresh-loading-overlay');
+                if (overlayEl) overlayEl.remove();
+                if (btn) btn.disabled = false;
+                smIsRefreshing = false;
+                smShowNotification('خطأ أثناء تحديث النظام', true);
+            }
+        })
+        .catch(err => {
+            const overlayEl = document.getElementById('sm-refresh-loading-overlay');
+            if (overlayEl) overlayEl.remove();
+            if (btn) btn.disabled = false;
+            smIsRefreshing = false;
+            smShowNotification('فشل الاتصال بالخادم', true);
+        });
+    };
 })(window);
 </script>
 
@@ -300,7 +358,7 @@ $hour = (int)current_time('G');
 $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء الخير';
 ?>
 
-<div class="sm-admin-dashboard" dir="rtl" style="font-family: 'Almarai', sans-serif; background: #fff; border: 1px solid var(--sm-border-color); border-radius: 12px; overflow: hidden;">
+<div class="sm-admin-dashboard" dir="rtl" style="font-family: 'Cairo', 'Noto Kufi Arabic', sans-serif; background: #fff; border: 1px solid var(--sm-border-color); border-radius: 12px; overflow: hidden;">
     <!-- OFFICIAL SYSTEM HEADER -->
     <div class="sm-main-header" style="height: 52px; padding: 4px 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 12px;">
@@ -333,6 +391,12 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
+            <!-- Refresh System Button -->
+            <button id="sm-system-refresh-btn" onclick="smRefreshSystem()" class="sm-btn" style="background: #475569; height: 32px; padding: 0 12px; font-size: 11px; color: white !important; display: inline-flex; align-items: center; gap: 6px;">
+                <span class="dashicons dashicons-update" style="font-size: 14px; width: 14px; height: 14px; line-height: 1;"></span>
+                <span>تحديث النظام</span>
+            </button>
+
             <?php if ($active_tab !== 'attendance' && ($is_admin || current_user_can('تسجيل_مخالفة'))): ?>
                 <button onclick="smOpenViolationModal()" class="sm-btn" style="background: var(--sm-primary-color); height: 32px; padding: 0 12px; font-size: 11px; color: white !important;">+ تسجيل مخالفة</button>
             <?php endif; ?>
@@ -384,7 +448,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </div>
 
                     <hr style="margin: 5px 0; border: none; border-top: 1px solid #eee;">
-                    <a href="<?php echo wp_logout_url(home_url('/sm-login')); ?>" class="sm-dropdown-item" style="color: #e53e3e;"><span class="dashicons dashicons-logout"></span> تسجيل الخروج</a>
+                    <a href="<?php echo home_url('/sm-login?sm_action=logout'); ?>" class="sm-dropdown-item" style="color: #e53e3e;"><span class="dashicons dashicons-logout"></span> تسجيل الخروج</a>
                 </div>
             </div>
         </div>

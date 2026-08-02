@@ -67,7 +67,7 @@ class SM_Admin {
     }
 
     public function enqueue_styles() {
-        wp_enqueue_style('google-font-alexandria', 'https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap', array(), null);
+        wp_enqueue_style('google-font-cairo', 'https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap', array(), null);
         wp_enqueue_style($this->plugin_name, SM_PLUGIN_URL . 'assets/css/sm-admin.css', array(), $this->version, 'all');
 
         $appearance = SM_Settings::get_appearance();
@@ -81,9 +81,9 @@ class SM_Admin {
             }
             .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
             .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-                font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
+                font-family: 'Cairo', 'Noto Kufi Arabic', sans-serif !important;
             }
-            .sm-content-wrapper { font-size: {$appearance['font_size']}; }
+            .sm-content-wrapper { font-size: calc({$appearance['font_size']} * 0.93); }
         ";
         wp_add_inline_style($this->plugin_name, $custom_css);
     }

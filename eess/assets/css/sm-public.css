@@ -19,7 +19,7 @@
 
 .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
 .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-    font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
+    font-family: 'Cairo', 'Noto Kufi Arabic', sans-serif !important;
     color: var(--sm-dark-color);
 }
 
@@ -73,7 +73,7 @@
 .sm-container select,
 .sm-container textarea,
 .sm-container button {
-    font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
+    font-family: 'Cairo', 'Noto Kufi Arabic', sans-serif !important;
 }
 
 /* Unified Table Design */
@@ -120,14 +120,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
     border: none;
     gap: 8px;
-    font-size: 14px;
+    font-size: 13px;
     background: var(--sm-primary-color);
     color: white;
     text-decoration: none;
@@ -162,19 +162,19 @@
 /* Unified Form Elements */
 .sm-label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 600;
     color: var(--sm-dark-color);
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .sm-input, .sm-select, .sm-textarea {
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 11px;
     border: 1px solid var(--sm-border-color);
     border-radius: 8px;
     background: white;
-    font-size: 14px;
+    font-size: 13px;
     transition: border-color 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
@@ -301,7 +301,7 @@
 }
 
 .sm-tab-btn {
-    padding: 12px 25px;
+    padding: 10px 20px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -309,7 +309,7 @@
     color: var(--sm-text-gray);
     border-bottom: 3px solid transparent;
     transition: 0.2s;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .sm-tab-btn:hover {
