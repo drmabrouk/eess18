@@ -274,25 +274,27 @@ function eessRejectUser(userId) {
                     <input type="text" name="user_login" class="sm-input" required>
                 </div>
                 <div class="sm-form-group">
-                    <label class="sm-label">البريد الإلكتروني:</label>
-                    <input type="text" class="sm-input" value="سيتم إنشاؤه تلقائياً" disabled style="background:#f1f5f9;">
+                    <label class="sm-label">البريد الإلكتروني (اختياري):</label>
+                    <input type="email" name="user_email" class="sm-input" placeholder="سيتم إنشاؤه تلقائياً إن تُرِك فارغاً">
                 </div>
                 <div class="sm-form-group">
                     <label class="sm-label">الرتبة:</label>
                     <select name="user_role" class="sm-select" onchange="toggleSpecialization(this)">
-                        <?php if ($current_level >= 4): ?><option value="sm_system_admin">مدير النظام التقني</option><?php endif; ?>
-                        <?php if ($current_level >= 3): ?><option value="sm_principal">مدير المدرسة</option><?php endif; ?>
-                        <?php if ($current_level >= 2): ?><option value="sm_supervisor">مشرف تربوي</option><?php endif; ?>
-                        <?php if ($current_level >= 1): ?><option value="sm_coordinator">منسق مادة</option><?php endif; ?>
-                        <?php if ($current_level >= 0): ?>
-                            <option value="sm_teacher">معلم</option>
-                            <option value="sm_clinic">موظف عيادة</option>
-                        <?php endif; ?>
+                        <option value="sm_teacher">معلم</option>
+                        <option value="sm_coordinator">منسق مادة</option>
+                        <option value="sm_supervisor">مشرف تربوي</option>
+                        <option value="sm_principal">مدير المدرسة</option>
+                        <option value="sm_system_admin">مدير النظام</option>
+                        <option value="sm_discipline_supervisor">مشرف سلوك / انضباط</option>
+                        <option value="sm_activities_supervisor">مشرف أنشطة</option>
+                        <option value="sm_transportation_supervisor">مشرف نقل ومواصلات</option>
+                        <option value="sm_bus_supervisor">مشرف حافلة</option>
+                        <option value="sm_parent">ولي أمر</option>
                         <option value="sm_student">طالب</option>
                     </select>
                 </div>
                 <div class="sm-form-group spec-group" style="display:none;">
-                    <label class="sm-label">المادة التخصصية (للمعلمين):</label>
+                    <label class="sm-label">المادة التخصصية (للمعلمين والمنسقين):</label>
                     <select name="specialization" class="sm-select">
                         <option value="">-- اختر المادة --</option>
                         <?php
@@ -328,24 +330,26 @@ function eessRejectUser(userId) {
                 </div>
                 <div class="sm-form-group">
                     <label class="sm-label">البريد الإلكتروني:</label>
-                    <input type="email" name="user_email" id="edit_u_email" class="sm-input" readonly style="background:#f1f5f9;">
+                    <input type="email" name="user_email" id="edit_u_email" class="sm-input">
                 </div>
                 <div class="sm-form-group">
                     <label class="sm-label">الرتبة:</label>
                     <select name="user_role" id="edit_u_role" class="sm-select" onchange="toggleSpecialization(this, 'edit')">
-                        <?php if ($current_level >= 4): ?><option value="sm_system_admin">مدير النظام التقني</option><?php endif; ?>
-                        <?php if ($current_level >= 3): ?><option value="sm_principal">مدير المدرسة</option><?php endif; ?>
-                        <?php if ($current_level >= 2): ?><option value="sm_supervisor">مشرف تربوي</option><?php endif; ?>
-                        <?php if ($current_level >= 1): ?><option value="sm_coordinator">منسق مادة</option><?php endif; ?>
-                        <?php if ($current_level >= 0): ?>
-                            <option value="sm_teacher">معلم</option>
-                            <option value="sm_clinic">موظف عيادة</option>
-                        <?php endif; ?>
+                        <option value="sm_teacher">معلم</option>
+                        <option value="sm_coordinator">منسق مادة</option>
+                        <option value="sm_supervisor">مشرف تربوي</option>
+                        <option value="sm_principal">مدير المدرسة</option>
+                        <option value="sm_system_admin">مدير النظام</option>
+                        <option value="sm_discipline_supervisor">مشرف سلوك / انضباط</option>
+                        <option value="sm_activities_supervisor">مشرف أنشطة</option>
+                        <option value="sm_transportation_supervisor">مشرف نقل ومواصلات</option>
+                        <option value="sm_bus_supervisor">مشرف حافلة</option>
+                        <option value="sm_parent">ولي أمر</option>
                         <option value="sm_student">طالب</option>
                     </select>
                 </div>
                 <div class="sm-form-group spec-group" id="edit_spec_group" style="display:none;">
-                    <label class="sm-label">المادة التخصصية (للمعلمين):</label>
+                    <label class="sm-label">المادة التخصصية (للمعلمين والمنسقين):</label>
                     <select name="specialization" id="edit_u_spec" class="sm-select">
                         <option value="">-- اختر المادة --</option>
                         <?php
@@ -367,7 +371,7 @@ function eessRejectUser(userId) {
 (function() {
     window.toggleSpecialization = function(select, mode = 'add') {
         const group = mode === 'add' ? select.closest('form').querySelector('.spec-group') : document.getElementById('edit_spec_group');
-        if (select.value === 'sm_teacher') {
+        if (select.value === 'sm_teacher' || select.value === 'sm_coordinator') {
             group.style.display = 'block';
         } else {
             group.style.display = 'none';

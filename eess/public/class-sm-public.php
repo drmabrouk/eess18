@@ -10,15 +10,11 @@ class SM_Public {
     }
 
     public function hide_admin_bar_for_non_admins($show) {
-        if (!current_user_can('manage_options') || current_user_can('إدارة_النظام')) {
-            // System Admins (sm_system_admin) have manage_system/إدارة_النظام
-            // User wants admin bar hidden for System Administrator too.
-            // Central Control is the only one with 'administrator' role.
-            if (!current_user_can('administrator')) {
-                return false;
-            }
+        $user = wp_get_current_user();
+        if (in_array('sm_system_admin', (array)$user->roles) || in_array('administrator', (array)$user->roles)) {
+            return $show;
         }
-        return $show;
+        return false;
     }
 
     public function restrict_admin_access() {
@@ -31,9 +27,12 @@ class SM_Public {
             }
         }
 
-        if (is_admin() && !defined('DOING_AJAX') && !current_user_can('manage_options')) {
-            wp_redirect(home_url('/sm-admin'));
-            exit;
+        if (is_admin() && !defined('DOING_AJAX')) {
+            $user = wp_get_current_user();
+            if (!in_array('sm_system_admin', (array)$user->roles) && !in_array('administrator', (array)$user->roles)) {
+                wp_redirect(home_url('/sm-admin'));
+                exit;
+            }
         }
     }
 
@@ -1329,8 +1328,44 @@ class SM_Public {
         $roles = (array) $user->roles;
         $active_tab = isset($_GET['sm_tab']) ? sanitize_text_field($_GET['sm_tab']) : 'summary';
         
-        // Data Preparation based on tab
+        // Sidebar Visibility Block check
+        $visibility = SM_Settings::get_sidebar_visibility();
+        $user_role_key = !empty($roles) ? $roles[0] : '';
+        $tab_section_map = array(
+            'stats'           => 'stats',
+            'students'        => 'students',
+            'teachers'        => 'teachers',
+            'parents'         => 'parents',
+            'grades'          => 'grades',
+            'teacher-reports' => 'teacher-reports',
+            'attendance'      => 'attendance',
+            'lesson-plans'    => 'lesson-plans',
+            'assignments'     => 'assignments',
+            'clinic'          => 'clinic',
+            'documents'       => 'documents'
+        );
+
         $is_admin = in_array('administrator', $roles) || current_user_can('manage_options');
+
+        if (!$is_admin && isset($tab_section_map[$active_tab])) {
+            $sec_key = $tab_section_map[$active_tab];
+            if (isset($visibility[$user_role_key]) && empty($visibility[$user_role_key][$sec_key])) {
+                ob_start();
+                ?>
+                <div class="sm-container" style="padding:60px 20px; text-align:center; max-width:550px; margin: 0 auto; font-family: 'Alexandria', sans-serif;" dir="rtl">
+                    <div style="background:#ffffff; padding:45px 30px; border-radius:12px; border:1px solid #cbd5e1; box-shadow:0 10px 15px -3px rgba(0,0,0,0.05);">
+                        <div style="font-size:75px; color:#ea580c; line-height:1; margin-bottom:20px;">🔒</div>
+                        <h2 style="margin:0 0 10px 0; font-weight:800; color:#0f172a; font-size:1.6rem;">عفواً، الدخول غير مصرح به</h2>
+                        <p style="margin:0 0 30px 0; font-size:14px; color:#64748b; line-height:1.7;">يرجى العلم بأنك لا تملك الصلاحيات الكافية للوصول إلى هذا القسم. إذا كنت تعتقد أن هذا خطأ، يرجى التواصل مع إدارة النظام.</p>
+                        <a href="<?php echo home_url('/sm-admin'); ?>" class="sm-btn" style="width:100%; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; color:white !important; background-color:#000000 !important; border:1px solid #000000;">العودة للوحة الإدارة الرئيسية</a>
+                    </div>
+                </div>
+                <?php
+                return ob_get_clean();
+            }
+        }
+
+        // Data Preparation based on tab
         $is_sys_admin = in_array('sm_system_admin', $roles);
         $is_principal = in_array('sm_principal', $roles);
         $is_supervisor = in_array('sm_supervisor', $roles);
@@ -1715,7 +1750,7 @@ class SM_Public {
         if (!wp_verify_nonce($_POST['sm_nonce'], 'sm_user_action')) wp_send_json_error('Security check failed');
 
         $username = sanitize_user($_POST['user_login']);
-        $email = $username . '@school-system.local'; // Automated email generation
+        $email = (!empty($_POST['user_email']) && is_email($_POST['user_email'])) ? sanitize_email($_POST['user_email']) : ($username . '@school-system.local');
 
         $user_data = array(
             'user_login' => $username,
@@ -1744,6 +1779,9 @@ class SM_Public {
             'ID' => $user_id,
             'display_name' => sanitize_text_field($_POST['display_name'])
         );
+        if (!empty($_POST['user_email']) && is_email($_POST['user_email'])) {
+            $user_data['user_email'] = sanitize_email($_POST['user_email']);
+        }
         if (!empty($_POST['user_pass'])) {
             $user_data['user_pass'] = $_POST['user_pass'];
         }
@@ -1772,7 +1810,7 @@ class SM_Public {
         }
 
         $username = sanitize_user($_POST['user_login']);
-        $email = $username . '@school-system.local'; // Automated
+        $email = (!empty($_POST['user_email']) && is_email($_POST['user_email'])) ? sanitize_email($_POST['user_email']) : ($username . '@school-system.local'); // Automated
 
         $user_data = array(
             'user_login' => $username,
@@ -2991,7 +3029,7 @@ class SM_Public {
         // Handle Sidebar Visibility Settings Save
         if (isset($_POST['sm_save_sidebar_visibility']) && wp_verify_nonce($_POST['sm_admin_nonce'], 'sm_admin_action')) {
             if (current_user_can('إدارة_النظام')) {
-                $roles_to_process = array('sm_system_admin', 'sm_principal', 'sm_supervisor', 'sm_coordinator', 'sm_teacher', 'sm_student', 'sm_parent');
+                $roles_to_process = array('sm_system_admin', 'sm_principal', 'sm_supervisor', 'sm_coordinator', 'sm_teacher', 'sm_student', 'sm_parent', 'sm_discipline_supervisor', 'sm_activities_supervisor', 'sm_transportation_supervisor', 'sm_bus_supervisor');
                 $sections_to_process = array('stats', 'students', 'teachers', 'parents', 'grades', 'teacher-reports', 'attendance', 'lesson-plans', 'assignments', 'clinic', 'documents');
 
                 $visibility = array();
@@ -3552,16 +3590,45 @@ class SM_Public {
         update_user_meta($target_user_id, 'eess_approval_status', 'approved');
 
         $user = get_user_by('id', $target_user_id);
-        $title = 'تم تفعيل واعتماد حسابك بنجاح - EESS';
+        $title = 'اعتماد وتفعيل حسابك الإلكتروني - EESS Account Activation';
+
         $body = '
-        <p>مرحباً بك يا <strong>' . esc_html($user->display_name ?: $user->user_email) . '</strong>،</p>
-        <p>يسعدنا إبلاغك بأنه تم تفعيل واعتماد حسابك رسمياً من قبل إدارة منصة EESS الإلكترونية.</p>
-        <p>يمكنك الآن تسجيل الدخول مباشرة والوصول إلى كافة الخدمات والأدوات المتاحة لرتبتك الأكاديمية.</p>
-        <div style="text-align: center; margin: 25px 0;">
-            <a href="' . home_url('/sm-login') . '" style="display:inline-block; background:#000000; color:#ffffff; text-decoration:none; padding:12px 35px; font-weight:bold; border-radius:6px;">تسجيل الدخول للمنصة</a>
+        <table dir="rtl" style="text-align: right; width: 100%; font-family: \'Alexandria\', sans-serif; border-collapse: collapse; margin-bottom: 25px;">
+            <tr>
+                <td>
+                    <h3 style="color: #0f172a; font-size: 16px; margin: 0 0 10px 0; font-weight: bold;">أهلاً بك يا ' . esc_html($user->display_name ?: $user->user_email) . '،</h3>
+                    <p style="font-size: 13px; color: #334155; line-height: 1.8; margin: 0 0 15px 0;">يسعدنا إبلاغك بأنه تم مراجعة واعتماد حسابك بنجاح على منصة <strong>خدمات الأنظمة الإلكترونية التعليمية (EESS)</strong>. حسابك الآن نشط بالكامل وجاهز للاستخدام الفوري.</p>
+
+                    <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;">
+                        <strong>تفاصيل الحساب / Account Details:</strong><br>
+                        • اسم المستخدم: <span style="font-family: monospace; font-weight: bold;">' . esc_html($user->user_login) . '</span><br>
+                        • البريد الإلكتروني: <span style="font-family: monospace; font-weight: bold;">' . esc_html($user->user_email) . '</span><br>
+                    </div>
+
+                    <p style="font-size: 13px; color: #334155; line-height: 1.8;"><strong>توصيات أمنية هامة:</strong> يرجى التأكد من عدم مشاركة بيانات دخولك أو رمز التفعيل مع أي شخص آخر، واحرص على استخدام كلمة مرور قوية لضمان أمان معلوماتك.</p>
+                </td>
+            </tr>
+        </table>
+
+        <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 25px 0;">
+
+        <table dir="ltr" style="text-align: left; width: 100%; font-family: \'Alexandria\', sans-serif; border-collapse: collapse;">
+            <tr>
+                <td>
+                    <h3 style="color: #0f172a; font-size: 16px; margin: 0 0 10px 0; font-weight: bold;">Welcome, ' . esc_html($user->display_name ?: $user->user_email) . ',</h3>
+                    <p style="font-size: 13px; color: #334155; line-height: 1.8; margin: 0 0 15px 0;">We are pleased to inform you that your account has been reviewed and successfully approved on the <strong>Educational Electronic Systems Services (EESS)</strong> platform. Your account is now fully active and ready for use.</p>
+
+                    <p style="font-size: 13px; color: #334155; line-height: 1.8;"><strong>Important Security Recommendations:</strong> Please ensure never to share your login credentials or OTP with anyone else, and use a strong password to ensure the security of your private data.</p>
+                </td>
+            </tr>
+        </table>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="' . home_url('/sm-login') . '" style="display:inline-block; background:#000000; color:#ffffff !important; text-decoration:none; padding:12px 35px; font-weight:bold; border-radius:6px; font-size:14px; font-family:\'Alexandria\', sans-serif;">تسجيل الدخول للمنصة / Login to Platform</a>
         </div>
         ';
-        $this->send_branded_email($user->user_email, $title, 'تفعيل حسابك الإلكتروني', $body);
+
+        $this->send_branded_email($user->user_email, $title, 'تنشيط حسابك بالمنصة', $body);
 
         wp_send_json_success('تم اعتماد وتنشيط الحساب وإخطار المستخدم بنجاح.');
     }
