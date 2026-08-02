@@ -17,13 +17,15 @@ $is_teacher = in_array('sm_teacher', $roles);
 $can_review = $is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator;
 
 // Auto-assign supervisor helper
-function eess_get_teacher_supervisor($teacher_id) {
-    // If coordinator exists in department, or default to principal / administrator
-    $supervisors = get_users(array('role__in' => array('sm_supervisor', 'sm_principal', 'administrator')));
-    if (!empty($supervisors)) {
-        return $supervisors[0]->ID; // Default to first available supervisor
+if (!function_exists('eess_get_teacher_supervisor')) {
+    function eess_get_teacher_supervisor($teacher_id) {
+        // If coordinator exists in department, or default to principal / administrator
+        $supervisors = get_users(array('role__in' => array('sm_supervisor', 'sm_principal', 'administrator')));
+        if (!empty($supervisors)) {
+            return $supervisors[0]->ID; // Default to first available supervisor
+        }
+        return 1; // Default fallback to user ID 1
     }
-    return 1; // Default fallback to user ID 1
 }
 
 // Fetch general settings

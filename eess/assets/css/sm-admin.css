@@ -19,7 +19,7 @@
 
 .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
 .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-    font-family: 'Almarai', sans-serif !important;
+    font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
     color: var(--sm-dark-color);
 }
 
@@ -73,7 +73,7 @@
 .sm-container select,
 .sm-container textarea,
 .sm-container button {
-    font-family: 'Almarai', sans-serif !important;
+    font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
 }
 
 /* Unified Table Design */

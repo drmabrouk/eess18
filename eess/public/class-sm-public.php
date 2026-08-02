@@ -41,7 +41,7 @@ class SM_Public {
         wp_enqueue_media();
         wp_enqueue_script('jquery');
         wp_enqueue_style('dashicons');
-        wp_enqueue_style('google-font-almarai', 'https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap', array(), null);
+        wp_enqueue_style('google-font-alexandria', 'https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap', array(), null);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '4.4.1', true);
         wp_enqueue_script('html5-qrcode', 'https://unpkg.com/html5-qrcode', array(), '2.3.8', true);
         wp_enqueue_style($this->plugin_name, SM_PLUGIN_URL . 'assets/css/sm-public.css', array('dashicons'), $this->version, 'all');
@@ -57,7 +57,7 @@ class SM_Public {
             }
             .sm-content-wrapper, .sm-admin-dashboard, .sm-container,
             .sm-content-wrapper *:not(.dashicons), .sm-admin-dashboard *:not(.dashicons), .sm-container *:not(.dashicons) {
-                font-family: 'Almarai', sans-serif !important;
+                font-family: 'Alexandria', 'Noto Kufi Arabic', sans-serif !important;
             }
             .sm-admin-dashboard { font-size: {$appearance['font_size']}; }
         ";
@@ -140,7 +140,7 @@ class SM_Public {
 
         $output = '
         <style>
-        @import url(\'https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap\');
+        @import url(\'https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap\');
 
         .eess-login-page-container {
             position: fixed;
@@ -153,7 +153,7 @@ class SM_Public {
             z-index: 99999;
             overflow-y: auto;
             background: #ffffff;
-            font-family: \'Cairo\', \'Almarai\', \'Tajawal\', sans-serif !important;
+            font-family: \'Alexandria\', \'Noto Kufi Arabic\', sans-serif !important;
             direction: rtl;
             margin: 0;
             padding: 0;
@@ -181,6 +181,157 @@ class SM_Public {
             position: relative;
             overflow: hidden;
             box-sizing: border-box;
+        }
+
+        /* Modal Overlays and dialogs */
+        .eess-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .eess-modal-dialog {
+            background: #ffffff;
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: eessFadeIn 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+            box-sizing: border-box;
+        }
+
+        @keyframes eessFadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .eess-modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .eess-modal-header h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .eess-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #94a3b8;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            margin: 0;
+            transition: color 0.15s ease;
+        }
+
+        .eess-modal-close:hover {
+            color: #475569;
+        }
+
+        .eess-modal-body {
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        /* Steps progress indicator */
+        .eess-step-progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .eess-step-progress-bar::before {
+            content: \'\';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .eess-step-node {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #64748b;
+            z-index: 2;
+            transition: all 0.25s ease;
+        }
+
+        .eess-step-node.active {
+            border-color: #000000;
+            background: #000000;
+            color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .eess-step-node.completed {
+            border-color: #10b981;
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        .eess-wizard-step {
+            display: none;
+        }
+
+        .eess-wizard-step.active {
+            display: block;
+        }
+
+        .eess-modal-msg {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .eess-modal-msg.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .eess-modal-msg.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
         }
 
         /* Official Website Badge */
@@ -611,6 +762,97 @@ class SM_Public {
 
         <div class="eess-login-page-container">
             <div class="eess-login-split-layout">
+                <!-- Right Side (Form - Light) -->
+                <div class="eess-login-right-panel">
+                    <div class="eess-login-form-inner">
+                        <!-- Title & Subtitle -->
+                        <h1 class="eess-login-form-title">تسجيل الدخول</h1>
+                        <p class="eess-login-form-subtitle">أدخل بيانات الاعتماد الخاصة بك للوصول إلى لوحة التحكم.</p>
+
+                        <!-- Error notice if failed -->
+                        ';
+                        if (isset($_GET['login']) && $_GET['login'] == 'failed') {
+                            $output .= '<div class="eess-error-notice">خطأ في اسم المستخدم أو كلمة المرور. يرجى التحقق وإعادة المحاولة.</div>';
+                        }
+                        $output .= '
+
+                        <!-- Custom login form -->
+                        <form name="loginform" id="sm_login_form" action="' . esc_url(site_url('wp-login.php', 'login_post')) . '" method="post">
+                            <!-- Email / Acad ID field -->
+                            <div class="eess-form-group">
+                                <label for="user_login" class="eess-field-label">البريد الإلكتروني / الرقم الأكاديمي <span style="color:#ef4444;">*</span></label>
+                                <input type="text" name="log" id="user_login" class="eess-form-input" placeholder="name@company.com" required>
+                            </div>
+
+                            <!-- Password field with lost-password link inline -->
+                            <div class="eess-form-group">
+                                <div class="eess-field-label-wrapper" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                    <label for="user_pass" class="eess-field-label" style="margin: 0;">كلمة المرور <span style="color:#ef4444;">*</span></label>
+                                    <a href="' . esc_url(wp_lostpassword_url(home_url('/sm-login'))) . '" class="eess-lost-pwd-link">نسيت كلمة المرور؟</a>
+                                </div>
+                                <input type="password" name="pwd" id="user_pass" class="eess-form-input" placeholder="••••••" required style="margin-top: 5px;">
+                            </div>
+
+                            <!-- Remember me row -->
+                            <div class="eess-form-row-remember">
+                                <label class="eess-remember-checkbox-label">
+                                    <input type="checkbox" name="rememberme" id="rememberme" value="forever">
+                                    <span class="eess-checkbox-custom"></span>
+                                    <span class="eess-checkbox-text">تذكر بياناتي على هذا الجهاز</span>
+                                </label>
+                            </div>
+
+                            <!-- Login Submit Button & Help Button -->
+                            <div class="eess-form-group" style="margin-top: 20px; display: flex; gap: 10px;">
+                                <button type="submit" name="wp-submit" id="wp-submit" class="eess-btn-login" style="flex: 1;">
+                                    <span>دخول النظام</span>
+                                    <span style="margin-right: 8px;">[→</span>
+                                </button>
+                                <button type="button" onclick="eessOpenSupportModal()" class="eess-btn-reset-pwd" style="width: auto; padding: 0 15px; background-color: #475569 !important;">
+                                    <span>الدعم والمساعدة</span>
+                                </button>
+                            </div>
+
+                            <input type="hidden" name="redirect_to" value="' . esc_url(isset($_GET['redirect_to']) ? $_GET['redirect_to'] : home_url('/sm-admin')) . '">
+                        </form>
+
+                        <!-- Password Reset Card -->
+                        <div class="eess-reset-pwd-card">
+                            <div class="eess-reset-card-header">
+                                <span class="eess-reset-card-icon">🔑</span>
+                                <span class="eess-reset-card-title">استعادة حسابي وكلمة المرور</span>
+                            </div>
+                            <p class="eess-reset-card-desc">إذا نسيت كلمة المرور الخاصة بك، يمكنك البدء فوراً في استعادتها وتحديثها دون مغادرة هذه الصفحة.</p>
+                            <button type="button" onclick="eessOpenForgotModal()" class="eess-btn-reset-pwd">
+                                البدء في استعادة كلمة المرور
+                            </button>
+                        </div>
+
+                        <!-- Registration Link Card -->
+                        <div class="eess-reset-pwd-card" style="margin-top: 15px; border-color: #cbd5e1;">
+                            <div class="eess-reset-card-header">
+                                <span class="eess-reset-card-icon">👤</span>
+                                <span class="eess-reset-card-title">ليس لديك حساب؟ سجل الآن</span>
+                            </div>
+                            <p class="eess-reset-card-desc">يمكنك تقديم طلب تسجيل حساب جديد في المنصة من خلال معالج التسجيل الذكي المكون من 4 خطوات.</p>
+                            <button type="button" onclick="eessOpenRegisterModal()" class="eess-btn-reset-pwd" style="background-color: #000000 !important; border: 1px solid #000000;">
+                                البدء في معالج التسجيل السريع
+                            </button>
+                        </div>
+
+                        <!-- Footer under right panel -->
+                        <div class="eess-login-footer">
+                            <div class="eess-footer-left">
+                                <span class="lock-icon">🔒</span>
+                                <span>دخول مشفر bit-256</span>
+                            </div>
+                            <div class="eess-footer-right">
+                                <span>© 2026 EESS. جميع الحقوق محفوظة</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Left Side (Branding - Dark) -->
                 <div class="eess-login-left-panel">
                     <!-- Official website link badge -->
@@ -664,84 +906,415 @@ class SM_Public {
                     <!-- Huge Watermark EESS -->
                     <div class="eess-watermark">EESS</div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Right Side (Form - Light) -->
-                <div class="eess-login-right-panel">
-                    <div class="eess-login-form-inner">
-                        <!-- Title & Subtitle -->
-                        <h1 class="eess-login-form-title">تسجيل الدخول</h1>
-                        <p class="eess-login-form-subtitle">أدخل بيانات الاعتماد الخاصة بك للوصول إلى لوحة التحكم.</p>
+        <!-- Forgot Password Modal Overhaul -->
+        <div id="eess-forgot-modal" class="eess-modal-overlay">
+            <div class="eess-modal-dialog">
+                <div class="eess-modal-header">
+                    <h3>استعادة كلمة المرور الآمنة</h3>
+                    <button type="button" class="eess-modal-close" onclick="eessCloseForgotModal()">&times;</button>
+                </div>
+                <div class="eess-modal-body">
+                    <div id="eess-forgot-msg" class="eess-modal-msg"></div>
 
-                        <!-- Error notice if failed -->
-                        ';
-                        if (isset($_GET['login']) && $_GET['login'] == 'failed') {
-                            $output .= '<div class="eess-error-notice">خطأ في اسم المستخدم أو كلمة المرور. يرجى التحقق وإعادة المحاولة.</div>';
-                        }
-                        $output .= '
-
-                        <!-- Custom login form -->
-                        <form name="loginform" id="sm_login_form" action="' . esc_url(site_url('wp-login.php', 'login_post')) . '" method="post">
-                            <!-- Email / Acad ID field -->
-                            <div class="eess-form-group">
-                                <label for="user_login" class="eess-field-label">البريد الإلكتروني / الرقم الأكاديمي <span style="color:#ef4444;">*</span></label>
-                                <input type="text" name="log" id="user_login" class="eess-form-input" placeholder="name@company.com" required>
-                            </div>
-
-                            <!-- Password field with lost-password link inline -->
-                            <div class="eess-form-group">
-                                <div class="eess-field-label-wrapper" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                    <label for="user_pass" class="eess-field-label" style="margin: 0;">كلمة المرور <span style="color:#ef4444;">*</span></label>
-                                    <a href="' . esc_url(wp_lostpassword_url(home_url('/sm-login'))) . '" class="eess-lost-pwd-link">نسيت كلمة المرور؟</a>
-                                </div>
-                                <input type="password" name="pwd" id="user_pass" class="eess-form-input" placeholder="••••••" required style="margin-top: 5px;">
-                            </div>
-
-                            <!-- Remember me row -->
-                            <div class="eess-form-row-remember">
-                                <label class="eess-remember-checkbox-label">
-                                    <input type="checkbox" name="rememberme" id="rememberme" value="forever">
-                                    <span class="eess-checkbox-custom"></span>
-                                    <span class="eess-checkbox-text">تذكر بياناتي على هذا الجهاز</span>
-                                </label>
-                            </div>
-
-                            <!-- Login Submit Button -->
-                            <div class="eess-form-group" style="margin-top: 20px;">
-                                <button type="submit" name="wp-submit" id="wp-submit" class="eess-btn-login">
-                                    <span>دخول النظام</span>
-                                    <span style="margin-right: 8px;">[→</span>
-                                </button>
-                            </div>
-
-                            <input type="hidden" name="redirect_to" value="' . esc_url(isset($_GET['redirect_to']) ? $_GET['redirect_to'] : home_url('/sm-admin')) . '">
-                        </form>
-
-                        <!-- Password Reset Card -->
-                        <div class="eess-reset-pwd-card">
-                            <div class="eess-reset-card-header">
-                                <span class="eess-reset-card-icon">🔑</span>
-                                <span class="eess-reset-card-title">إعادة تعيين كلمة المرور بدون تسجيل</span>
-                            </div>
-                            <p class="eess-reset-card-desc">يمكنك طلب رابط استعادة كلمة المرور مباشرة في حال فقدانها دون الحاجة لإنشاء حساب جديد.</p>
-                            <a href="' . esc_url(wp_lostpassword_url(home_url('/sm-login'))) . '" class="eess-btn-reset-pwd">
-                                الانتقال لإعادة تعيين كلمة المرور
-                            </a>
+                    <!-- Step 1: Enter Email -->
+                    <div id="eess-forgot-step-1" class="eess-wizard-step active">
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.6;">يرجى كتابة بريدك الإلكتروني المسجل في النظام وسوف نرسل لك رمز تحقق آمن OTP مكون من 6 أرقام لتأكيد الهوية وتحديث كلمة المرور.</p>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">البريد الإلكتروني المعتمد <span style="color:#ef4444;">*</span></label>
+                            <input type="email" id="eess-forgot-email" class="eess-form-input" placeholder="name@company.com">
                         </div>
+                        <button type="button" onclick="eessSendForgotOTP()" class="eess-btn-login" style="margin-top: 15px;">إرسال رمز التحقق OTP</button>
+                    </div>
 
-                        <!-- Footer under right panel -->
-                        <div class="eess-login-footer">
-                            <div class="eess-footer-left">
-                                <span class="lock-icon">🔒</span>
-                                <span>دخول مشفر bit-256</span>
-                            </div>
-                            <div class="eess-footer-right">
-                                <span>© 2026 EESS. جميع الحقوق محفوظة</span>
-                            </div>
+                    <!-- Step 2: Enter OTP -->
+                    <div id="eess-forgot-step-2" class="eess-wizard-step">
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.6;">تم إرسال رمز التحقق بنجاح. يرجى مراجعة بريدك الإلكتروني وإدخال الرمز المكون من 6 أرقام بالأسفل لتأكيد هويتك.</p>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">رمز التحقق OTP <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="eess-forgot-otp" class="eess-form-input" placeholder="••••••" maxlength="6" style="text-align: center; letter-spacing: 6px; font-size: 20px;">
+                        </div>
+                        <button type="button" onclick="eessVerifyForgotOTP()" class="eess-btn-login" style="margin-top: 15px;">تحقق وتأكيد الهوية</button>
+                    </div>
+
+                    <!-- Step 3: Enter New Password -->
+                    <div id="eess-forgot-step-3" class="eess-wizard-step">
+                        <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 id="eess-forgot-welcome-msg" style="margin: 0; color: #000000; font-weight: 800; font-size: 14px;">أهلاً بك!</h4>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b; line-height: 1.6;">تم تأكيد هويتك بنجاح. يرجى إدخال كلمة المرور الجديدة وتأكيدها لحفظ التغييرات والدخول المباشر للمنصة.</p>
+                        </div>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">كلمة المرور الجديدة <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="eess-forgot-pass" class="eess-form-input" placeholder="••••••">
+                        </div>
+                        <div class="eess-form-group" style="margin-top: 10px;">
+                            <label class="eess-field-label">تأكيد كلمة المرور <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="eess-forgot-pass-conf" class="eess-form-input" placeholder="••••••">
+                        </div>
+                        <button type="button" onclick="eessResetPassword()" class="eess-btn-login" style="margin-top: 20px;">تحديث كلمة المرور والدخول للمنصة</button>
+                    </div>
+
+                    <!-- Support Card Inside Modal -->
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #f1f5f9; font-size: 11px; color: #64748b; line-height: 1.6;">
+                        💬 إذا واجهت أي صعوبة في الدخول أو استعادة حسابك، يرجى الاتصال بقسم الدعم الفني لشركة EESS عبر البريد الرسمي <a href="mailto:info@eess.online" style="color: #8b1e1e; font-weight: bold; text-decoration: underline;">info@eess.online</a>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help & Support Modal -->
+        <div id="eess-support-modal" class="eess-modal-overlay">
+            <div class="eess-modal-dialog" style="max-width: 450px;">
+                <div class="eess-modal-header">
+                    <h3>المساعدة والدعم الفني</h3>
+                    <button type="button" class="eess-modal-close" onclick="eessCloseSupportModal()">&times;</button>
+                </div>
+                <div class="eess-modal-body">
+                    <p style="font-size: 13px; color: #334155; line-height: 1.8; margin-top: 0;">إذا كنت تواجه أي صعوبة في الدخول إلى حسابك أو استعادة كلمة المرور، يرجى التكرم بمراسلة إدارة المنصة عبر البريد الإلكتروني الرسمي مباشرة:</p>
+                    <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0;">
+                        <a href="mailto:info@eess.online" style="color: #8b1e1e; font-weight: bold; font-size: 16px; text-decoration: none;">info@eess.online</a>
+                    </div>
+                    <p style="font-size: 12px; color: #64748b; line-height: 1.6;">سوف يقوم مهندسو الدعم الفني بالرد عليك وحل المشكلة في أقرب وقت ممكن.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Wizard Modal -->
+        <div id="eess-register-modal" class="eess-modal-overlay">
+            <div class="eess-modal-dialog">
+                <div class="eess-modal-header">
+                    <h3>تسجيل حساب جديد - بوابة EESS</h3>
+                    <button type="button" class="eess-modal-close" onclick="eessCloseRegisterModal()">&times;</button>
+                </div>
+                <div class="eess-modal-body">
+                    <!-- Step Indicator -->
+                    <div class="eess-step-progress-bar">
+                        <div class="eess-step-node active" id="node-1">1</div>
+                        <div class="eess-step-node" id="node-2">2</div>
+                        <div class="eess-step-node" id="node-3">3</div>
+                        <div class="eess-step-node" id="node-4">4</div>
+                    </div>
+
+                    <div id="eess-register-msg" class="eess-modal-msg"></div>
+
+                    <!-- Step 1: Email Address -->
+                    <div id="eess-reg-step-1" class="eess-wizard-step active">
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.6;">يرجى البدء بإدخال بريدك الإلكتروني المعتمد بالمنصة للتحقق منه وإكمال بقية خطوات التسجيل.</p>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">البريد الإلكتروني الرسمي <span style="color:#ef4444;">*</span></label>
+                            <input type="email" id="eess-reg-email" class="eess-form-input" placeholder="name@company.com">
+                        </div>
+                        <button type="button" onclick="eessRegisterStep1Next()" class="eess-btn-login" style="margin-top: 15px;">التالي (تأكيد البريد)</button>
+                    </div>
+
+                    <!-- Step 2: Employee ID and Password -->
+                    <div id="eess-reg-step-2" class="eess-wizard-step">
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.6;">الآن، يرجى كتابة الرقم الوظيفي / الأكاديمي الموحد الخاص بك، وتعيين كلمة مرور آمنة لحسابك.</p>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">الرقم الوظيفي / رقم الموظف <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="eess-reg-emp-num" class="eess-form-input" placeholder="مثال: EESS-10992">
+                        </div>
+                        <div class="eess-form-group" style="margin-top: 10px;">
+                            <label class="eess-field-label">كلمة المرور <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="eess-reg-pass" class="eess-form-input" placeholder="••••••">
+                        </div>
+                        <div class="eess-form-group" style="margin-top: 10px;">
+                            <label class="eess-field-label">تأكيد كلمة المرور <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="eess-reg-pass-conf" class="eess-form-input" placeholder="••••••">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" onclick="eessGoToRegStep(1)" class="eess-btn-reset-pwd" style="width: 30%; background-color:#64748b !important;">السابق</button>
+                            <button type="button" onclick="eessRegisterStep2Next()" class="eess-btn-login" style="width: 70%;">التالي (التحقق الأكاديمي)</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Job Title & School -->
+                    <div id="eess-reg-step-3" class="eess-wizard-step">
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.6;">الرجاء تحديد المسمى الوظيفي الخاص بك والمدرسة أو الهيئة الأكاديمية التابع لها بالكامل.</p>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">المسمى الوظيفي / الرتبة <span style="color:#ef4444;">*</span></label>
+                            <select id="eess-reg-role" class="eess-form-input" style="height: 42px; padding: 0 10px;">
+                                <option value="sm_teacher">معلم</option>
+                                <option value="sm_coordinator">منسق مادة</option>
+                                <option value="sm_supervisor">مشرف تربوي</option>
+                                <option value="sm_clinic">ممرض عيادة</option>
+                            </select>
+                        </div>
+                        <div class="eess-form-group" style="margin-top: 10px;">
+                            <label class="eess-field-label">المدرسة التابع لها <span style="color:#ef4444;">*</span></label>
+                            <select id="eess-reg-school" class="eess-form-input" style="height: 42px; padding: 0 10px;">
+                                ';
+                                $school_info = SM_Settings::get_school_info();
+                                $output .= '<option value="' . esc_attr($school_info['school_name']) . '">' . esc_html($school_info['school_name']) . '</option>';
+                                $output .= '
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" onclick="eessGoToRegStep(2)" class="eess-btn-reset-pwd" style="width: 30%; background-color:#64748b !important;">السابق</button>
+                            <button type="button" onclick="eessRegisterStep3Next()" class="eess-btn-login" style="width: 70%;">إرسال رمز التفعيل OTP</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: OTP Verification & Final Submit -->
+                    <div id="eess-reg-step-4" class="eess-wizard-step">
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.6;">تم إرسال رمز تفعيل آمن OTP لبريدك الإلكتروني المكتوب. يرجى إدخال الرمز لتأكيد ملكية البريد وتأكيد طلب التسجيل بالمنصة.</p>
+                        <div class="eess-form-group">
+                            <label class="eess-field-label">رمز التفعيل OTP <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="eess-reg-otp" class="eess-form-input" placeholder="••••••" maxlength="6" style="text-align: center; letter-spacing: 6px; font-size: 20px;">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" onclick="eessGoToRegStep(3)" class="eess-btn-reset-pwd" style="width: 30%; background-color:#64748b !important;">السابق</button>
+                            <button type="button" onclick="eessRegisterSubmitFinal()" class="eess-btn-login" style="width: 70%;">تأكيد وإرسال طلب التسجيل</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Custom JS Client logic for Password Recovery and Registration -->
+        <script>
+        function eessShowForgotMsg(text, isError) {
+            const el = document.getElementById(\'eess-forgot-msg\');
+            el.innerText = text;
+            el.style.display = \'block\';
+            if (isError) {
+                el.className = \'eess-modal-msg error\';
+            } else {
+                el.className = \'eess-modal-msg success\';
+            }
+        }
+
+        function eessShowRegMsg(text, isError) {
+            const el = document.getElementById(\'eess-register-msg\');
+            el.innerText = text;
+            el.style.display = \'block\';
+            if (isError) {
+                el.className = \'eess-modal-msg error\';
+            } else {
+                el.className = \'eess-modal-msg success\';
+            }
+        }
+
+        // Modal triggers
+        function eessOpenForgotModal() {
+            document.getElementById(\'eess-forgot-modal\').style.display = \'flex\';
+            eessGoToForgotStep(1);
+        }
+        function eessCloseForgotModal() {
+            document.getElementById(\'eess-forgot-modal\').style.display = \'none\';
+        }
+
+        function eessOpenSupportModal() {
+            document.getElementById(\'eess-support-modal\').style.display = \'flex\';
+        }
+        function eessCloseSupportModal() {
+            document.getElementById(\'eess-support-modal\').style.display = \'none\';
+        }
+
+        function eessOpenRegisterModal() {
+            document.getElementById(\'eess-register-modal\').style.display = \'flex\';
+            eessGoToRegStep(1);
+        }
+        function eessCloseRegisterModal() {
+            document.getElementById(\'eess-register-modal\').style.display = \'none\';
+        }
+
+        // Recovery navigation
+        function eessGoToForgotStep(stepNum) {
+            document.getElementById(\'eess-forgot-msg\').style.display = \'none\';
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(\'eess-forgot-step-\' + i).style.display = i === stepNum ? \'block\' : \'none\';
+            }
+        }
+
+        // Send OTP
+        function eessSendForgotOTP() {
+            const email = document.getElementById(\'eess-forgot-email\').value;
+            if (!email) {
+                eessShowForgotMsg(\'يرجى إدخال البريد الإلكتروني.\', true);
+                return;
+            }
+            eessShowForgotMsg(\'جاري إرسال رمز التحقق...\', false);
+
+            const data = new FormData();
+            data.append(\'action\', \'eess_forgot_otp\');
+            data.append(\'email\', email);
+
+            fetch(\'' . admin_url('admin-ajax.php') . '\', { method: \'POST\', body: data })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    eessGoToForgotStep(2);
+                    eessShowForgotMsg(res.data, false);
+                } else {
+                    eessShowForgotMsg(res.data, true);
+                }
+            });
+        }
+
+        // Verify OTP
+        function eessVerifyForgotOTP() {
+            const email = document.getElementById(\'eess-forgot-email\').value;
+            const otp = document.getElementById(\'eess-forgot-otp\').value;
+            if (!otp) {
+                eessShowForgotMsg(\'يرجى كتابة الرمز.\', true);
+                return;
+            }
+
+            const data = new FormData();
+            data.append(\'action\', \'eess_forgot_verify\');
+            data.append(\'email\', email);
+            data.append(\'otp\', otp);
+
+            fetch(\'' . admin_url('admin-ajax.php') . '\', { method: \'POST\', body: data })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    document.getElementById(\'eess-forgot-welcome-msg\').innerText = \'أهلاً بك يا \' + res.data.display_name + \'!\';
+                    eessGoToForgotStep(3);
+                } else {
+                    eessShowForgotMsg(res.data, true);
+                }
+            });
+        }
+
+        // Reset password
+        function eessResetPassword() {
+            const email = document.getElementById(\'eess-forgot-email\').value;
+            const otp = document.getElementById(\'eess-forgot-otp\').value;
+            const pass = document.getElementById(\'eess-forgot-pass\').value;
+            const conf = document.getElementById(\'eess-forgot-pass-conf\').value;
+
+            if (!pass || !conf) {
+                eessShowForgotMsg(\'يرجى ملء كلمتي المرور.\', true);
+                return;
+            }
+
+            const data = new FormData();
+            data.append(\'action\', \'eess_forgot_reset\');
+            data.append(\'email\', email);
+            data.append(\'otp\', otp);
+            data.append(\'password\', pass);
+            data.append(\'password_conf\', conf);
+
+            fetch(\'' . admin_url('admin-ajax.php') . '\', { method: \'POST\', body: data })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    eessShowForgotMsg(\'تم تحديث كلمة المرور بنجاح. جاري تحويلك للوحة التحكم...\', false);
+                    setTimeout(() => {
+                        window.location.href = res.data.redirect;
+                    }, 1500);
+                } else {
+                    eessShowForgotMsg(res.data, true);
+                }
+            });
+        }
+
+        // Wizard navigation
+        function eessGoToRegStep(stepNum) {
+            document.getElementById(\'eess-register-msg\').style.display = \'none\';
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(\'eess-reg-step-\' + i).className = i === stepNum ? \'eess-wizard-step active\' : \'eess-wizard-step\';
+
+                const node = document.getElementById(\'node-\' + i);
+                node.className = \'eess-step-node\';
+                if (i === stepNum) {
+                    node.classList.add(\'active\');
+                } else if (i < stepNum) {
+                    node.classList.add(\'completed\');
+                    node.innerText = \'✓\';
+                } else {
+                    node.innerText = i;
+                }
+            }
+        }
+
+        function eessRegisterStep1Next() {
+            const email = document.getElementById(\'eess-reg-email\').value;
+            if (!email) {
+                eessShowRegMsg(\'يرجى إدخال البريد الإلكتروني.\', true);
+                return;
+            }
+            eessGoToRegStep(2);
+        }
+
+        function eessRegisterStep2Next() {
+            const empNum = document.getElementById(\'eess-reg-emp-num\').value;
+            const pass = document.getElementById(\'eess-reg-pass\').value;
+            const conf = document.getElementById(\'eess-reg-pass-conf\').value;
+
+            if (!empNum || !pass || !conf) {
+                eessShowRegMsg(\'جميع حقول هذه الخطوة إلزامية.\', true);
+                return;
+            }
+            if (pass !== conf) {
+                eessShowRegMsg(\'كلمتا المرور غير متطابقتين.\', true);
+                return;
+            }
+            eessGoToRegStep(3);
+        }
+
+        function eessRegisterStep3Next() {
+            const email = document.getElementById(\'eess-reg-email\').value;
+            eessShowRegMsg(\'جاري إرسال الرمز التعريفي OTP للبريد الإلكتروني...\', false);
+
+            const data = new FormData();
+            data.append(\'action\', \'eess_register_otp\');
+            data.append(\'email\', email);
+
+            fetch(\'' . admin_url('admin-ajax.php') . '\', { method: \'POST\', body: data })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    eessGoToRegStep(4);
+                    eessShowRegMsg(res.data, false);
+                } else {
+                    eessShowRegMsg(res.data, true);
+                }
+            });
+        }
+
+        function eessRegisterSubmitFinal() {
+            const email = document.getElementById(\'eess-reg-email\').value;
+            const empNum = document.getElementById(\'eess-reg-emp-num\').value;
+            const pass = document.getElementById(\'eess-reg-pass\').value;
+            const conf = document.getElementById(\'eess-reg-pass-conf\').value;
+            const role = document.getElementById(\'eess-reg-role\').value;
+            const school = document.getElementById(\'eess-reg-school\').value;
+            const otp = document.getElementById(\'eess-reg-otp\').value;
+
+            if (!otp) {
+                eessShowRegMsg(\'يرجى كتابة رمز التحقق OTP المرسل لبريدك الإلكتروني.\', true);
+                return;
+            }
+
+            const data = new FormData();
+            data.append(\'action\', \'eess_register_submit\');
+            data.append(\'email\', email);
+            data.append(\'emp_num\', empNum);
+            data.append(\'password\', pass);
+            data.append(\'password_conf\', conf);
+            data.append(\'role\', role);
+            data.append(\'school\', school);
+            data.append(\'otp\', otp);
+
+            fetch(\'' . admin_url('admin-ajax.php') . '\', { method: \'POST\', body: data })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    eessShowRegMsg(res.data, false);
+                    setTimeout(() => {
+                        eessCloseRegisterModal();
+                    }, 4000);
+                } else {
+                    eessShowRegMsg(res.data, true);
+                }
+            });
+        }
+        </script>
         ';
         return $output;
     }
@@ -2724,5 +3297,302 @@ class SM_Public {
             'finished'  => $is_finished,
             'total_so_far' => $offset + $processed
         ));
+    }
+
+    // Branded EESS Email Helper
+    private function send_branded_email($to, $subject, $title, $body_content) {
+        $headers = array('Content-Type: text/html; charset=UTF-8', 'From: EESS Platform <info@eess.online>');
+
+        $html = '
+        <div dir="rtl" style="font-family: \'Alexandria\', \'Noto Kufi Arabic\', Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px; text-align: right; direction: rtl;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                <div style="background: #0d0d0d; padding: 25px; text-align: center; border-bottom: 4px solid #8b1e1e;">
+                    <h2 style="color: #ffffff; margin: 0; font-weight: 800; font-size: 1.5rem; letter-spacing: 1px;">EESS</h2>
+                    <div style="color: #cbd5e1; font-size: 11px; margin-top: 5px;">Educational Electronic Systems Services</div>
+                </div>
+                <div style="padding: 30px; box-sizing: border-box;">
+                    <h3 style="color: #0f172a; margin-top: 0; font-weight: 800; font-size: 1.2rem;">' . esc_html($title) . '</h3>
+                    <div style="color: #334155; font-size: 14px; line-height: 1.8; margin-bottom: 25px;">
+                        ' . $body_content . '
+                    </div>
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 25px; font-size: 12px; color: #64748b;">
+                        إذا واجهت أي صعوبة في الدخول أو استخدام الخدمة، يمكنك دائماً مراجعة قسم الدعم الفني عبر البريد الإلكتروني الرسمي: <a href="mailto:info@eess.online" style="color: #8b1e1e; font-weight: bold; text-decoration: none;">info@eess.online</a>.
+                    </div>
+                </div>
+                <div style="background: #f1f5f9; padding: 15px 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0;">
+                    <div>جميع الحقوق محفوظة © 2026 EESS. خدمات الأنظمة الإلكترونية التعليمية</div>
+                    <div style="margin-top: 5px;"><a href="https://eess.online" target="_blank" style="color: #94a3b8; text-decoration: underline;">eess.online</a></div>
+                </div>
+            </div>
+        </div>
+        ';
+        return wp_mail($to, $subject, $html, $headers);
+    }
+
+    // Block Pending Approval users from logging in
+    public function block_pending_users_login($user, $password) {
+        if ($user instanceof WP_User) {
+            $status = get_user_meta($user->ID, 'eess_approval_status', true);
+            if ($status === 'pending') {
+                return new WP_Error(
+                    'pending_approval',
+                    'حسابك قيد المراجعة الإدارية. يرجى الانتظار لحين اعتماد وتفعيل الحساب من قبل قسم إدارة المستخدمين.'
+                );
+            }
+        }
+        return $user;
+    }
+
+    // Forgot Password OTP Generator
+    public function ajax_forgot_otp() {
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        if (empty($email)) {
+            wp_send_json_error('يرجى إدخال البريد الإلكتروني.');
+        }
+
+        $user = get_user_by('email', $email);
+        if (!$user) {
+            wp_send_json_error('عفواً، لا يوجد حساب مسجل بهذا البريد الإلكتروني.');
+        }
+
+        $otp = sprintf('%06d', rand(100000, 999999));
+        set_transient('eess_reset_otp_' . md5($email), $otp, 15 * MINUTE_IN_SECONDS);
+
+        $title = 'رمز التحقق لإعادة تعيين كلمة المرور - EESS';
+        $body = '
+        <p>مرحباً بك يا <strong>' . esc_html($user->display_name) . '</strong>،</p>
+        <p>لقد تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بحسابك على منصة EESS الإلكترونية.</p>
+        <p>رمز التحقق الآمن (OTP) الخاص بك هو:</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <span style="display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 12px 30px; font-size: 24px; font-weight: 800; letter-spacing: 5px; color: #000000; border-radius: 6px;">' . $otp . '</span>
+        </div>
+        <p style="color: #64748b; font-size: 12px;">ملاحظة: هذا الرمز صالح لمدة 15 دقيقة فقط. يرجى عدم مشاركة هذا الرمز مع أي شخص لضمان أمان حسابك.</p>
+        ';
+
+        if ($this->send_branded_email($email, $title, 'رمز استعادة كلمة المرور', $body)) {
+            wp_send_json_success('تم إرسال رمز التحقق بنجاح إلى بريدك الإلكتروني.');
+        } else {
+            wp_send_json_error('فشل إرسال البريد الإلكتروني. يرجى مراجعة خادم البريد.');
+        }
+    }
+
+    // Forgot Password OTP Verifier
+    public function ajax_forgot_verify() {
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        $otp = isset($_POST['otp']) ? sanitize_text_field($_POST['otp']) : '';
+
+        if (empty($email) || empty($otp)) {
+            wp_send_json_error('جميع الحقول مطلوبة.');
+        }
+
+        $saved_otp = get_transient('eess_reset_otp_' . md5($email));
+        if ($saved_otp === false || $saved_otp !== $otp) {
+            wp_send_json_error('رمز التحقق غير صحيح أو انتهت صلاحيته.');
+        }
+
+        $user = get_user_by('email', $email);
+        wp_send_json_success(array(
+            'display_name' => $user->display_name
+        ));
+    }
+
+    // Forgot Password Reset & Autologin
+    public function ajax_forgot_reset() {
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        $otp = isset($_POST['otp']) ? sanitize_text_field($_POST['otp']) : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $password_conf = isset($_POST['password_conf']) ? $_POST['password_conf'] : '';
+
+        if (empty($email) || empty($otp) || empty($password) || empty($password_conf)) {
+            wp_send_json_error('جميع الحقول مطلوبة.');
+        }
+
+        if ($password !== $password_conf) {
+            wp_send_json_error('كلمتا المرور غير متطابقتين.');
+        }
+
+        if (strlen($password) < 6) {
+            wp_send_json_error('يجب ألا تقل كلمة المرور عن 6 أحرف.');
+        }
+
+        $saved_otp = get_transient('eess_reset_otp_' . md5($email));
+        if ($saved_otp === false || $saved_otp !== $otp) {
+            wp_send_json_error('انتهت صلاحية الجلسة الآمنة. يرجى البدء من جديد.');
+        }
+
+        $user = get_user_by('email', $email);
+        if (!$user) {
+            wp_send_json_error('خطأ غير متوقع. لم يتم العثور على المستخدم.');
+        }
+
+        // Reset password
+        wp_set_password($password, $user->ID);
+        delete_transient('eess_reset_otp_' . md5($email));
+
+        // Autologin
+        wp_clear_auth_cookie();
+        wp_set_current_user($user->ID);
+        wp_set_auth_cookie($user->ID);
+
+        wp_send_json_success(array(
+            'redirect' => home_url('/sm-admin')
+        ));
+    }
+
+    // Registration Wizard OTP generator
+    public function ajax_register_otp() {
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        if (empty($email)) {
+            wp_send_json_error('يرجى إدخال البريد الإلكتروني.');
+        }
+
+        if (email_exists($email)) {
+            wp_send_json_error('عفواً، هذا البريد الإلكتروني مستخدم بالفعل ومسجل بالنظام.');
+        }
+
+        $otp = sprintf('%06d', rand(100000, 999999));
+        set_transient('eess_register_otp_' . md5($email), $otp, 15 * MINUTE_IN_SECONDS);
+
+        $title = 'رمز التحقق لتسجيل حساب جديد - EESS';
+        $body = '
+        <p>مرحباً بك،</p>
+        <p>يسعدنا انضمامك إلى منصة EESS الإلكترونية لإدارة وتطوير الخدمات التعليمية.</p>
+        <p>رمز تفعيل البريد الإلكتروني والتحقق الخاص بك هو:</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <span style="display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 12px 30px; font-size: 24px; font-weight: 800; letter-spacing: 5px; color: #000000; border-radius: 6px;">' . $otp . '</span>
+        </div>
+        <p style="color: #64748b; font-size: 12px;">ملاحظة: الرمز صالح لمدة 15 دقيقة فقط. يرجى إدخال الرمز بالمكان المخصص لإتمام عملية التسجيل.</p>
+        ';
+
+        if ($this->send_branded_email($email, $title, 'رمز تفعيل البريد الإلكتروني', $body)) {
+            wp_send_json_success('تم إرسال رمز التحقق بنجاح إلى البريد الإلكتروني المكتوب.');
+        } else {
+            wp_send_json_error('فشل إرسال البريد الإلكتروني. يرجى مراجعة خادم البريد.');
+        }
+    }
+
+    // Registration Wizard Submit
+    public function ajax_register_submit() {
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        $emp_num = isset($_POST['emp_num']) ? sanitize_text_field($_POST['emp_num']) : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $password_conf = isset($_POST['password_conf']) ? $_POST['password_conf'] : '';
+        $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : '';
+        $school = isset($_POST['school']) ? sanitize_text_field($_POST['school']) : '';
+        $otp = isset($_POST['otp']) ? sanitize_text_field($_POST['otp']) : '';
+
+        if (empty($email) || empty($emp_num) || empty($password) || empty($password_conf) || empty($role) || empty($otp)) {
+            wp_send_json_error('جميع الحقول إلزامية لإكمال عملية التسجيل.');
+        }
+
+        if ($password !== $password_conf) {
+            wp_send_json_error('كلمتا المرور غير متطابقتين.');
+        }
+
+        $saved_otp = get_transient('eess_register_otp_' . md5($email));
+        if ($saved_otp === false || $saved_otp !== $otp) {
+            wp_send_json_error('رمز التحقق (OTP) غير صحيح أو انتهت صلاحيته.');
+        }
+
+        // Insert pending user
+        $username = strstr($email, '@', true) . rand(10, 99);
+        while (username_exists($username)) {
+            $username .= rand(0, 9);
+        }
+
+        $user_id = wp_insert_user(array(
+            'user_login' => $username,
+            'user_email' => $email,
+            'user_pass'  => $password,
+            'role'       => $role
+        ));
+
+        if (is_wp_error($user_id)) {
+            wp_send_json_error($user_id->get_error_message());
+        }
+
+        // Set pending status and metadata
+        update_user_meta($user_id, 'eess_approval_status', 'pending');
+        update_user_meta($user_id, 'eess_employee_number', $emp_num);
+        update_user_meta($user_id, 'eess_school_name', $school);
+
+        delete_transient('eess_register_otp_' . md5($email));
+
+        // Notify System User Management
+        $admin_email = get_option('admin_email') ?: 'info@eess.online';
+        $admin_title = 'طلب تسجيل حساب جديد قيد الانتظار - EESS';
+        $admin_body = '
+        <p>مرحباً بقسم إدارة المستخدمين،</p>
+        <p>تم استلام طلب تسجيل حساب جديد بالمنصة وينتظر المراجعة والاعتماد.</p>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 6px; border:1px solid #e2e8f0; line-height: 1.8;">
+            <strong>البريد الإلكتروني:</strong> ' . esc_html($email) . '<br>
+            <strong>رقم الموظف:</strong> ' . esc_html($emp_num) . '<br>
+            <strong>الرتبة / المسمى الوظيفي:</strong> ' . esc_html($role) . '<br>
+            <strong>المدرسة المنتسب لها:</strong> ' . esc_html($school) . '<br>
+        </div>
+        <p>يمكنكم مراجعة الطلب والموافقة عليه أو رفضه مباشرة من خلال تبويب إدارة المستخدمين بلوحة التحكم.</p>
+        ';
+        $this->send_branded_email($admin_email, $admin_title, 'طلب تسجيل حساب قيد الانتظار', $admin_body);
+
+        wp_send_json_success('تم تسجيل الحساب بنجاح. حسابك حالياً قيد المراجعة الإدارية وسوف نرسل لك تفعيلاً فور الاعتماد.');
+    }
+
+    // Admin Action: Approve user
+    public function ajax_approve_user() {
+        check_ajax_referer('eess_admin_action', 'nonce');
+        if (!is_user_logged_in() || !current_user_can('manage_options')) {
+            wp_send_json_error('غير مصرح لك بإجراء هذه العملية.');
+        }
+
+        $target_user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        if (!$target_user_id) {
+            wp_send_json_error('معرف المستخدم غير صحيح.');
+        }
+
+        update_user_meta($target_user_id, 'eess_approval_status', 'approved');
+
+        $user = get_user_by('id', $target_user_id);
+        $title = 'تم تفعيل واعتماد حسابك بنجاح - EESS';
+        $body = '
+        <p>مرحباً بك يا <strong>' . esc_html($user->display_name ?: $user->user_email) . '</strong>،</p>
+        <p>يسعدنا إبلاغك بأنه تم تفعيل واعتماد حسابك رسمياً من قبل إدارة منصة EESS الإلكترونية.</p>
+        <p>يمكنك الآن تسجيل الدخول مباشرة والوصول إلى كافة الخدمات والأدوات المتاحة لرتبتك الأكاديمية.</p>
+        <div style="text-align: center; margin: 25px 0;">
+            <a href="' . home_url('/sm-login') . '" style="display:inline-block; background:#000000; color:#ffffff; text-decoration:none; padding:12px 35px; font-weight:bold; border-radius:6px;">تسجيل الدخول للمنصة</a>
+        </div>
+        ';
+        $this->send_branded_email($user->user_email, $title, 'تفعيل حسابك الإلكتروني', $body);
+
+        wp_send_json_success('تم اعتماد وتنشيط الحساب وإخطار المستخدم بنجاح.');
+    }
+
+    // Admin Action: Reject user
+    public function ajax_reject_user() {
+        check_ajax_referer('eess_admin_action', 'nonce');
+        if (!is_user_logged_in() || !current_user_can('manage_options')) {
+            wp_send_json_error('غير مصرح لك بإجراء هذه العملية.');
+        }
+
+        $target_user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        if (!$target_user_id) {
+            wp_send_json_error('معرف المستخدم غير صحيح.');
+        }
+
+        $user = get_user_by('id', $target_user_id);
+        if ($user) {
+            $title = 'بخصوص طلب تسجيل حسابك - EESS';
+            $body = '
+            <p>مرحباً بك،</p>
+            <p>نأسف لإبلاغك بأنه تم رفض طلب التسجيل الخاص بك على منصة EESS الإلكترونية بعد المراجعة الإدارية.</p>
+            <p>في حال كنت تعتقد أن هناك خطأً، يرجى التواصل مجدداً مع الدعم الفني أو مراجعة إدارة شؤون الموظفين.</p>
+            ';
+            $this->send_branded_email($user->user_email, $title, 'مراجعة طلب التسجيل', $body);
+
+            // Delete user
+            require_once(ABSPATH . 'wp-admin/includes/user.php');
+            wp_delete_user($target_user_id);
+        }
+
+        wp_send_json_success('تم رفض طلب التسجيل وحذف الحساب المعلق بنجاح.');
     }
 }
