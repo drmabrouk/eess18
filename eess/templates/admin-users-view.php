@@ -1,4 +1,108 @@
-<?php if (!defined('ABSPATH')) exit; ?>
+<?php if (!defined('ABSPATH')) exit;
+
+// Fetch pending approval registration requests
+$pending_users = get_users(array(
+    'meta_key'   => 'eess_approval_status',
+    'meta_value' => 'pending'
+));
+?>
+
+<?php if (!empty($pending_users)): ?>
+<div style="background: #fff5f5; border: 1px solid #fca5a5; padding: 25px; border-radius: 12px; margin-bottom: 35px; box-shadow: 0 4px 6px rgba(139, 30, 30, 0.05);">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <span class="dashicons dashicons-warning" style="color: #8b1e1e; font-size: 24px; width: 24px; height: 24px;"></span>
+        <h4 style="margin: 0; color: #8b1e1e; font-weight: 800; font-size: 1.15em;">طلبات التسجيل الجديدة بانتظار الاعتماد والمراجعة (<?php echo count($pending_users); ?>)</h4>
+    </div>
+    <p style="margin: 0 0 20px 0; font-size: 13px; color: #64748b; line-height: 1.6;">تم تقديم طلبات التسجيل التالية ذاتياً من قبل المعلمين والموظفين بالمنصة. يرجى مراجعة البيانات واعتماد تفعيل الحساب أو رفضه وإلغائه.</p>
+
+    <div class="sm-table-container" style="overflow-x: auto; background: white;">
+        <table class="sm-table" style="margin: 0;">
+            <thead>
+                <tr>
+                    <th>البريد الإلكتروني</th>
+                    <th>رقم الموظف</th>
+                    <th>المسمى المطلوب</th>
+                    <th>المدرسة التابع لها</th>
+                    <th>تاريخ الطلب</th>
+                    <th>الإجراءات الإدارية</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($pending_users as $pu):
+                    $emp_num = get_user_meta($pu->ID, 'eess_employee_number', true);
+                    $school = get_user_meta($pu->ID, 'eess_school_name', true);
+                    $role_label = 'مستخدم';
+                    if (in_array('sm_teacher', (array)$pu->roles)) $role_label = 'معلم';
+                    elseif (in_array('sm_coordinator', (array)$pu->roles)) $role_label = 'منسق مادة';
+                    elseif (in_array('sm_supervisor', (array)$pu->roles)) $role_label = 'مشرف تربوي';
+                    elseif (in_array('sm_clinic', (array)$pu->roles)) $role_label = 'ممرض عيادة';
+                ?>
+                <tr id="pending-user-row-<?php echo $pu->ID; ?>">
+                    <td style="font-weight: 700;"><?php echo esc_html($pu->user_email); ?></td>
+                    <td><span style="font-weight: bold; font-family: monospace; color: #475569;"><?php echo esc_html($emp_num); ?></span></td>
+                    <td><span style="display:inline-block; padding:3px 10px; background:#f1f5f9; color:#475569; border-radius:50px; font-size:11px; font-weight:bold;"><?php echo $role_label; ?></span></td>
+                    <td><?php echo esc_html($school); ?></td>
+                    <td><?php echo date_i18n('Y-m-d H:i', strtotime($pu->user_registered)); ?></td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" onclick="eessApproveUser(<?php echo $pu->ID; ?>)" class="sm-btn" style="width: auto; height: 32px; padding: 0 14px; font-size: 11px; font-weight: 700;">✓ اعتماد وتفعيل الحساب</button>
+                            <button type="button" onclick="eessRejectUser(<?php echo $pu->ID; ?>)" class="sm-btn" style="width: auto; height: 32px; padding: 0 14px; font-size: 11px; font-weight: 700; background-color: #8b1e1e !important;">✗ رفض وإلغاء</button>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function eessApproveUser(userId) {
+    if (!confirm('هل أنت متأكد من رغبتك في اعتماد وتنشيط حساب هذا الموظف؟')) return;
+
+    const data = new FormData();
+    data.append('action', 'eess_approve_user');
+    data.append('user_id', userId);
+    data.append('nonce', '<?php echo wp_create_nonce("eess_admin_action"); ?>');
+
+    fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: data })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            smShowNotification('تم اعتماد وتفعيل الحساب بنجاح وإرسال إشعار للمستخدم.');
+            const row = document.getElementById('pending-user-row-' + userId);
+            if (row) row.remove();
+            setTimeout(() => { location.reload(); }, 1000);
+        } else {
+            smShowNotification('فشل الاعتماد: ' + res.data, true);
+        }
+    });
+}
+
+function eessRejectUser(userId) {
+    if (!confirm('هل أنت متأكد من رفض طلب هذا المستخدم وحذف حسابه المعلق نهائياً؟')) return;
+
+    const data = new FormData();
+    data.append('action', 'eess_reject_user');
+    data.append('user_id', userId);
+    data.append('nonce', '<?php echo wp_create_nonce("eess_admin_action"); ?>');
+
+    fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: data })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            smShowNotification('تم رفض طلب التسجيل وحذف الحساب بنجاح.');
+            const row = document.getElementById('pending-user-row-' + userId);
+            if (row) row.remove();
+            setTimeout(() => { location.reload(); }, 1000);
+        } else {
+            smShowNotification('فشل الرفض: ' + res.data, true);
+        }
+    });
+}
+</script>
+<?php endif; ?>
+
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
     <h3 style="margin:0; border:none; padding:0;">إدارة مستخدمي النظام</h3>
     <div style="display:flex; gap:10px;">

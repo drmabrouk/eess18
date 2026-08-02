@@ -39,6 +39,7 @@ class School_Management {
         $this->loader->add_action('template_redirect', $plugin_public, 'handle_form_submission');
         $this->loader->add_action('wp_login_failed', $plugin_public, 'login_failed');
         $this->loader->add_action('wp_login', $plugin_public, 'log_successful_login', 10, 2);
+        $this->loader->add_filter('wp_authenticate_user', $plugin_public, 'block_pending_users_login', 10, 2);
         $this->loader->add_action('wp_ajax_sm_get_student', $plugin_public, 'ajax_get_student');
         $this->loader->add_action('wp_ajax_sm_search_students', $plugin_public, 'ajax_search_students');
         $this->loader->add_action('wp_ajax_sm_get_student_intelligence', $plugin_public, 'ajax_get_student_intelligence');
@@ -96,6 +97,22 @@ class School_Management {
         $this->loader->add_action('wp_ajax_sm_save_class_grades', $plugin_public, 'ajax_save_class_grades');
         $this->loader->add_action('wp_ajax_sm_bulk_delete_students_ajax', $plugin_public, 'ajax_bulk_delete_students');
         $this->loader->add_action('wp_ajax_sm_download_plans_zip', $plugin_public, 'ajax_download_plans_zip');
+
+        // Forgot password AJAX actions
+        $this->loader->add_action('wp_ajax_nopriv_eess_forgot_otp', $plugin_public, 'ajax_forgot_otp');
+        $this->loader->add_action('wp_ajax_eess_forgot_otp', $plugin_public, 'ajax_forgot_otp');
+        $this->loader->add_action('wp_ajax_nopriv_eess_forgot_verify', $plugin_public, 'ajax_forgot_verify');
+        $this->loader->add_action('wp_ajax_eess_forgot_verify', $plugin_public, 'ajax_forgot_verify');
+        $this->loader->add_action('wp_ajax_nopriv_eess_forgot_reset', $plugin_public, 'ajax_forgot_reset');
+        $this->loader->add_action('wp_ajax_eess_forgot_reset', $plugin_public, 'ajax_forgot_reset');
+
+        // Registration wizard AJAX actions
+        $this->loader->add_action('wp_ajax_nopriv_eess_register_otp', $plugin_public, 'ajax_register_otp');
+        $this->loader->add_action('wp_ajax_nopriv_eess_register_submit', $plugin_public, 'ajax_register_submit');
+
+        // Admin approval actions
+        $this->loader->add_action('wp_ajax_eess_approve_user', $plugin_public, 'ajax_approve_user');
+        $this->loader->add_action('wp_ajax_eess_reject_user', $plugin_public, 'ajax_reject_user');
     }
 
     public function run() {
