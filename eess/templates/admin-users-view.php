@@ -103,9 +103,23 @@ function eessRejectUser(userId) {
 </script>
 <?php endif; ?>
 
+<div id="user-csv-import-box" style="display:none; background: #f8fafc; padding: 25px; border: 2px dashed #cbd5e0; border-radius: 12px; margin-bottom: 25px;">
+    <h4 style="margin-top:0; color:var(--sm-secondary-color); font-weight: 800;">استيراد المستخدمين الشامل من ملف CSV</h4>
+    <p style="font-size:12px; color:#64748b; margin-bottom:15px; line-height:1.6;">يرجى تجهيز ملف CSV الخاص بك بحيث يضم الحقول التالية بالترتيب: <strong>اسم المستخدم، البريد، الاسم الكامل، الدور (مثال: sm_teacher)، الجوال، كلمة المرور، رابط الصورة الشخصية، التخصص</strong>.</p>
+    <form method="post" enctype="multipart/form-data">
+        <?php wp_nonce_field('sm_admin_action', 'sm_admin_nonce'); ?>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <input type="file" name="csv_file" accept=".csv" required class="sm-input" style="width:auto;">
+            <button type="submit" name="sm_import_users_csv" class="sm-btn" style="width:auto;">تأكيد وبدء الاستيراد</button>
+        </div>
+    </form>
+</div>
+
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
     <h3 style="margin:0; border:none; padding:0;">إدارة مستخدمي النظام</h3>
     <div style="display:flex; gap:10px;">
+        <button onclick="document.getElementById('user-csv-import-box').style.display = document.getElementById('user-csv-import-box').style.display === 'none' ? 'block' : 'none'" class="sm-btn sm-btn-outline" style="width:auto; font-size:12px;">استيراد مستخدمين (CSV) <span class="dashicons dashicons-upload"></span></button>
+        <a href="<?php echo admin_url('admin-ajax.php?action=sm_export_users_csv&nonce=' . wp_create_nonce('eess_admin_action')); ?>" class="sm-btn sm-btn-outline" style="width:auto; font-size:12px; text-decoration: none;">تصدير مستخدمين (CSV) <span class="dashicons dashicons-download"></span></a>
         <div class="sm-dropdown" style="position: relative;">
             <button class="sm-btn sm-btn-outline" style="width:auto; font-size:12px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">تصفية حسب الرتبة <span class="dashicons dashicons-filter"></span></button>
             <div style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 180px; margin-top: 5px;">
@@ -212,6 +226,10 @@ function eessRejectUser(userId) {
                                 'sm_supervisor' => 'مشرف تربوي',
                                 'sm_coordinator' => 'منسق مادة',
                                 'sm_teacher' => 'معلم',
+                                'sm_discipline_supervisor' => 'مشرف سلوك / انضباط',
+                                'sm_activities_supervisor' => 'مشرف أنشطة',
+                                'sm_transportation_supervisor' => 'مشرف نقل ومواصلات',
+                                'sm_bus_supervisor' => 'مشرف حافلة',
                                 'sm_clinic' => 'العيادة المدرسية',
                                 'sm_student' => 'طالب',
                                 'sm_parent' => 'ولي أمر'
@@ -236,6 +254,7 @@ function eessRejectUser(userId) {
                                 "email" => $u->user_email,
                                 "login" => $u->user_login,
                                 "role" => $u_role_key,
+                                "photo" => get_user_meta($u->ID, 'eess_profile_photo', true),
                                 "specialization" => get_user_meta($u->ID, 'sm_specialization', true)
                             );
                             ?>
@@ -289,6 +308,7 @@ function eessRejectUser(userId) {
                         <option value="sm_activities_supervisor">مشرف أنشطة</option>
                         <option value="sm_transportation_supervisor">مشرف نقل ومواصلات</option>
                         <option value="sm_bus_supervisor">مشرف حافلة</option>
+                        <option value="sm_clinic">العيادة المدرسية</option>
                         <option value="sm_parent">ولي أمر</option>
                         <option value="sm_student">طالب</option>
                     </select>
@@ -304,9 +324,17 @@ function eessRejectUser(userId) {
                         ?>
                     </select>
                 </div>
-                <div class="sm-form-group" style="grid-column: span 2;">
+                <div class="sm-form-group">
                     <label class="sm-label">كلمة المرور:</label>
                     <input type="password" name="user_pass" class="sm-input" required>
+                </div>
+                <div class="sm-form-group" style="grid-column: span 2;">
+                    <label class="sm-label">الصورة الشخصية (الملف الشخصي):</label>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="file" name="profile_photo" class="sm-input" accept="image/*" onchange="previewProfilePhoto(this, 'add')">
+                        <button type="button" class="sm-btn sm-btn-outline" style="width: auto; background:#e53e3e; color:white !important; display:none;" id="add_remove_photo_btn" onclick="removeSelectedPhoto('add')">حذف الصورة</button>
+                    </div>
+                    <img id="add_photo_preview" style="display:none; width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-top: 10px; border: 2px solid var(--sm-primary-color);">
                 </div>
             </div>
             <button type="submit" class="sm-btn" style="margin-top:20px; width: 100%;">إنشاء الحساب الآن</button>
@@ -344,6 +372,7 @@ function eessRejectUser(userId) {
                         <option value="sm_activities_supervisor">مشرف أنشطة</option>
                         <option value="sm_transportation_supervisor">مشرف نقل ومواصلات</option>
                         <option value="sm_bus_supervisor">مشرف حافلة</option>
+                        <option value="sm_clinic">العيادة المدرسية</option>
                         <option value="sm_parent">ولي أمر</option>
                         <option value="sm_student">طالب</option>
                     </select>
@@ -361,6 +390,15 @@ function eessRejectUser(userId) {
                     <label class="sm-label">كلمة مرور جديدة (اختياري):</label>
                     <input type="password" name="user_pass" class="sm-input" placeholder="اتركه فارغاً لعدم التغيير">
                 </div>
+                <div class="sm-form-group" style="grid-column: span 2;">
+                    <label class="sm-label">الصورة الشخصية (الملف الشخصي):</label>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="file" name="profile_photo" class="sm-input" accept="image/*" onchange="previewProfilePhoto(this, 'edit')">
+                        <button type="button" class="sm-btn sm-btn-outline" style="width: auto; background:#e53e3e; color:white !important;" id="edit_remove_photo_btn" onclick="removeSelectedPhoto('edit')">حذف الصورة</button>
+                        <input type="hidden" name="delete_photo_flag" id="edit_delete_photo_flag" value="0">
+                    </div>
+                    <img id="edit_photo_preview" style="display:none; width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-top: 10px; border: 2px solid var(--sm-primary-color);">
+                </div>
             </div>
             <button type="submit" class="sm-btn" style="margin-top:20px; width: 100%;">حفظ التغييرات</button>
         </form>
@@ -369,6 +407,40 @@ function eessRejectUser(userId) {
 
 <script>
 (function() {
+    window.previewProfilePhoto = function(input, mode) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(mode + '_photo_preview');
+                if (img) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                const btn = document.getElementById(mode + '_remove_photo_btn');
+                if (btn) btn.style.display = 'inline-flex';
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    window.removeSelectedPhoto = function(mode) {
+        const input = document.querySelector(`#${mode}-user-form input[type="file"]`);
+        if (input) input.value = '';
+        const img = document.getElementById(mode + '_photo_preview');
+        if (img) {
+            img.src = '';
+            img.style.display = 'none';
+        }
+        const btn = document.getElementById(mode + '_remove_photo_btn');
+        if (btn) btn.style.display = 'none';
+
+        if (mode === 'edit') {
+            const flag = document.getElementById('edit_delete_photo_flag');
+            if (flag) flag.value = '1';
+        }
+    };
+
     window.toggleSpecialization = function(select, mode = 'add') {
         const group = mode === 'add' ? select.closest('form').querySelector('.spec-group') : document.getElementById('edit_spec_group');
         if (select.value === 'sm_teacher' || select.value === 'sm_coordinator') {
@@ -384,6 +456,19 @@ function eessRejectUser(userId) {
         document.getElementById('edit_u_email').value = u.email;
         document.getElementById('edit_u_role').value = u.role;
         document.getElementById('edit_u_spec').value = u.specialization || '';
+        document.getElementById('edit_delete_photo_flag').value = '0';
+
+        const img = document.getElementById('edit_photo_preview');
+        const btn = document.getElementById('edit_remove_photo_btn');
+        if (u.photo) {
+            img.src = u.photo;
+            img.style.display = 'block';
+            btn.style.display = 'inline-flex';
+        } else {
+            img.src = '';
+            img.style.display = 'none';
+            btn.style.display = 'none';
+        }
 
         toggleSpecialization(document.getElementById('edit_u_role'), 'edit');
         document.getElementById('edit-user-modal').style.display = 'flex';

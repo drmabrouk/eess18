@@ -508,7 +508,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </li>
                 <?php endif; ?>
 
-                <?php if (($is_wp_admin || !empty($my_visibility['lesson-plans'])) && ($is_coordinator || $is_teacher)): ?>
+                <?php if (($is_wp_admin || !empty($my_visibility['lesson-plans'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'lesson-plans' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'lesson-plans'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-welcome-write-blog"></span> تحضير الدروس</a>
                     </li>
@@ -578,8 +578,8 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     break;
 
                 case 'teachers':
-                    if ($is_admin || current_user_can('إدارة_المعلمين')) {
-                        include SM_PLUGIN_DIR . 'templates/admin-teachers.php';
+                    if ($is_admin || current_user_can('إدارة_المعلمين') || current_user_can('إدارة_المستخدمين')) {
+                        include SM_PLUGIN_DIR . 'templates/admin-users-view.php';
                     }
                     break;
 
@@ -621,7 +621,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                         <div class="sm-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; overflow-x: auto; white-space: nowrap; padding-bottom: 10px;">
                             <button class="sm-tab-btn sm-active" onclick="smOpenInternalTab('school-settings', this)">السلطة</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('design-settings', this)">تصميم النظام</button>
-                            <button class="sm-tab-btn" onclick="smOpenInternalTab('user-settings', this)">إدارة المستخدمين</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('sidebar-settings', this)">تخصيص القائمة</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('school-structure', this)">الهيكل المدرسي</button>
                             <button class="sm-tab-btn" onclick="smOpenInternalTab('backup-settings', this)">مركز النسخ الاحتياطي</button>
@@ -694,9 +693,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                             </form>
                         </div>
 
-                        <div id="user-settings" class="sm-internal-tab" style="display:none;">
-                            <?php include SM_PLUGIN_DIR . 'templates/admin-users-view.php'; ?>
-                        </div>
                         <div id="sidebar-settings" class="sm-internal-tab" style="display:none;">
                             <form method="post">
                                 <?php wp_nonce_field('sm_admin_action', 'sm_admin_nonce');
