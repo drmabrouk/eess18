@@ -116,6 +116,7 @@ class School_Management {
         // Admin approval actions
         $this->loader->add_action('wp_ajax_eess_approve_user', $plugin_public, 'ajax_approve_user');
         $this->loader->add_action('wp_ajax_eess_reject_user', $plugin_public, 'ajax_reject_user');
+        $this->loader->add_action('wp_ajax_eess_save_user_notes', $plugin_public, 'ajax_save_user_notes');
     }
 
     public function run() {

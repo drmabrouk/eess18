@@ -1367,7 +1367,8 @@ class SM_Public {
             'teachers'        => 'teachers',
             'parents'         => 'parents',
             'grades'          => 'grades',
-            'teacher-reports' => 'teacher-reports',
+            'hr-affairs'      => 'hr-affairs',
+            'hr-management'   => 'hr-management',
             'attendance'      => 'attendance',
             'lesson-plans'    => 'lesson-plans',
             'assignments'     => 'assignments',
@@ -1408,7 +1409,7 @@ class SM_Public {
         if ($active_tab === 'record' && !current_user_can('تسجيل_مخالفة')) $active_tab = 'summary';
         if ($active_tab === 'students' && !current_user_can('إدارة_الطلاب')) $active_tab = 'summary';
         if ($active_tab === 'teachers' && !current_user_can('إدارة_المستخدمين')) $active_tab = 'summary';
-        if ($active_tab === 'teacher-reports' && !current_user_can('إدارة_المخالفات')) $active_tab = 'summary';
+        if ($active_tab === 'hr-management' && !($is_admin || $is_sys_admin || in_array('sm_hr', $roles) || current_user_can('manage_hr'))) $active_tab = 'summary';
         if ($active_tab === 'confiscated' && !current_user_can('إدارة_المخالفات')) $active_tab = 'summary';
         if ($active_tab === 'attendance' && !current_user_can('إدارة_الطلاب')) $active_tab = 'summary';
         if ($active_tab === 'clinic' && !current_user_can('إدارة_العيادة')) $active_tab = 'summary';
@@ -3855,5 +3856,23 @@ class SM_Public {
         }
 
         wp_send_json_success('تم رفض طلب التسجيل وحذف الحساب المعلق بنجاح.');
+    }
+
+    // Admin Action: Save user notes
+    public function ajax_save_user_notes() {
+        check_ajax_referer('eess_admin_action', 'nonce');
+        if (!is_user_logged_in() || !current_user_can('manage_options')) {
+            wp_send_json_error('غير مصرح لك بإجراء هذه العملية.');
+        }
+
+        $target_user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        $notes = isset($_POST['notes']) ? sanitize_textarea_field($_POST['notes']) : '';
+
+        if (!$target_user_id) {
+            wp_send_json_error('معرف المستخدم غير صحيح.');
+        }
+
+        update_user_meta($target_user_id, 'eess_admin_notes', $notes);
+        wp_send_json_success('تم حفظ الملاحظات الداخلية بنجاح.');
     }
 }

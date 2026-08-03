@@ -456,7 +456,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
     <div class="sm-admin-layout" style="display: flex; min-height: 800px;">
         <!-- SIDEBAR -->
-        <div class="sm-sidebar" style="width: 280px; flex-shrink: 0; background: var(--sm-bg-light); border-left: 1px solid var(--sm-border-color); padding: 20px 0;">
+        <div class="sm-sidebar" style="width: 240px; flex-shrink: 0; background: var(--sm-bg-light); border-left: 1px solid var(--sm-border-color); padding: 20px 0;">
             <ul style="list-style: none; padding: 0; margin: 0;">
                 <li class="sm-sidebar-item <?php echo $active_tab == 'summary' ? 'sm-active' : ''; ?>">
                     <a href="<?php echo add_query_arg('sm_tab', 'summary'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-dashboard"></span> لوحة المعلومات</a>
@@ -499,11 +499,18 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <?php endif; ?>
 
 
-                <?php if (($is_wp_admin || !empty($my_visibility['teacher-reports'])) && ($is_admin || $is_sys_admin || $is_principal || $is_supervisor)): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'teacher-reports' ? 'sm-active' : ''; ?>" style="position:relative;">
-                        <a href="<?php echo add_query_arg('sm_tab', 'teacher-reports'); ?>" class="sm-sidebar-link">
-                            <span class="dashicons dashicons-warning"></span> بلاغات المعلمين
-                            <span id="pending-reports-badge" class="sm-sidebar-badge" style="display:none;">0</span>
+                <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher || in_array('sm_hr', $roles) || in_array('sm_discipline_supervisor', $roles) || in_array('sm_activities_supervisor', $roles) || in_array('sm_transportation_supervisor', $roles) || in_array('sm_bus_supervisor', $roles) || in_array('sm_clinic', $roles)): ?>
+                    <li class="sm-sidebar-item <?php echo $active_tab == 'hr-affairs' ? 'sm-active' : ''; ?>">
+                        <a href="<?php echo add_query_arg('sm_tab', 'hr-affairs'); ?>" class="sm-sidebar-link">
+                            <span class="dashicons dashicons-businessman"></span> شؤون الموظفين (HR Affairs)
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if ($is_admin || $is_sys_admin || in_array('sm_hr', $roles) || current_user_can('manage_hr')): ?>
+                    <li class="sm-sidebar-item <?php echo $active_tab == 'hr-management' ? 'sm-active' : ''; ?>">
+                        <a href="<?php echo add_query_arg('sm_tab', 'hr-management'); ?>" class="sm-sidebar-link">
+                            <span class="dashicons dashicons-id-alt"></span> إدارة الموارد البشرية
                         </a>
                     </li>
                 <?php endif; ?>
@@ -591,8 +598,12 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
 
 
-                case 'teacher-reports':
-                    include SM_PLUGIN_DIR . 'templates/admin-teacher-reports.php';
+                case 'hr-affairs':
+                    include SM_PLUGIN_DIR . 'templates/admin-hr-affairs.php';
+                    break;
+
+                case 'hr-management':
+                    include SM_PLUGIN_DIR . 'templates/admin-hr-management.php';
                     break;
 
                 case 'attendance':
