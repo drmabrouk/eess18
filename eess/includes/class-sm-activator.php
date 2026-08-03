@@ -190,6 +190,7 @@ class SM_Activator {
         self::cleanup_legacy_pages();
         self::migrate_old_roles();
         self::seed_default_subjects();
+        self::translate_subjects_to_arabic();
     }
 
     private static function cleanup_legacy_pages() {
@@ -258,7 +259,8 @@ class SM_Activator {
             'manage_assignments' => 'إدارة_الواجبات',
             'manage_parents' => 'إدارة_أولياء_الأمور',
             'view_own_data' => 'عرض_بياناتي',
-            'submit_complaint' => 'تقديم_شكوى'
+            'submit_complaint' => 'تقديم_شكوى',
+            'manage_hr' => 'إدارة_الموارد_البشرية'
         );
 
         // Add Caps to Administrator
@@ -370,6 +372,14 @@ class SM_Activator {
             $clinic->add_cap($caps['manage_clinic']);
             $clinic->add_cap('read');
         }
+
+        // 11. الموارد البشرية (Human Resources) *(New)*
+        add_role('sm_hr', 'الموارد البشرية', array('read' => true));
+        $hr_role = get_role('sm_hr');
+        if ($hr_role) {
+            $hr_role->add_cap('إدارة_الموارد_البشرية');
+            $hr_role->add_cap('read');
+        }
     }
 
     private static function seed_default_subjects() {
@@ -377,20 +387,20 @@ class SM_Activator {
         $table_subjects = $wpdb->prefix . 'sm_subjects';
 
         $required_subjects = array(
-            'Physical Education & Health',
-            'Health Sciences',
-            'Chemistry',
-            'Mathematics',
-            'Islamic Studies',
-            'Arabic Language',
-            'English Language',
-            'Physics',
-            'Social Studies',
-            'Computer Science',
-            'General Science',
-            'Biology',
-            'Music Education',
-            'Visual Arts'
+            'التربية البدنية والصحية',
+            'العلوم الصحية',
+            'الكيمياء',
+            'الرياضيات',
+            'التربية الإسلامية',
+            'اللغة العربية',
+            'اللغة الإنجليزية',
+            'الفيزياء',
+            'الدراسات الاجتماعية',
+            'علوم الحاسوب',
+            'العلوم العامة',
+            'الأحياء',
+            'التربية الموسيقية',
+            'الفنون البصرية'
         );
 
         foreach ($required_subjects as $subject_name) {
@@ -399,6 +409,44 @@ class SM_Activator {
                 // Insert with a default grade ID of 1
                 $wpdb->insert($table_subjects, array('name' => $subject_name, 'grade_id' => 1));
             }
+        }
+    }
+
+    public static function translate_subjects_to_arabic() {
+        global $wpdb;
+        $table_subjects = $wpdb->prefix . 'sm_subjects';
+
+        $translation_map = array(
+            'Physical Education & Health' => 'التربية البدنية والصحية',
+            'Health Sciences' => 'العلوم الصحية',
+            'Chemistry' => 'الكيمياء',
+            'Mathematics' => 'الرياضيات',
+            'Islamic Studies' => 'التربية الإسلامية',
+            'Arabic Language' => 'اللغة العربية',
+            'English Language' => 'اللغة الإنجليزية',
+            'Physics' => 'الفيزياء',
+            'Social Studies' => 'الدراسات الاجتماعية',
+            'Computer Science' => 'علوم الحاسوب',
+            'General Science' => 'العلوم العامة',
+            'Biology' => 'الأحياء',
+            'Music Education' => 'التربية الموسيقية',
+            'Visual Arts' => 'الفنون البصرية'
+        );
+
+        // 1. Update existing subjects in DB
+        foreach ($translation_map as $eng => $ar) {
+            $wpdb->query($wpdb->prepare(
+                "UPDATE $table_subjects SET name = %s WHERE name = %s",
+                $ar, $eng
+            ));
+        }
+
+        // 2. Update existing user metadata sm_specialization
+        foreach ($translation_map as $eng => $ar) {
+            $wpdb->query($wpdb->prepare(
+                "UPDATE {$wpdb->usermeta} SET meta_value = %s WHERE meta_key = 'sm_specialization' AND meta_value = %s",
+                $ar, $eng
+            ));
         }
     }
 
