@@ -28,6 +28,7 @@
     height: 52px !important;
     padding: 4px 16px !important;
     box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
 }
 
 .sm-user-profile-nav img {
@@ -375,4 +376,23 @@
 
 .sm-sidebar-link:hover span.dashicons {
     transform: scale(1.1);
+}
+
+/* Responsive layout adjustments for the widgets grid */
+.sm-dashboard-widgets-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 340px;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1200px) {
+    .sm-dashboard-widgets-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.sm-shortcuts-bar .sm-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
