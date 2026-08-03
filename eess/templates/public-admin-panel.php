@@ -363,12 +363,10 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
     <div class="sm-main-header" style="height: 52px; padding: 4px 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 12px;">
             <?php if (!empty($school['school_logo'])): ?>
-                <div style="background: white; padding: 2px; border: 1px solid var(--sm-border-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                    <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 28px; width: auto; object-fit: contain; display: block;">
-                </div>
+                <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 32px; width: auto; border-radius: 6px; object-fit: contain; display: block;">
             <?php else: ?>
-                <div style="background: #f1f5f9; padding: 2px; border: 1px solid var(--sm-border-color); border-radius: 6px; height: 28px; width: 28px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
-                    <span class="dashicons dashicons-building" style="font-size: 14px; width: 14px; height: 14px;"></span>
+                <div style="background: #f1f5f9; border-radius: 6px; height: 32px; width: 32px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <span class="dashicons dashicons-building" style="font-size: 16px; width: 16px; height: 16px;"></span>
                 </div>
             <?php endif; ?>
             <div>
@@ -391,10 +389,9 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
-            <!-- Refresh System Button -->
-            <button id="sm-system-refresh-btn" onclick="smRefreshSystem()" class="sm-btn" style="background: #475569; height: 32px; padding: 0 12px; font-size: 11px; color: white !important; display: inline-flex; align-items: center; gap: 6px;">
-                <span class="dashicons dashicons-update" style="font-size: 14px; width: 14px; height: 14px; line-height: 1;"></span>
-                <span>تحديث النظام</span>
+            <!-- Refresh System Button (Icon only, slate monochromatic) -->
+            <button id="sm-system-refresh-btn" onclick="smRefreshSystem()" class="sm-btn sm-btn-outline" style="height: 32px; width: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50% !important; border: 1px solid var(--sm-border-color); background: #f8fafc; color: var(--sm-secondary-color) !important; cursor: pointer; transition: 0.2s; min-width: 32px;" title="تحديث النظام">
+                <span class="dashicons dashicons-update" style="font-size: 15px; width: 15px; height: 15px; line-height: 1; color: var(--sm-secondary-color) !important; margin: 0;"></span>
             </button>
 
             <?php if ($active_tab !== 'attendance' && ($is_admin || current_user_can('تسجيل_مخالفة'))): ?>
