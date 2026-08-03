@@ -158,7 +158,7 @@ if (isset($_POST['eess_save_lesson_prep']) && wp_verify_nonce($_POST['eess_lesso
     echo '<div class="updated" style="background:#f0fdf4; color:#15803d; padding:15px; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:20px; font-weight:700; font-family:\'Cairo\', sans-serif;">تم حفظ خطة التحضير بنجاح.</div>';
 }
 
-// Handle Supervisor Actions (Approve, Reject, Request Revision, Comment)
+// Handle Supervisor Actions (Approve, Request Revision, Comment, Reject)
 if (isset($_POST['eess_supervisor_action']) && wp_verify_nonce($_POST['eess_supervisor_nonce'], 'eess_supervisor_action_nonce')) {
     $prep_id = intval($_POST['prep_id']);
     $action  = sanitize_text_field($_POST['prep_status_action']);
@@ -215,77 +215,54 @@ if (isset($_GET['duplicate_prep_id'])) {
 }
 ?>
 
-<div class="sm-content-wrapper" dir="rtl" style="font-family: 'Cairo', sans-serif;">
+<div class="sm-content-wrapper" dir="rtl" style="font-family: 'Cairo', sans-serif; background-color: #f8fafc; padding: 25px; min-height: 100vh;">
 
-    <!-- Top Title Header -->
+    <!-- Top Title Header & Quick Analytics Dashboard -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <div>
-            <h2 style="margin: 0; font-weight: 800; color: var(--sm-dark-color); font-size: 22px;">منظومة تحضير الدروس والخطط التعليمية</h2>
-            <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--sm-text-gray);">إعداد واعتماد خطط الدروس، متابعة نسب الالتزام والامتثال الأكاديمي اليومي والأسبوعي</p>
+            <h2 style="margin: 0; font-weight: 900; color: #1e293b; font-size: 22px; letter-spacing: -0.5px;">تحضير وتدقيق الدروس</h2>
+            <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b; font-weight: 500;">إعداد واعتماد خطط الدروس اليومية، ومتابعة الالتزام الأكاديمي والتعليمي للمدرسة</p>
         </div>
-    </div>
 
-    <!-- Administrative Statistics Dashboard -->
-    <?php if ($can_review):
+        <!-- Real-Time Metric Badges (Rounded pill chips) -->
+        <?php
         $stats_total_required = count(get_users(array('role' => 'sm_teacher')));
-        $stats_submitted      = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status IN ('submitted', 'approved', 'revision_required', 'rejected', 'late')");
-        $stats_pending        = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status = 'submitted'");
+        $stats_submitted      = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status IN ('submitted', 'approved', 'revision_required', 'rejected', 'late', 'resubmitted')");
+        $stats_pending        = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status IN ('submitted', 'resubmitted')");
         $stats_approved       = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status = 'approved'");
-        $stats_rejected       = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status = 'rejected'");
-        $stats_revision       = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status = 'revision_required'");
         $stats_late           = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status = 'late'");
-
-        $submission_pct = $stats_total_required > 0 ? round(($stats_submitted / $stats_total_required) * 100) : 0;
-    ?>
-    <div style="background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid var(--sm-border-color); margin-bottom: 30px; box-shadow: var(--sm-shadow);">
-        <h3 style="margin: 0 0 20px 0; font-weight: 800; color: var(--sm-dark-color); border-bottom: 1px solid var(--sm-border-color); padding-bottom: 12px; font-size: 15px;">متابعة خطط التحضير ومستويات الالتزام</h3>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box;">
-                <div style="font-size: 11px; color: var(--sm-text-gray); font-weight: 700;">المعلمون المطالبون</div>
-                <div style="font-size: 24px; font-weight: 800; color: var(--sm-dark-color); line-height:1;"><?php echo $stats_total_required; ?></div>
+        $stats_on_time        = $stats_submitted - $stats_late;
+        $on_time_pct          = $stats_submitted > 0 ? round(($stats_on_time / $stats_submitted) * 100) : 100;
+        ?>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <span class="dashicons dashicons-welcome-write-blog" style="font-size: 15px; width: 15px; height: 15px; color: #64748b; margin: 0;"></span>
+                <span>إجمالي التحضيرات: <strong style="color: #1e293b;"><?php echo $stats_submitted; ?></strong></span>
             </div>
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid var(--sm-secondary-color);">
-                <div style="font-size: 11px; color: var(--sm-text-gray); font-weight: 700;">التحضيرات المستلمة</div>
-                <div style="font-size: 24px; font-weight: 800; color: var(--sm-secondary-color); line-height:1;"><?php echo $stats_submitted; ?></div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #16a34a; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <span class="dashicons dashicons-yes-alt" style="font-size: 15px; width: 15px; height: 15px; color: #16a34a; margin: 0;"></span>
+                <span>المعتمدة: <strong style="color: #15803d;"><?php echo $stats_approved; ?></strong></span>
             </div>
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid #f59e0b;">
-                <div style="font-size: 11px; color: #b45309; font-weight: 700;">بانتظار المراجعة</div>
-                <div style="font-size: 24px; font-weight: 800; color: #d97706; line-height:1;"><?php echo $stats_pending; ?></div>
+            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 6px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #b45309; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <span class="dashicons dashicons-clock" style="font-size: 15px; width: 15px; height: 15px; color: #d97706; margin: 0;"></span>
+                <span>بانتظار المراجعة: <strong style="color: #b45309;"><?php echo $stats_pending; ?></strong></span>
             </div>
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid #10b981;">
-                <div style="font-size: 11px; color: #15803d; font-weight: 700;">التحضيرات المعتمدة</div>
-                <div style="font-size: 24px; font-weight: 800; color: #16a34a; line-height:1;"><?php echo $stats_approved; ?></div>
-            </div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 15px;">
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid #f97316;">
-                <div style="font-size: 11px; color: #c2410c; font-weight: 700;">طلب مراجعة/تعديل</div>
-                <div style="font-size: 24px; font-weight: 800; color: #ea580c; line-height:1;"><?php echo $stats_revision; ?></div>
-            </div>
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid #ef4444;">
-                <div style="font-size: 11px; color: #b91c1c; font-weight: 700;">التحضيرات المرفوضة</div>
-                <div style="font-size: 24px; font-weight: 800; color: #dc2626; line-height:1;"><?php echo $stats_rejected; ?></div>
-            </div>
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid #ef4444;">
-                <div style="font-size: 11px; color: #991b1b; font-weight: 700;">تسليمات متأخرة</div>
-                <div style="font-size: 24px; font-weight: 800; color: #8b1e1e; line-height:1;"><?php echo $stats_late; ?></div>
-            </div>
-            <div class="sm-stat-card" style="text-align: right; background: #ffffff; padding: 15px 20px; border-radius: 8px; border: 1px solid var(--sm-border-color); display: flex; flex-direction: column; justify-content: space-between; height: 80px; box-sizing: border-box; border-right: 4px solid #3b82f6;">
-                <div style="font-size: 11px; color: #1d4ed8; font-weight: 700;">نسبة الامتثال الكلية</div>
-                <div style="font-size: 24px; font-weight: 800; color: #2563eb; line-height:1;"><?php echo $submission_pct; ?>%</div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #2563eb; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <span class="dashicons dashicons-calendar" style="font-size: 15px; width: 15px; height: 15px; color: #2563eb; margin: 0;"></span>
+                <span>التسليم في الموعد: <strong style="color: #1d4ed8;"><?php echo $on_time_pct; ?>%</strong></span>
             </div>
         </div>
     </div>
-    <?php endif; ?>
 
-    <!-- Main Content Layout -->
+    <!-- Main Content Grid Layout -->
     <div style="display: flex; flex-direction: column; gap: 24px;">
 
-        <!-- Form Tab (Only visible to teachers to create/edit) -->
+        <!-- Section: Teacher Preparation Entry (Only visible to teachers to create/edit) -->
         <?php if ($is_teacher): ?>
-        <div style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid var(--sm-border-color); box-shadow: var(--sm-shadow);">
-            <h3 style="margin: 0 0 20px 0; font-weight: 800; color: var(--sm-dark-color); border-bottom: 1px solid var(--sm-border-color); padding-bottom: 12px; font-size: 15px;">
-                <?php echo ($edit_prep && $edit_prep->id > 0) ? 'تعديل وثيقة خطة تحضير الدرس الحالية' : 'إعداد نموذج خطة تحضير درس جديدة'; ?>
+        <div style="background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+            <h3 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <span class="dashicons dashicons-edit-page" style="font-size: 18px; width: 18px; height: 18px; color: #64748b;"></span>
+                <?php echo ($edit_prep && $edit_prep->id > 0) ? 'تعديل خطة تحضير الدرس الحالية' : 'إعداد خطة تحضير درس جديدة'; ?>
             </h3>
 
             <form method="post">
@@ -302,11 +279,11 @@ if (isset($_GET['duplicate_prep_id'])) {
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px;">
                     <div class="sm-form-group" style="margin-bottom:0;">
                         <label class="sm-label">عنوان الدرس <span style="color:#ef4444;">*</span></label>
-                        <input type="text" name="lesson_title" value="<?php echo esc_attr($edit_prep->title ?? ''); ?>" class="sm-input" required placeholder="العنوان بالتفصيل..." style="height: 38px; font-size:12px;">
+                        <input type="text" name="lesson_title" value="<?php echo esc_attr($edit_prep->title ?? ''); ?>" class="sm-input" required placeholder="مثال: تركيب الخلية الحيوانية" style="height: 38px; font-size:12px;">
                     </div>
                     <div class="sm-form-group" style="margin-bottom:0;">
                         <label class="sm-label">المادة الدراسية <span style="color:#ef4444;">*</span></label>
-                        <input type="text" name="lesson_subject" value="<?php echo esc_attr($edit_prep->subject ?? ''); ?>" class="sm-input" required placeholder="اسم المادة..." style="height: 38px; font-size:12px;">
+                        <input type="text" name="lesson_subject" value="<?php echo esc_attr($edit_prep->subject ?? ''); ?>" class="sm-input" required placeholder="مثال: العلوم العامة" style="height: 38px; font-size:12px;">
                     </div>
                     <div class="sm-form-group" style="margin-bottom:0;">
                         <label class="sm-label">الصف الدراسي <span style="color:#ef4444;">*</span></label>
@@ -314,7 +291,7 @@ if (isset($_GET['duplicate_prep_id'])) {
                     </div>
                     <div class="sm-form-group" style="margin-bottom:0;">
                         <label class="sm-label">الشعبة / الفصل <span style="color:#ef4444;">*</span></label>
-                        <input type="text" name="lesson_section" value="<?php echo esc_attr($edit_prep->class_section ?? ''); ?>" class="sm-input" required placeholder="مثال: أ / 1" style="height: 38px; font-size:12px;">
+                        <input type="text" name="lesson_section" value="<?php echo esc_attr($edit_prep->class_section ?? ''); ?>" class="sm-input" required placeholder="مثال: 1" style="height: 38px; font-size:12px;">
                     </div>
                     <div class="sm-form-group" style="margin-bottom:0;">
                         <label class="sm-label">تاريخ إعطاء الدرس <span style="color:#ef4444;">*</span></label>
@@ -323,42 +300,42 @@ if (isset($_GET['duplicate_prep_id'])) {
                 </div>
 
                 <!-- Fields -->
-                <div class="sm-form-group">
+                <div class="sm-form-group" style="margin-bottom: 15px;">
                     <label class="sm-label">الأهداف السلوكية والتعليمية المحددة (Objectives) <span style="color:#ef4444;">*</span></label>
-                    <textarea name="objectives" class="sm-textarea" style="height: 90px; font-size:12px;" required placeholder="صياغة أهداف الدرس بوضوح وقابلية للقياس (أن يستنتج الطالب...)..."><?php echo esc_textarea($data['objectives'] ?? ''); ?></textarea>
+                    <textarea name="objectives" class="sm-textarea" style="height: 80px; font-size:12px;" required placeholder="أن يحدد الطالب الأجزاء الأساسية لغشاء الخلية..."><?php echo esc_textarea($data['objectives'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="sm-form-group">
+                <div class="sm-form-group" style="margin-bottom: 15px;">
                     <label class="sm-label">التمهيد والتهيئة الحافزة للدرس (Warm-up) <span style="color:#ef4444;">*</span></label>
-                    <textarea name="warmup" class="sm-textarea" style="height: 80px; font-size:12px;" required placeholder="أنشطة استهلالية لربط المفهوم وتنشيط المعرفة السابقة..."><?php echo esc_textarea($data['warmup'] ?? ''); ?></textarea>
+                    <textarea name="warmup" class="sm-textarea" style="height: 80px; font-size:12px;" required placeholder="عرض صورة خلية مجهرية وطرح تساؤل تفاعلي على الطلاب..."><?php echo esc_textarea($data['warmup'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="sm-form-group">
+                <div class="sm-form-group" style="margin-bottom: 15px;">
                     <label class="sm-label">الاستراتيجيات، الأنشطة والخطوات التعليمية الشاملة (Strategies & Activities) <span style="color:#ef4444;">*</span></label>
-                    <textarea name="activities" class="sm-textarea" style="height: 120px; font-size:12px;" required placeholder="خطة سير الحصة الدراسية، الأنشطة الفردية والجماعية، واستراتيجيات التعلّم النشط..."><?php echo esc_textarea($data['activities'] ?? ''); ?></textarea>
+                    <textarea name="activities" class="sm-textarea" style="height: 100px; font-size:12px;" required placeholder="تقسيم الطلاب لمجموعات عمل ثنائية، استخدام التعلم النشط..."><?php echo esc_textarea($data['activities'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="sm-form-group">
+                <div class="sm-form-group" style="margin-bottom: 15px;">
                     <label class="sm-label">التقويم الصفي وأدوات القياس التكويني (Evaluation & Assessment) <span style="color:#ef4444;">*</span></label>
-                    <textarea name="evaluation" class="sm-textarea" style="height: 80px; font-size:12px;" required placeholder="الأسئلة والتقييمات الذاتية للتحقق من بلوغ الأهداف الصيفية..."><?php echo esc_textarea($data['evaluation'] ?? ''); ?></textarea>
+                    <textarea name="evaluation" class="sm-textarea" style="height: 80px; font-size:12px;" required placeholder="حل تمرين صفي سريع فردياً لتقييم استيعاب الأهداف..."><?php echo esc_textarea($data['evaluation'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="sm-form-group">
+                <div class="sm-form-group" style="margin-bottom: 15px;">
                     <label class="sm-label">الواجبات المنزلية والمهام الأكاديمية المقررة (Homework)</label>
-                    <textarea name="homework" class="sm-textarea" style="height: 70px; font-size:12px;" placeholder="الواجبات أو المشروعات التكميلية في نهاية الحصة..."><?php echo esc_textarea($data['homework'] ?? ''); ?></textarea>
+                    <textarea name="homework" class="sm-textarea" style="height: 70px; font-size:12px;" placeholder="حل السؤال رقم 3 في الكراسة العملية..."><?php echo esc_textarea($data['homework'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="sm-form-group" style="margin-bottom: 24px;">
+                <div class="sm-form-group" style="margin-bottom: 25px;">
                     <label class="sm-label">التأملات المهنية وملاحظات التطوير والتعديل المستقبلي</label>
-                    <textarea name="notes" class="sm-textarea" style="height: 70px; font-size:12px;" placeholder="تدوين أي معوقات أو فرص للتطوير المهني في الدرس..."><?php echo esc_textarea($data['notes'] ?? ''); ?></textarea>
+                    <textarea name="notes" class="sm-textarea" style="height: 70px; font-size:12px;" placeholder="تدوين تحديات التنفيذ أو المقترحات التطويرية للحصة القادمة..."><?php echo esc_textarea($data['notes'] ?? ''); ?></textarea>
                 </div>
 
                 <!-- Form Buttons -->
-                <div style="display: flex; gap: 10px;">
-                    <button type="submit" name="eess_save_lesson_prep" onclick="document.getElementById('lesson_status').value='submitted'" class="sm-btn" style="width: auto; height: 38px; font-size:12px; font-weight:700;">حفظ وإرسال وثيقة التحضير للمراجعة</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="submit" name="eess_save_lesson_prep" onclick="document.getElementById('lesson_status').value='submitted'" class="sm-btn" style="width: auto; height: 38px; font-size:12px; font-weight:700; background: #16a34a; border-color: #16a34a;">إرسال وثيقة التحضير للمراجعة والاعتماد</button>
                     <button type="submit" name="eess_save_lesson_prep" onclick="document.getElementById('lesson_status').value='draft'" class="sm-btn sm-btn-secondary" style="width: auto; height: 38px; font-size:12px; font-weight:700;">حفظ كمسودة مؤقتة</button>
                     <?php if ($edit_prep): ?>
-                        <a href="<?php echo home_url('/lesson-prep'); ?>" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; font-size:12px; font-weight:700; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: #fff;">إلغاء التعديل</a>
+                        <a href="<?php echo remove_query_arg('edit_prep_id', home_url('/lesson-prep')); ?>" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; font-size:12px; font-weight:700; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: #fff;">إلغاء التعديل</a>
                     <?php endif; ?>
                 </div>
 
@@ -367,188 +344,229 @@ if (isset($_GET['duplicate_prep_id'])) {
         </div>
         <?php endif; ?>
 
-        <!-- History/List Panel -->
-        <div style="background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid var(--sm-border-color); box-shadow: var(--sm-shadow);">
-            <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--sm-border-color); padding-bottom: 12px; margin-bottom: 20px;">
-                <span class="dashicons dashicons-welcome-write-blog" style="color: var(--sm-primary-color); font-size: 18px; width: 18px; height: 18px;"></span>
-                <h3 style="margin:0; font-size: 15px; font-weight: 800; color: var(--sm-dark-color);">
-                    <?php echo $can_review ? 'استعراض واعتماد خطط تحضير المعلمين والتحقق من الامتثال' : 'أرشيف وسجل تحضير الدروس والخطط السابقة الخاص بي'; ?>
-                </h3>
-            </div>
+        <!-- Section: Search Filters and Dynamic Lesson Cards Container -->
+        <div style="background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
 
-            <!-- Inline search filters -->
-            <form method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; background: var(--sm-bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--sm-border-color);">
+            <!-- Unified Single-Row Control & Filter Toolbar -->
+            <form id="sm-lesson-filters-form" method="get" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+                <!-- Retain other query parameter values -->
                 <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>">
+                <?php
+                $active_sort = isset($_GET['sort_order']) && $_GET['sort_order'] === 'ASC' ? 'ASC' : 'DESC';
+                ?>
+                <input type="hidden" name="sort_order" id="sort_order_param" value="<?php echo $active_sort; ?>">
 
-                <div class="sm-form-group" style="margin-bottom:0;">
-                    <label style="font-size: 11px; font-weight: bold; color: var(--sm-text-gray); display: block; margin-bottom: 4px;">البحث بالكلمات المفتاحية</label>
-                    <input type="text" name="s_query" value="<?php echo isset($_GET['s_query']) ? esc_attr($_GET['s_query']) : ''; ?>" placeholder="اسم المعلم أو عنوان الدرس..." class="sm-input" style="height:32px; font-size:12px;">
+                <!-- Flexible Search Field with Icon & Clear -->
+                <div style="flex: 1; min-width: 200px; position: relative; display: flex; align-items: center;">
+                    <span class="dashicons dashicons-search" style="position: absolute; right: 10px; font-size: 16px; width: 16px; height: 16px; color: #94a3b8; pointer-events: none;"></span>
+                    <input type="text" name="s_query" id="s_query_input" value="<?php echo isset($_GET['s_query']) ? esc_attr($_GET['s_query']) : ''; ?>" placeholder="بحث باسم المعلم، الدرس، المادة..." class="sm-input" style="height: 36px; font-size: 12px; padding: 0 35px 0 30px; border-radius: 6px;">
+                    <?php if (isset($_GET['s_query']) && !empty($_GET['s_query'])): ?>
+                        <button type="button" onclick="document.getElementById('s_query_input').value=''; document.getElementById('sm-lesson-filters-form').submit();" style="position: absolute; left: 10px; background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 14px; font-weight: bold; line-height: 1; display: flex; align-items: center; justify-content: center; height: 100%; padding: 0;">✖</button>
+                    <?php endif; ?>
                 </div>
 
-                <div class="sm-form-group" style="margin-bottom:0;">
-                    <label style="font-size: 11px; font-weight: bold; color: var(--sm-text-gray); display: block; margin-bottom: 4px;">تاريخ الدرس</label>
-                    <input type="date" name="filter_date" value="<?php echo isset($_GET['filter_date']) ? esc_attr($_GET['filter_date']) : ''; ?>" class="sm-input" style="height:32px; font-size:12px;">
-                </div>
+                <!-- Embedded Field Label Filters (selects with internal labels) -->
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <!-- Date Filter -->
+                    <div style="position: relative;">
+                        <input type="date" name="filter_date" value="<?php echo isset($_GET['filter_date']) ? esc_attr($_GET['filter_date']) : ''; ?>" class="sm-input" style="height: 36px; font-size: 11px; padding: 0 10px; border-radius: 6px; width: 130px;" onchange="document.getElementById('sm-lesson-filters-form').submit();">
+                    </div>
 
-                <div class="sm-form-group" style="margin-bottom:0;">
-                    <label style="font-size: 11px; font-weight: bold; color: var(--sm-text-gray); display: block; margin-bottom: 4px;">حالة الاعتماد</label>
-                    <select name="filter_status" class="sm-select" style="height:32px; font-size:12px; padding: 0 10px;">
-                        <option value="">كافة الحالات</option>
-                        <option value="draft" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'draft'); ?>>مسودة</option>
-                        <option value="submitted" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'submitted'); ?>>مقدم للاعتماد</option>
-                        <option value="approved" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'approved'); ?>>معتمد</option>
-                        <option value="revision_required" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'revision_required'); ?>>طلب تعديل</option>
-                        <option value="rejected" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'rejected'); ?>>مرفوض</option>
-                        <option value="late" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'late'); ?>>تسليم متأخر</option>
+                    <!-- Status Filter -->
+                    <select name="filter_status" class="sm-select" style="height: 36px; font-size: 11px; padding: 0 10px; border-radius: 6px; width: 155px; font-weight: 700; background-color: #ffffff;" onchange="document.getElementById('sm-lesson-filters-form').submit();">
+                        <option value="">حالة الاعتماد: الكل</option>
+                        <option value="draft" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'draft'); ?>>الاعتماد: مسودة</option>
+                        <option value="submitted" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'submitted'); ?>>الاعتماد: بانتظار المراجعة</option>
+                        <option value="approved" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'approved'); ?>>الاعتماد: معتمد</option>
+                        <option value="revision_required" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'revision_required'); ?>>الاعتماد: طلب تعديل</option>
+                        <option value="rejected" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'rejected'); ?>>الاعتماد: مرفوض</option>
+                        <option value="late" <?php selected(isset($_GET['filter_status']) && $_GET['filter_status'] == 'late'); ?>>الاعتماد: تسليم متأخر</option>
                     </select>
-                </div>
 
-                <div style="display: flex; align-items: flex-end; gap: 5px;">
-                    <button type="submit" class="sm-btn" style="height: 32px; font-size:11px; padding:0 12px; width:auto;">تصفية</button>
-                    <a href="<?php echo home_url('/lesson-prep'); ?>" class="sm-btn sm-btn-outline" style="height: 32px; font-size:11px; padding:0 12px; width:auto; display:flex; align-items:center; justify-content:center; text-decoration:none; background:#fff;">إعادة ضبط</a>
+                    <!-- Minimalist Sort Toggle Button with Tooltip -->
+                    <button type="button" onclick="toggleDateSort();" class="sm-btn sm-btn-outline" style="height: 36px; width: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #ffffff;" title="<?php echo $active_sort === 'DESC' ? 'الترتيب: الأحدث أولاً (انقر للعكس)' : 'الترتيب: الأقدم أولاً (انقر للعكس)'; ?>">
+                        <span class="dashicons <?php echo $active_sort === 'DESC' ? 'dashicons-arrow-down-alt2' : 'dashicons-arrow-up-alt2'; ?>" style="font-size: 16px; width: 16px; height: 16px; margin: 0; color: #475569;"></span>
+                    </button>
+
+                    <!-- Reset Trigger -->
+                    <a href="<?php echo home_url('/lesson-prep'); ?>" class="sm-btn sm-btn-outline" style="height: 36px; padding: 0 12px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #ffffff; text-decoration: none;">إعادة ضبط</a>
                 </div>
             </form>
 
-            <!-- Table of Submissions -->
-            <div class="sm-table-container">
-                <table class="sm-table">
-                    <thead>
-                        <tr>
-                            <th style="font-weight: 700; width: 110px;">تاريخ الدرس</th>
-                            <?php if ($can_review): ?>
-                                <th style="font-weight: 700; width: 140px;">اسم المعلم</th>
-                            <?php endif; ?>
-                            <th style="font-weight: 700;">عنوان الدرس والمادة</th>
-                            <th style="font-weight: 700; width: 120px;">الصف والشعبة</th>
-                            <th style="font-weight: 700; width: 90px;">الإصدار</th>
-                            <th style="font-weight: 700; width: 140px;">حالة الاستحقاق</th>
-                            <th style="font-weight: 700; width: 125px;">حالة الاعتماد</th>
-                            <th style="text-align: left; padding-left: 20px; font-weight: 700; width: 220px;">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $query = "SELECT p.*, u.display_name as teacher_name
-                                  FROM {$wpdb->prefix}sm_lesson_preps p
-                                  JOIN {$wpdb->prefix}users u ON p.teacher_id = u.ID";
+            <!-- Grid of Lesson Cards -->
+            <?php
+            // Prepare Query
+            $query = "SELECT p.*, u.display_name as teacher_name
+                      FROM {$wpdb->prefix}sm_lesson_preps p
+                      JOIN {$wpdb->prefix}users u ON p.teacher_id = u.ID";
 
-                        $conditions = array();
-                        $params = array();
+            $conditions = array();
+            $params = array();
 
-                        if (!$can_review) {
-                            $conditions[] = "p.teacher_id = %d";
-                            $params[] = $user_id;
+            if (!$can_review) {
+                $conditions[] = "p.teacher_id = %d";
+                $params[] = $user_id;
+            }
+
+            if (isset($_GET['filter_date']) && !empty($_GET['filter_date'])) {
+                $conditions[] = "p.lesson_date = %s";
+                $params[] = sanitize_text_field($_GET['filter_date']);
+            }
+
+            if (isset($_GET['filter_status']) && !empty($_GET['filter_status'])) {
+                $conditions[] = "p.status = %s";
+                $params[] = sanitize_text_field($_GET['filter_status']);
+            }
+
+            if (isset($_GET['s_query']) && !empty($_GET['s_query'])) {
+                $conditions[] = "(p.title LIKE %s OR u.display_name LIKE %s OR p.subject LIKE %s)";
+                $like_param = '%' . $wpdb->esc_like(sanitize_text_field($_GET['s_query'])) . '%';
+                $params[] = $like_param;
+                $params[] = $like_param;
+                $params[] = $like_param;
+            }
+
+            if (!empty($conditions)) {
+                $query .= " WHERE " . implode(" AND ", $conditions);
+            }
+
+            // Order by toggle choice
+            $query .= " ORDER BY p.lesson_date " . $active_sort . ", p.created_at " . $active_sort;
+
+            if (!empty($params)) {
+                $submissions = $wpdb->get_results($wpdb->prepare($query, $params));
+            } else {
+                $submissions = $wpdb->get_results($query);
+            }
+            ?>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 20px;">
+                <?php if (empty($submissions)): ?>
+                    <div style="grid-column: 1 / -1; background: #ffffff; border: 2px dashed #e2e8f0; border-radius: 12px; padding: 60px 20px; text-align: center;">
+                        <span class="dashicons dashicons-media-text" style="font-size: 36px; width: 36px; height: 36px; color: #94a3b8; margin-bottom: 12px;"></span>
+                        <h4 style="margin: 0; font-size: 13px; font-weight: 800; color: #1e293b;">لا توجد خطط تحضير مدرجة ومسجلة حالياً</h4>
+                        <p style="margin: 5px 0 0 0; font-size: 11px; color: #64748b; font-weight: 600;">يرجى التحقق من معايير التصفية أو البدء بإضافة تحضير جديد.</p>
+                    </div>
+                <?php else: ?>
+                    <?php
+                    $school_info = SM_Settings::get_school_info();
+                    $school_name = $school_info['school_name'] ?? 'المدرسة الافتراضية';
+
+                    foreach ($submissions as $sub):
+                        $avatar_url = get_user_meta($sub->teacher_id, 'eess_profile_photo', true) ?: get_avatar_url($sub->teacher_id);
+                        $teacher_title = 'معلم المادة';
+
+                        // Status classification colors
+                        $status_styles = array(
+                            'draft' => 'background: #f1f5f9; color: #475569; border-color: #cbd5e1;',
+                            'submitted' => 'background: #fffbeb; color: #d97706; border-color: #fde68a;',
+                            'approved' => 'background: #ecfdf5; color: #047857; border-color: #a7f3d0;',
+                            'revision_required' => 'background: #fff7ed; color: #c2410c; border-color: #fed7aa;',
+                            'rejected' => 'background: #fef2f2; color: #b91c1c; border-color: #fca5a5;',
+                            'late' => 'background: #fef2f2; color: #dc2626; border-color: #fca5a5;',
+                            'resubmitted' => 'background: #f0f9ff; color: #0369a1; border-color: #bae6fd;',
+                        );
+                        $status_label = array(
+                            'draft' => 'مسودة',
+                            'submitted' => 'بانتظار المراجعة',
+                            'approved' => 'معتمد',
+                            'revision_required' => 'تعديل مطلوب',
+                            'rejected' => 'مرفوض',
+                            'late' => 'تسليم متأخر',
+                            'resubmitted' => 'معدل ومستلم',
+                        )[$sub->status] ?? $sub->status;
+
+                        $delay_label = 'في الموعد';
+                        if ($sub->delay_seconds > 0) {
+                            $days = floor($sub->delay_seconds / 86400);
+                            $hours = floor(($sub->delay_seconds % 86400) / 3600);
+                            $minutes = floor(($sub->delay_seconds % 3600) / 60);
+
+                            $delay_parts = array();
+                            if ($days > 0) $delay_parts[] = $days . ' يوم';
+                            if ($hours > 0) $delay_parts[] = $hours . ' ساعة';
+                            if ($minutes > 0) $delay_parts[] = $minutes . ' دقيقة';
+                            $delay_label = 'متأخر: ' . implode(' و', $delay_parts);
                         }
+                    ?>
+                        <!-- Premium Lesson Card Component Architecture -->
+                        <div class="sm-lesson-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.25s ease;" onmouseover="this.style.borderColor='#cbd5e1'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.03)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.02)';">
 
-                        if (isset($_GET['filter_date']) && !empty($_GET['filter_date'])) {
-                            $conditions[] = "p.lesson_date = %s";
-                            $params[] = sanitize_text_field($_GET['filter_date']);
-                        }
+                            <!-- Header Row -->
+                            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                                <img src="<?php echo esc_url($avatar_url); ?>" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; flex-shrink: 0;" alt="صورة المعلم">
+                                <div style="min-width: 0; flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                        <strong style="font-size: 13px; color: #1e293b; font-weight: 800;"><?php echo esc_html($sub->teacher_name); ?></strong>
+                                        <span class="sm-badge" style="background: #f1f5f9; color: #475569; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;"><?php echo esc_html($teacher_title); ?></span>
+                                    </div>
+                                    <!-- Inline metadata row separated by bullets -->
+                                    <div style="font-size: 10px; color: #64748b; font-weight: 700; margin-top: 3px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; line-height: 1;">
+                                        <span><?php echo esc_html($sub->subject); ?></span>
+                                        <span>•</span>
+                                        <span><?php echo esc_html($sub->grade_level); ?></span>
+                                        <span>•</span>
+                                        <span><?php echo esc_html($school_name); ?></span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        if (isset($_GET['filter_status']) && !empty($_GET['filter_status'])) {
-                            $conditions[] = "p.status = %s";
-                            $params[] = sanitize_text_field($_GET['filter_status']);
-                        }
+                            <!-- Main Content Body -->
+                            <div style="flex-grow: 1; margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                                    <h4 style="margin: 0; font-size: 14px; font-weight: 900; color: #1e293b; line-height: 1.4;"><?php echo esc_html($sub->title); ?></h4>
+                                    <span style="font-size: 10px; font-weight: 800; color: #64748b; white-space: nowrap; background: #f8fafc; border: 1px solid #e2e8f0; padding: 2px 6px; border-radius: 4px;">إصدار <?php echo $sub->version; ?></span>
+                                </div>
 
-                        if (isset($_GET['s_query']) && !empty($_GET['s_query'])) {
-                            $conditions[] = "(p.title LIKE %s OR u.display_name LIKE %s OR p.subject LIKE %s)";
-                            $like_param = '%' . $wpdb->esc_like(sanitize_text_field($_GET['s_query'])) . '%';
-                            $params[] = $like_param;
-                            $params[] = $like_param;
-                            $params[] = $like_param;
-                        }
+                                <div style="font-size: 11px; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px; margin-bottom: 12px;">
+                                    <span class="dashicons dashicons-calendar-alt" style="font-size: 14px; width: 14px; height: 14px; color: #94a3b8; margin: 0;"></span>
+                                    <span>تاريخ الإعطاء: <?php echo date_i18n('Y-m-d', strtotime($sub->lesson_date)); ?></span>
+                                </div>
 
-                        if (!empty($conditions)) {
-                            $query .= " WHERE " . implode(" AND ", $conditions);
-                        }
-
-                        $query .= " ORDER BY p.lesson_date DESC, p.created_at DESC";
-
-                        if (!empty($params)) {
-                            $submissions = $wpdb->get_results($wpdb->prepare($query, $params));
-                        } else {
-                            $submissions = $wpdb->get_results($query);
-                        }
-
-                        if (empty($submissions)):
-                        ?>
-                        <tr>
-                            <td colspan="<?php echo $can_review ? 8 : 7; ?>" style="text-align: center; color: var(--sm-text-gray); padding: 40px; font-weight:700;">لا توجد خطط تحضير مدرجة ومسجلة حالياً تطابق شروط البحث.</td>
-                        </tr>
-                        <?php
-                        else:
-                            foreach ($submissions as $sub):
-                                $delay_desc = 'في الموعد';
-                                if ($sub->delay_seconds > 0) {
-                                    $days = floor($sub->delay_seconds / 86400);
-                                    $hours = floor(($sub->delay_seconds % 86400) / 3600);
-                                    $minutes = floor(($sub->delay_seconds % 3600) / 60);
-
-                                    $delay_parts = array();
-                                    if ($days > 0) $delay_parts[] = $days . ' يوم';
-                                    if ($hours > 0) $delay_parts[] = $hours . ' ساعة';
-                                    if ($minutes > 0) $delay_parts[] = $minutes . ' دقيقة';
-                                    $delay_desc = implode(' و', $delay_parts);
-                                }
-                        ?>
-                        <tr>
-                            <td style="font-weight: 700; color: var(--sm-dark-color); font-size:12px;"><?php echo date_i18n('Y-m-d', strtotime($sub->lesson_date)); ?></td>
-                            <?php if ($can_review): ?>
-                                <td style="font-weight: 700; color: var(--sm-secondary-color);"><?php echo esc_html($sub->teacher_name); ?></td>
-                            <?php endif; ?>
-                            <td>
-                                <div style="font-weight:700; color:var(--sm-dark-color);"><?php echo esc_html($sub->title); ?></div>
-                                <div style="font-size:11px; color:var(--sm-text-gray); font-weight:700; margin-top:2px;"><?php echo esc_html($sub->subject); ?></div>
-                            </td>
-                            <td style="font-weight: 600;"><?php echo esc_html($sub->grade_level . ' (' . $sub->class_section . ')'); ?></td>
-                            <td><span style="font-weight:bold; color: var(--sm-text-gray); font-size:11px;">إصدار <?php echo $sub->version; ?></span></td>
-                            <td>
-                                <?php if ($sub->delay_seconds > 0): ?>
-                                    <span style="color: #ef4444; font-weight: 700; font-size: 11px;">⚠️ متأخر: <?php echo $delay_desc; ?></span>
-                                <?php else: ?>
-                                    <span style="color: #10b981; font-weight: 700; font-size: 11px;">✓ في الموعد</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php
-                                $status_labels = array(
-                                    'draft' => array('label' => 'مسودة', 'bg' => '#f1f5f9', 'color' => '#475569'),
-                                    'submitted' => array('label' => 'بانتظار المراجعة', 'bg' => '#fffbeb', 'color' => '#b45309'),
-                                    'approved' => array('label' => 'معتمد', 'bg' => '#f0fdf4', 'color' => '#16a34a'),
-                                    'revision_required' => array('label' => 'تعديل مطلوب', 'bg' => '#fff7ed', 'color' => '#c2410c'),
-                                    'rejected' => array('label' => 'مرفوض', 'bg' => '#fef2f2', 'color' => '#b91c1c'),
-                                    'late' => array('label' => 'تسليم متأخر', 'bg' => '#fef2f2', 'color' => '#b91c1c'),
-                                    'resubmitted' => array('label' => 'معدل ومستلم', 'bg' => '#f0f9ff', 'color' => '#0369a1'),
-                                );
-                                $badge = $status_labels[$sub->status] ?? array('label' => $sub->status, 'bg' => '#f1f5f9', 'color' => '#475569');
-                                ?>
-                                <span class="sm-badge" style="background:<?php echo $badge['bg']; ?>; color:<?php echo $badge['color']; ?>; border: 1px solid currentColor;">
-                                    <?php echo $badge['label']; ?>
-                                </span>
-                            </td>
-                            <td style="text-align: left; padding-left: 20px;">
-                                <div style="display:flex; gap:5px; justify-content: flex-end;">
-                                    <button onclick="smOpenPrepViewer(<?php echo $sub->id; ?>)" class="sm-btn sm-btn-outline" style="padding: 4px 10px; font-size:11px; height:28px; background:#fff; font-weight: 700;">عرض المستند</button>
-
-                                    <?php if ($is_teacher): ?>
-                                        <?php if ($sub->status === 'draft' || $sub->status === 'revision_required'): ?>
-                                            <a href="<?php echo add_query_arg('edit_prep_id', $sub->id, home_url('/lesson-prep')); ?>" class="sm-btn" style="padding: 4px 10px; font-size:11px; height:28px; font-weight:700; text-decoration:none;">تعديل</a>
-                                        <?php endif; ?>
-                                        <a href="<?php echo add_query_arg('duplicate_prep_id', $sub->id, home_url('/lesson-prep')); ?>" class="sm-btn sm-btn-secondary" style="padding: 4px 10px; font-size:11px; height:28px; font-weight:700; text-decoration:none;">نسخ</a>
-                                    <?php endif; ?>
-
-                                    <?php if ($can_review && ($sub->status === 'submitted' || $sub->status === 'late')): ?>
-                                        <button onclick="smOpenReviewModal(<?php echo $sub->id; ?>, '<?php echo esc_js($sub->title); ?>')" class="sm-btn" style="padding: 4px 10px; font-size:11px; height:28px; font-weight:700; background:#10b981;">اعتماد</button>
+                                <!-- Delivery status indicators -->
+                                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                    <span class="sm-badge" style="<?php echo $status_styles[$sub->status] ?? $status_styles['draft']; ?> font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 800; border: 1px solid;">
+                                        <?php echo esc_html($status_label); ?>
+                                    </span>
+                                    <?php if ($sub->delay_seconds > 0): ?>
+                                        <span class="sm-badge" style="background: #fef2f2; color: #dc2626; border-color: #fca5a5; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 800; border: 1px solid;">
+                                            ⚠️ <?php echo esc_html($delay_label); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="sm-badge" style="background: #ecfdf5; color: #059669; border-color: #a7f3d0; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 800; border: 1px solid;">
+                                            ✓ في الموعد المعتمد
+                                        </span>
                                     <?php endif; ?>
                                 </div>
-                            </td>
-                        </tr>
-                        <?php
-                            endforeach;
-                        endif;
-                        ?>
-                    </tbody>
-                </table>
+                            </div>
+
+                            <!-- Action Footer containing primary and secondary action triggers -->
+                            <div style="display: flex; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 12px; flex-wrap: wrap;">
+                                <!-- Interactive Slide Presentation Button -->
+                                <button onclick="smOpenPrepViewer(<?php echo $sub->id; ?>)" class="sm-btn sm-btn-outline" style="flex: 1; height: 32px; font-size: 11px; font-weight: 700; border-radius: 6px; background: #f0f9ff; border-color: #bae6fd; color: #0369a1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;" onmouseover="this.style.background='#e0f2fe'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='#f0f9ff'; this.style.transform='scale(1)';">
+                                    <span class="dashicons dashicons-slides" style="font-size: 14px; width: 14px; height: 14px; margin: 0; color: #0284c7;"></span>
+                                    <span>عرض الدرس</span>
+                                </button>
+
+                                <?php if ($is_teacher): ?>
+                                    <?php if ($sub->status === 'draft' || $sub->status === 'revision_required'): ?>
+                                        <a href="<?php echo add_query_arg('edit_prep_id', $sub->id, home_url('/lesson-prep')); ?>" class="sm-btn" style="height: 32px; font-size: 11px; font-weight: 700; padding: 0 12px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">تعديل</a>
+                                    <?php endif; ?>
+                                    <a href="<?php echo add_query_arg('duplicate_prep_id', $sub->id, home_url('/lesson-prep')); ?>" class="sm-btn sm-btn-secondary" style="height: 32px; font-size: 11px; font-weight: 700; padding: 0 12px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">نسخ</a>
+                                <?php endif; ?>
+
+                                <?php if ($can_review): ?>
+                                    <?php if ($sub->status === 'submitted' || $sub->status === 'late' || $sub->status === 'resubmitted'): ?>
+                                        <!-- Dynamic Approval Button -->
+                                        <button onclick="smOpenReviewModal(<?php echo $sub->id; ?>, '<?php echo esc_js($sub->title); ?>')" class="sm-btn" style="height: 32px; font-size: 11px; font-weight: 700; border-radius: 6px; background: #16a34a; border-color: #16a34a; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 0 12px;">اعتماد الدرس</button>
+                                    <?php elseif ($sub->status === 'approved'): ?>
+                                        <button class="sm-btn" disabled style="height: 32px; font-size: 11px; font-weight: 700; border-radius: 6px; background: #047857; border-color: #047857; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 0 12px; cursor: not-allowed; opacity: 1;">تم إعتماده بالفعل</button>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -556,18 +574,18 @@ if (isset($_GET['duplicate_prep_id'])) {
 
     <!-- Administrative Settings Block -->
     <?php if ($is_admin || $is_sys_admin): ?>
-    <div style="background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid var(--sm-border-color); margin-top: 24px; box-shadow: var(--sm-shadow);">
-        <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--sm-border-color); padding-bottom: 12px; margin-bottom: 20px;">
+    <div style="background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        <div style="display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px;">
             <span class="dashicons dashicons-admin-generic" style="color: var(--sm-primary-color); font-size: 18px; width: 18px; height: 18px;"></span>
-            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--sm-dark-color);">إعدادات وجدولة تسليم التحضيرات والأوقات الرسمية</h3>
+            <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #1e293b;">إعدادات وجدولة تسليم التحضيرات والأوقات الرسمية</h3>
         </div>
 
         <form method="post">
             <?php wp_nonce_field('eess_settings_action', 'eess_settings_nonce'); ?>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom: 20px; background: var(--sm-bg-light); padding: 20px; border-radius: 8px; border: 1px solid var(--sm-border-color);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom: 20px; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <div class="sm-form-group" style="margin-bottom:0;">
                     <label class="sm-label">دورية التسليم الرسمية:</label>
-                    <select name="submission_frequency" class="sm-select" style="height:38px; font-size:12px;">
+                    <select name="submission_frequency" class="sm-select" style="height:38px; font-size:12px; background: #fff;">
                         <option value="daily" <?php selected($prep_settings['submission_frequency'] == 'daily'); ?>>تسليم وثيقة تحضير يومية (درس لكل يوم عمل)</option>
                         <option value="weekly" <?php selected($prep_settings['submission_frequency'] == 'weekly'); ?>>تسليم وثيقة تحضير أسبوعية (كل يوم أحد)</option>
                     </select>
@@ -575,22 +593,22 @@ if (isset($_GET['duplicate_prep_id'])) {
                 <div class="sm-form-group" style="margin-bottom:0;">
                     <label class="sm-label">موعد الإغلاق اليومي واستحقاق التأخير:</label>
                     <input type="time" name="submission_deadline" value="<?php echo esc_attr($prep_settings['submission_deadline']); ?>" class="sm-input" style="height:38px; font-size:12px;">
-                    <p style="font-size:10px; color: var(--sm-text-gray); margin-top:5px; font-weight:700;">أي تحضير يُسلّم بعد هذا التوقيت يُعتبر تسليماً متأخراً (التوقيت الافتراضي 10:00 صباحاً).</p>
+                    <p style="font-size:10px; color: #64748b; margin-top:5px; font-weight:700;">أي تحضير يُسلّم بعد هذا التوقيت يُعتبر تسليماً متأخراً (التوقيت الافتراضي 10:00 صباحاً).</p>
                 </div>
                 <div class="sm-form-group" style="margin-bottom:0;">
                     <label class="sm-label">استثناءات مادة التربية الرياضية (Physical Education):</label>
-                    <select name="pe_monday_only" class="sm-select" style="height:38px; font-size:12px;">
+                    <select name="pe_monday_only" class="sm-select" style="height:38px; font-size:12px; background: #fff;">
                         <option value="yes" <?php selected($prep_settings['pe_monday_only'] == 'yes'); ?>>نعم - يُعفى معلمو التربية الرياضية ويُطلب منهم تحضير يوم الاثنين فقط</option>
                         <option value="no" <?php selected($prep_settings['pe_monday_only'] == 'no'); ?>>لا - يُعامل معلمو التربية الرياضية معاملة بقية المواد</option>
                     </select>
                 </div>
                 <div class="sm-form-group" style="margin-bottom:0;">
                     <label class="sm-label">أيام العمل والتحضير الأسبوعية المعتمدة:</label>
-                    <div style="display:flex; gap:15px; flex-wrap:wrap; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid var(--sm-border-color); height: 38px; box-sizing: border-box; align-items: center;">
+                    <div style="display:flex; gap:15px; flex-wrap:wrap; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; height: 38px; box-sizing: border-box; align-items: center;">
                         <?php
                         $days_list = array('sun' => 'الأحد', 'mon' => 'الاثنين', 'tue' => 'الثلاثاء', 'wed' => 'الأربعاء', 'thu' => 'الخميس');
                         foreach ($days_list as $key => $lbl): ?>
-                            <label style="font-size:11px; display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-weight: 700; color: var(--sm-dark-color);">
+                            <label style="font-size:11px; display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-weight: 700; color: #1e293b;">
                                 <input type="checkbox" name="working_days[]" value="<?php echo $key; ?>" <?php checked(in_array($key, $prep_settings['working_days'])); ?>> <?php echo $lbl; ?>
                             </label>
                         <?php endforeach; ?>
@@ -606,12 +624,12 @@ if (isset($_GET['duplicate_prep_id'])) {
 
 <!-- Document Viewer Modal Dialog -->
 <div id="prep-viewer-modal" class="sm-modal-overlay">
-    <div class="sm-modal-content" style="max-width: 750px; padding: 25px;">
+    <div class="sm-modal-content" style="max-width: 750px; padding: 25px; border-radius: 12px;">
         <div class="sm-modal-header" style="border-bottom: 2px solid var(--sm-primary-color); padding-bottom: 15px; margin-bottom: 20px;">
-            <h3 id="view-modal-title" style="margin:0; font-size:15px; font-weight:800; color:var(--sm-primary-color);">عنوان التحضير المختار</h3>
+            <h3 id="view-modal-title" style="margin:0; font-size:15px; font-weight:800; color:var(--sm-primary-color); font-family: 'Cairo', sans-serif;">عنوان التحضير المختار</h3>
             <button onclick="document.getElementById('prep-viewer-modal').style.display='none'" class="sm-modal-close" style="position:static; margin:0;">&times;</button>
         </div>
-        <div class="sm-modal-body" id="prep-viewer-body" style="max-height: 480px; overflow-y:auto; line-height: 1.6; font-size:13px; text-align:right;">
+        <div class="sm-modal-body" id="prep-viewer-body" style="max-height: 480px; overflow-y:auto; line-height: 1.6; font-size:13px; text-align:right; font-family: 'Cairo', sans-serif;">
             <!-- Rendered dynamically via JS -->
         </div>
     </div>
@@ -619,24 +637,24 @@ if (isset($_GET['duplicate_prep_id'])) {
 
 <!-- Supervisor Review Action Modal Dialog -->
 <div id="prep-review-modal" class="sm-modal-overlay">
-    <div class="sm-modal-content" style="max-width: 500px; padding: 25px;">
+    <div class="sm-modal-content" style="max-width: 500px; padding: 25px; border-radius: 12px;">
         <div class="sm-modal-header" style="margin-bottom: 20px;">
-            <h3 style="margin:0; font-size: 15px; font-weight:800;">مراجعة واعتماد خطة التحضير المحددة</h3>
+            <h3 style="margin:0; font-size: 15px; font-weight:800; font-family: 'Cairo', sans-serif;">مراجعة واعتماد خطة التحضير المحددة</h3>
             <button onclick="document.getElementById('prep-review-modal').style.display='none'" class="sm-modal-close" style="position:static; margin:0;">&times;</button>
         </div>
-        <div class="sm-modal-body" style="text-align:right;">
+        <div class="sm-modal-body" style="text-align:right; font-family: 'Cairo', sans-serif;">
             <form method="post">
                 <?php wp_nonce_field('eess_supervisor_action', 'eess_supervisor_nonce'); ?>
                 <input type="hidden" name="prep_id" id="review-prep-id">
 
                 <div class="sm-form-group">
                     <label class="sm-label">عنوان خطة التحضير:</label>
-                    <input type="text" id="review-prep-title" class="sm-input" readonly style="background:var(--sm-bg-light); color:var(--sm-text-gray); font-weight: 700; height: 38px; font-size:12px;">
+                    <input type="text" id="review-prep-title" class="sm-input" readonly style="background:#f8fafc; color:#64748b; font-weight: 700; height: 38px; font-size:12px;">
                 </div>
 
                 <div class="sm-form-group">
                     <label class="sm-label">القرار الإداري الفني والاعتماد:</label>
-                    <select name="prep_status_action" class="sm-select" required style="height: 38px; font-size:12px;">
+                    <select name="prep_status_action" class="sm-select" required style="height: 38px; font-size:12px; background: #fff;">
                         <option value="approved">✓ اعتماد وإجازة التحضير (معتمد)</option>
                         <option value="revision_required">⚠ طلب مراجعة وتعديل (تعديل مطلوب)</option>
                         <option value="rejected">✗ رفض وإلغاء وثيقة التحضير (مرفوض)</option>
@@ -648,7 +666,7 @@ if (isset($_GET['duplicate_prep_id'])) {
                     <textarea name="supervisor_comment" class="sm-textarea" style="height: 90px; font-size:12px;" placeholder="أدخل ملحوظاتك الفنية وتوجيهاتك للمعلم..."></textarea>
                 </div>
 
-                <button type="submit" name="eess_supervisor_action" class="sm-btn" style="background:#10b981; width:100%; height: 38px; font-size:12px; font-weight: 700;">تطبيق القرار وإبلاغ المدرس</button>
+                <button type="submit" name="eess_supervisor_action" class="sm-btn" style="background:#16a34a; border-color:#16a34a; width:100%; height: 38px; font-size:12px; font-weight: 700;">تطبيق القرار وإبلاغ المدرس</button>
             </form>
         </div>
     </div>
@@ -692,47 +710,47 @@ const eessSubmissions = <?php
     echo json_encode($preps_for_js);
 ?>;
 
-function smOpenPrepViewer(id) {
+window.smOpenPrepViewer = function(id) {
     const data = eessSubmissions[id];
     if (!data) return;
 
     document.getElementById('view-modal-title').innerText = data.title;
 
     let html = `
-        <div style="background: var(--sm-bg-light); padding: 12px 15px; border-radius: 8px; border:1px solid var(--sm-border-color); margin-bottom:20px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-weight:700; color:var(--sm-dark-color);">
-            <div>المادة الدراسية: <span style="color:var(--sm-primary-color);">${data.subject}</span></div>
-            <div>الصف الدراسي: <span style="color:var(--sm-primary-color);">${data.grade} (${data.section})</span></div>
-            <div style="grid-column: span 2;">تاريخ الدرس المقرر: <span style="color:var(--sm-primary-color);">${data.date}</span></div>
+        <div style="background: #f8fafc; padding: 12px 15px; border-radius: 8px; border:1px solid #e2e8f0; margin-bottom:20px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-weight:700; color:#1e293b;">
+            <div>المادة الدراسية: <span style="color:#0284c7;">${data.subject}</span></div>
+            <div>الصف الدراسي: <span style="color:#0284c7;">${data.grade} (${data.section})</span></div>
+            <div style="grid-column: span 2;">تاريخ الدرس المقرر: <span style="color:#0284c7;">${data.date}</span></div>
         </div>
-        <div style="margin-bottom: 15px; border-right: 3px solid var(--sm-primary-color); padding-right:12px;">
-            <h4 style="margin:0 0 5px 0; color:var(--sm-primary-color); font-weight:800; font-size:13px;">الأهداف السلوكية والتعليمية المحددة:</h4>
-            <p style="margin:0; color:var(--sm-dark-color); font-weight:600; line-height:1.5;">${data.objectives.replace(/\n/g, '<br>')}</p>
+        <div style="margin-bottom: 15px; border-right: 3px solid #334155; padding-right:12px;">
+            <h4 style="margin:0 0 5px 0; color:#334155; font-weight:800; font-size:13px;">الأهداف السلوكية والتعليمية المحددة:</h4>
+            <p style="margin:0; color:#1e293b; font-weight:600; line-height:1.5;">${data.objectives.replace(/\n/g, '<br>')}</p>
         </div>
-        <div style="margin-bottom: 15px; border-right: 3px solid var(--sm-secondary-color); padding-right:12px;">
-            <h4 style="margin:0 0 5px 0; color:var(--sm-secondary-color); font-weight:800; font-size:13px;">التمهيد والتهيئة الحافزة للدرس:</h4>
-            <p style="margin:0; color:var(--sm-dark-color); font-weight:600; line-height:1.5;">${data.warmup.replace(/\n/g, '<br>')}</p>
+        <div style="margin-bottom: 15px; border-right: 3px solid #475569; padding-right:12px;">
+            <h4 style="margin:0 0 5px 0; color:#475569; font-weight:800; font-size:13px;">التمهيد والتهيئة الحافزة للدرس:</h4>
+            <p style="margin:0; color:#1e293b; font-weight:600; line-height:1.5;">${data.warmup.replace(/\n/g, '<br>')}</p>
         </div>
-        <div style="margin-bottom: 15px; border-right: 3px solid var(--sm-accent-color); padding-right:12px;">
-            <h4 style="margin:0 0 5px 0; color:var(--sm-accent-color); font-weight:800; font-size:13px;">الأنشطة والخطوات التعليمية الاستراتيجية:</h4>
-            <p style="margin:0; color:var(--sm-dark-color); font-weight:600; line-height:1.5;">${data.activities.replace(/\n/g, '<br>')}</p>
+        <div style="margin-bottom: 15px; border-right: 3px solid #64748b; padding-right:12px;">
+            <h4 style="margin:0 0 5px 0; color:#64748b; font-weight:800; font-size:13px;">الأنشطة والخطوات التعليمية الاستراتيجية:</h4>
+            <p style="margin:0; color:#1e293b; font-weight:600; line-height:1.5;">${data.activities.replace(/\n/g, '<br>')}</p>
         </div>
-        <div style="margin-bottom: 15px; border-right: 3px solid var(--sm-dark-color); padding-right:12px;">
-            <h4 style="margin:0 0 5px 0; color:var(--sm-dark-color); font-weight:800; font-size:13px;">التقويم الصفي وأدوات القياس التكويني:</h4>
-            <p style="margin:0; color:var(--sm-dark-color); font-weight:600; line-height:1.5;">${data.evaluation.replace(/\n/g, '<br>')}</p>
+        <div style="margin-bottom: 15px; border-right: 3px solid #1e293b; padding-right:12px;">
+            <h4 style="margin:0 0 5px 0; color:#1e293b; font-weight:800; font-size:13px;">التقويم الصفي وأدوات القياس التكويني:</h4>
+            <p style="margin:0; color:#1e293b; font-weight:600; line-height:1.5;">${data.evaluation.replace(/\n/g, '<br>')}</p>
         </div>
         <div style="margin-bottom: 15px; border-right: 3px solid #b91c1c; padding-right:12px;">
             <h4 style="margin:0 0 5px 0; color:#b91c1c; font-weight:800; font-size:13px;">الواجبات المنزلية والمهام الأكاديمية:</h4>
-            <p style="margin:0; color:var(--sm-dark-color); font-weight:600; line-height:1.5;">${data.homework ? data.homework.replace(/\n/g, '<br>') : 'لا يوجد واجب صفي مقرر'}</p>
+            <p style="margin:0; color:#1e293b; font-weight:600; line-height:1.5;">${data.homework ? data.homework.replace(/\n/g, '<br>') : 'لا يوجد واجب صفي مقرر'}</p>
         </div>
         <div style="margin-bottom: 15px; border-right: 3px solid #4b5563; padding-right:12px;">
             <h4 style="margin:0 0 5px 0; color:#4b5563; font-weight:800; font-size:13px;">ملاحظات تربوية وتأملات مهنية إضافية:</h4>
-            <p style="margin:0; color:var(--sm-dark-color); font-weight:600; line-height:1.5;">${data.notes ? data.notes.replace(/\n/g, '<br>') : 'لا توجد ملاحظات إضافية'}</p>
+            <p style="margin:0; color:#1e293b; font-weight:600; line-height:1.5;">${data.notes ? data.notes.replace(/\n/g, '<br>') : 'لا توجد ملاحظات إضافية'}</p>
         </div>
     `;
 
     if (data.comments && data.comments.length > 0) {
         html += `
-            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed var(--sm-border-color);">
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #e2e8f0;">
                 <h4 style="margin: 0 0 15px 0; color:#b91c1c; font-weight:800; font-size:13px;">سجل التوجيهات والملاحظات من المشرفين:</h4>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                     ${data.comments.map(c => `
@@ -751,11 +769,18 @@ function smOpenPrepViewer(id) {
 
     document.getElementById('prep-viewer-body').innerHTML = html;
     document.getElementById('prep-viewer-modal').style.display = 'flex';
-}
+};
 
-function smOpenReviewModal(id, title) {
+window.smOpenReviewModal = function(id, title) {
     document.getElementById('review-prep-id').value = id;
     document.getElementById('review-prep-title').value = title;
     document.getElementById('prep-review-modal').style.display = 'flex';
-}
+};
+
+window.toggleDateSort = function() {
+    const currentSort = document.getElementById('sort_order_param').value;
+    const newSort = currentSort === 'DESC' ? 'ASC' : 'DESC';
+    document.getElementById('sort_order_param').value = newSort;
+    document.getElementById('sm-lesson-filters-form').submit();
+};
 </script>
