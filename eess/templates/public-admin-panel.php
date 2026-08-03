@@ -391,6 +391,12 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
+            <!-- Bell Notification Icon -->
+            <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #ffffff; border: 1px solid var(--sm-border-color); border-radius: 50%; cursor: pointer; color: var(--sm-secondary-color);" title="التنبيهات">
+                <span class="dashicons dashicons-bell" style="font-size: 16px; width: 16px; height: 16px; line-height: 1;"></span>
+                <span style="position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background-color: #f43f5e; border: 1.5px solid #ffffff; border-radius: 50%;"></span>
+            </div>
+
             <!-- Refresh System Button -->
             <button id="sm-system-refresh-btn" onclick="smRefreshSystem()" class="sm-btn" style="background: #475569; height: 32px; padding: 0 12px; font-size: 11px; color: white !important; display: inline-flex; align-items: center; gap: 6px;">
                 <span class="dashicons dashicons-update" style="font-size: 14px; width: 14px; height: 14px; line-height: 1;"></span>
@@ -456,7 +462,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
     <div class="sm-admin-layout" style="display: flex; min-height: 800px;">
         <!-- SIDEBAR -->
-        <div class="sm-sidebar" style="width: 280px; flex-shrink: 0; background: var(--sm-bg-light); border-left: 1px solid var(--sm-border-color); padding: 20px 0;">
+        <div class="sm-sidebar" style="width: 280px; flex-shrink: 0; background: var(--sm-bg-light); border-left: 1px solid var(--sm-border-color); padding: 20px 0; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
             <ul style="list-style: none; padding: 0; margin: 0;">
                 <li class="sm-sidebar-item <?php echo $active_tab == 'summary' ? 'sm-active' : ''; ?>">
                     <a href="<?php echo add_query_arg('sm_tab', 'summary'); ?>" class="sm-sidebar-link"><span class="dashicons dashicons-dashboard"></span> لوحة المعلومات</a>
@@ -540,6 +546,16 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                     </li>
                 <?php endif; ?>
             </ul>
+
+            <!-- Server Status Card at the very bottom -->
+            <div class="sm-server-status-card" style="margin: 20px 16px 0 16px; padding: 16px; background: #ffffff; border: 1px solid var(--sm-border-color); border-radius: 12px; box-shadow: var(--sm-shadow); direction: rtl;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--sm-text-gray); margin-bottom: 8px;">حالة الخادم المحلي</div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #10b981; margin-bottom: 6px;">
+                    <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 6px rgba(16,185,129,0.5);"></span>
+                    <span>قاعدة البيانات متصلة</span>
+                </div>
+                <div style="font-size: 10px; color: var(--sm-text-gray); font-weight: 600;">v98.0.0 - Premium Edition</div>
+            </div>
         </div>
 
         <!-- CONTENT AREA -->
