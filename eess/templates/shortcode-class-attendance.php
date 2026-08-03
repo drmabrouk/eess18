@@ -1,20 +1,20 @@
 <?php if (!defined('ABSPATH')) exit;
 $school = SM_Settings::get_school_info();
 $academic = SM_Settings::get_academic_structure();
-
 ?>
-<div class="sm-class-attendance-shortcode" dir="rtl" style="max-width: 900px; margin: 20px auto; padding: 40px; background: #fff; border-radius: 20px; border: 1px solid var(--sm-border-color); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+<div class="sm-class-attendance-shortcode" dir="rtl" style="max-width: 850px; margin: 30px auto; padding: 35px; background: #ffffff; border-radius: 16px; border: 1px solid var(--sm-border-color); box-shadow: var(--sm-shadow); font-family: 'Cairo', sans-serif;">
 
     <!-- Header: Logo, Title, Date -->
-    <div style="text-align: center; margin-bottom: 40px;">
-        <?php if ($school['school_logo']): ?>
-            <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 80px; width: auto; margin-bottom: 20px; object-fit: contain;">
+    <div style="text-align: center; margin-bottom: 35px;">
+        <?php if (!empty($school['school_logo'])): ?>
+            <img src="<?php echo esc_url($school['school_logo']); ?>" style="height: 70px; width: auto; margin-bottom: 15px; object-fit: contain;">
         <?php endif; ?>
 
-        <h1 style="font-weight: 900; color: var(--sm-dark-color); margin: 0 0 15px 0; font-size: 2.2em; border: none;">تسجيل الحضور اليومي</h1>
+        <h1 style="font-weight: 800; color: var(--sm-dark-color); margin: 0 0 10px 0; font-size: 22px; border: none; padding: 0;">تسجيل حضور ومواظبة الفصول اليومي</h1>
+        <p style="margin: 0 0 20px 0; font-size: 13px; color: var(--sm-text-gray); font-weight: 600;">المنصة الوطنية للتقييد الفوري ورصد الغياب اليومي وحالات التأخر للطلاب</p>
 
-        <div style="display: inline-block; padding: 8px 25px; background: var(--sm-pastel-red); color: var(--sm-primary-color); border-radius: 50px; font-weight: 800; font-size: 1.1em; border: 1px solid #fed7d7;">
-            <?php echo date_i18n('l، j F Y'); ?>
+        <div style="display: inline-block; padding: 6px 20px; background: var(--sm-bg-light); color: var(--sm-primary-color); border-radius: 9999px; font-weight: 800; font-size: 12px; border: 1px solid var(--sm-border-color);">
+            📅 اليوم: <?php echo date_i18n('l، j F Y'); ?>
         </div>
     </div>
 
@@ -22,11 +22,11 @@ $academic = SM_Settings::get_academic_structure();
     <?php
     $is_staff = is_user_logged_in() && (current_user_can('إدارة_الطلاب') || current_user_can('تسجيل_مخالفة'));
     ?>
-    <div id="at-selection-area" style="display: grid; grid-template-columns: <?php echo $is_staff ? '1fr 1fr 1fr' : '1fr'; ?>; gap: 20px; margin-bottom: 40px; background: #f8fafc; padding: 25px; border-radius: 15px; border: 1px solid #edf2f7;">
+    <div id="at-selection-area" style="display: grid; grid-template-columns: <?php echo $is_staff ? '1fr 1fr 1fr' : '1fr'; ?>; gap: 15px; margin-bottom: 30px; background: var(--sm-bg-light); padding: 20px; border-radius: 12px; border: 1px solid var(--sm-border-color); align-items: flex-end;">
         <?php if ($is_staff): ?>
         <div class="sm-form-group" style="margin-bottom: 0;">
-            <label class="sm-label" style="font-size: 1.1em;">الصف الدراسي:</label>
-            <select id="at-grade-select" class="sm-select" style="height: 50px; font-size: 1.1em;" onchange="atUpdateSections()">
+            <label class="sm-label" style="margin-bottom: 6px; font-weight: 800;">الصف الدراسي:</label>
+            <select id="at-grade-select" class="sm-select" style="height: 38px; font-size: 12px; background: #fff;" onchange="atUpdateSections()">
                 <option value="">-- اختر الصف --</option>
                 <?php
                 $active_grades = $academic['active_grades'] ?? array();
@@ -37,48 +37,48 @@ $academic = SM_Settings::get_academic_structure();
             </select>
         </div>
         <div class="sm-form-group" style="margin-bottom: 0;">
-            <label class="sm-label" style="font-size: 1.1em;">الشعبة / الفصل:</label>
-            <select id="at-section-select" class="sm-select" style="height: 50px; font-size: 1.1em;" disabled onchange="atLoadStudents()">
+            <label class="sm-label" style="margin-bottom: 6px; font-weight: 800;">الشعبة / الفصل:</label>
+            <select id="at-section-select" class="sm-select" style="height: 38px; font-size: 12px; background: #fff;" disabled onchange="atLoadStudents()">
                 <option value="">-- اختر الشعبة --</option>
             </select>
         </div>
         <?php endif; ?>
 
         <div class="sm-form-group" style="margin-bottom: 0; text-align: center;">
-            <label class="sm-label" style="font-size: 1.1em;">كود دخول الفصل:</label>
-            <input type="text" id="at-security-code" class="sm-input" maxlength="4" style="height: 50px; font-size: 1.5em; text-align: center; letter-spacing: 5px; font-family: monospace; max-width: 200px; margin: 0 auto;" placeholder="0000" oninput="checkSecurityCode()">
+            <label class="sm-label" style="margin-bottom: 6px; font-weight: 800; display: block; text-align: center;">كود التحقق والتحضير للفصل:</label>
+            <input type="text" id="at-security-code" class="sm-input" maxlength="4" style="height: 38px; font-size: 18px; text-align: center; letter-spacing: 4px; font-family: monospace; max-width: 150px; margin: 0 auto; font-weight: 800;" placeholder="0000" oninput="checkSecurityCode()">
             <?php if (!$is_staff): ?>
-                <div style="font-size: 11px; color: #718096; margin-top: 8px;">أدخل الكود المكون من 4 أرقام للوصول لقائمة الطلاب</div>
+                <div style="font-size: 10px; color: var(--sm-text-gray); margin-top: 6px; font-weight: 600;">أدخل رمز التحقق (4 أرقام) لرصد الحضور</div>
             <?php endif; ?>
         </div>
     </div>
 
     <!-- Students List Area -->
     <div id="at-students-container" style="display: none;">
-        <div id="at-list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
-            <div style="font-weight: 900; color: var(--sm-dark-color); font-size: 1.3em;">قائمة طلاب الشعبة:</div>
-            <div id="at-bulk-actions" style="display: flex; gap: 15px;">
-                <button onclick="atSetAll('present')" class="sm-btn" style="background: #38a169; padding: 10px 25px;">رصد حضور الجميع</button>
+        <div id="at-list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--sm-border-color); padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <div style="font-weight: 800; color: var(--sm-dark-color); font-size: 13px;">👥 طلاب الفصل المستهدف:</div>
+            <div id="at-bulk-actions" style="display: flex; gap: 10px;">
+                <button onclick="atSetAll('present')" class="sm-btn" style="height: 30px; line-height: 28px; width: auto; padding: 0 15px; font-size: 11px; background: #16a34a; border-color: #16a34a; font-weight: 700;">✓ رصد حضور جميع الطلاب</button>
             </div>
         </div>
 
-        <div id="at-students-list" style="margin-bottom: 40px;">
+        <div id="at-students-list" style="margin-bottom: 30px; display: flex; flex-direction: column; gap: 12px;">
             <!-- Loaded via AJAX -->
         </div>
 
-        <div id="at-footer-actions" style="text-align: center; padding-top: 30px; border-top: 1px solid #eee;">
-            <button id="at-submit-btn" onclick="atSubmitAttendance()" class="sm-btn" style="width: 100%; height: 60px; font-size: 1.3em; font-weight: 900; background: var(--sm-primary-color); border-radius: 12px; box-shadow: 0 4px 14px 0 rgba(246, 48, 73, 0.39);">تأكيد وإرسال الكشف للنظام</button>
-            <p id="at-post-submit-note" style="display: none; margin-top: 20px; color: #718096; font-weight: 700;">
-                <span class="dashicons dashicons-info" style="font-size: 18px; width: 18px; height: 18px;"></span>
-                تم إرسال كشف الحضور. يمكنك الآن تعديل حالات الغياب أو التأخير فقط.
+        <div id="at-footer-actions" style="text-align: center; padding-top: 25px; border-top: 1px solid var(--sm-border-color);">
+            <button id="at-submit-btn" onclick="atSubmitAttendance()" class="sm-btn" style="width: 100%; height: 44px; font-size: 13px; font-weight: 800; border-radius: 8px;">تأكيد وحفظ الكشف النهائي وإرساله للنظام</button>
+            <p id="at-post-submit-note" style="display: none; margin-top: 15px; color: var(--sm-text-gray); font-weight: 700; font-size: 11px;">
+                <span class="dashicons dashicons-info" style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; color: var(--sm-primary-color);"></span>
+                تم إرسال كشف الغياب والحضور للنظام بنجاح. يمكنك الآن تعديل حالات الغياب أو التأخير المنفردة فقط في أي وقت.
             </p>
         </div>
     </div>
 
-    <div id="at-no-selection" style="text-align: center; padding: 80px 40px; color: var(--sm-text-gray); background: #fcfcfc; border-radius: 15px; border: 2px dashed #eee;">
-        <span class="dashicons dashicons-id-alt" style="font-size: 64px; width: 64px; height: 64px; margin-bottom: 25px; opacity: 0.2;"></span>
-        <h3 style="margin: 0; color: #a0aec0; border: none;">يرجى اختيار الصف والشعبة للمتابعة</h3>
-        <p style="margin-top: 10px;">سيتم عرض قائمة الطلاب فور اختيار بيانات الفصل الصحيحة (أو إدخال كود الأمان للزوار).</p>
+    <div id="at-no-selection" style="text-align: center; padding: 60px 20px; color: var(--sm-text-gray); background: var(--sm-bg-light); border-radius: 12px; border: 2px dashed var(--sm-border-color);">
+        <span class="dashicons dashicons-id-alt" style="font-size: 36px; width: 36px; height: 36px; margin-bottom: 12px; color: var(--sm-text-gray);"></span>
+        <h3 style="margin: 0; color: var(--sm-dark-color); font-size: 13px; font-weight: 800; border: none; padding: 0;">يرجى تحديد الصف والشعبة للمتابعة</h3>
+        <p style="margin: 5px 0 0 0; font-size: 11px; color: var(--sm-text-gray); font-weight: 600;">سيتم جلب قائمة طلاب الصف والتحقق من كود الأمان المعتمد تلقائياً.</p>
     </div>
 </div>
 
@@ -88,19 +88,19 @@ let isSubmitted = false;
 let currentStudents = [];
 let isAuthorized = false;
 
-function smShowNotification(msg, isError = false) {
+window.smShowNotification = function(msg, isError = false) {
     if (typeof window.smShowNotification === 'function') {
         window.smShowNotification(msg, isError);
         return;
     }
     const n = document.createElement('div');
-    n.style.cssText = `position:fixed; bottom:20px; left:20px; background:${isError?'#e53e3e':'#3182ce'}; color:#fff; padding:15px 25px; border-radius:10px; z-index:10000; font-weight:700; box-shadow:0 10px 15px rgba(0,0,0,0.1);`;
+    n.style.cssText = `position:fixed; bottom:20px; left:20px; background:${isError?'#dc2626':'#3b82f6'}; color:#fff; padding:12px 20px; border-radius:8px; z-index:10000; font-weight:800; font-size:12px; font-family:'Cairo',sans-serif; box-shadow: 0 10px 15px rgba(0,0,0,0.1);`;
     n.innerText = msg;
     document.body.appendChild(n);
     setTimeout(() => n.remove(), 4000);
-}
+};
 
-function checkSecurityCode() {
+window.checkSecurityCode = function() {
     const isStaff = <?php echo $is_staff ? 'true' : 'false'; ?>;
     const inputCode = document.getElementById('at-security-code').value;
 
@@ -124,16 +124,13 @@ function checkSecurityCode() {
         const section = sectionSelect.value;
         if (!className || !section) return;
 
-        // Verify code via AJAX
         verifyCodeAndLoad(className, section, inputCode);
     } else {
-        // Visitor mode: Try to load any class with this code
         verifyCodeAndLoad('', '', inputCode);
     }
-}
+};
 
-function verifyCodeAndLoad(className, section, code) {
-    const listContainer = document.getElementById('at-students-list');
+window.verifyCodeAndLoad = function(className, section, code) {
     const container = document.getElementById('at-students-container');
     const noSel = document.getElementById('at-no-selection');
 
@@ -150,8 +147,8 @@ function verifyCodeAndLoad(className, section, code) {
     .then(res => {
         if (res.success) {
             isAuthorized = true;
-            document.getElementById('at-security-code').style.borderColor = '#38a169';
-            document.getElementById('at-security-code').style.background = '#f0fff4';
+            document.getElementById('at-security-code').style.borderColor = '#16a34a';
+            document.getElementById('at-security-code').style.background = '#f0fdf4';
 
             currentStudents = res.data;
             noSel.style.display = 'none';
@@ -159,54 +156,23 @@ function verifyCodeAndLoad(className, section, code) {
             atRenderList();
         } else {
             isAuthorized = false;
-            document.getElementById('at-security-code').style.borderColor = '#e53e3e';
+            document.getElementById('at-security-code').style.borderColor = '#dc2626';
 
-            if (className === '') { // Visitor mode
+            if (className === '') {
                 container.style.display = 'none';
                 noSel.style.display = 'block';
             }
         }
     });
-}
+};
 
-function atLoadStudentsForVisitor(className, section) {
-    const listContainer = document.getElementById('at-students-list');
-    const container = document.getElementById('at-students-container');
-    const noSel = document.getElementById('at-no-selection');
-
-    noSel.style.display = 'none';
-    container.style.display = 'block';
-    listContainer.innerHTML = '<div style="text-align: center; padding: 60px;"><div class="at-spinner"></div><p style="margin-top: 20px; color: #718096; font-weight: 700;">جاري تحميل قائمة الطلاب...</p></div>';
-
-    const date = new Date().toISOString().split('T')[0];
-    const code = document.getElementById('at-security-code').value;
-    const formData = new FormData();
-    formData.append('action', 'sm_get_students_attendance_ajax');
-    formData.append('class_name', className);
-    formData.append('section', section);
-    formData.append('date', date);
-    formData.append('security_code', code);
-
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: formData })
-    .then(r => r.json())
-    .then(res => {
-        if (res.success) {
-            currentStudents = res.data;
-            atRenderList();
-        } else {
-            listContainer.innerHTML = '<div style="color: #e53e3e; padding: 25px; background: #fff5f5; border-radius: 10px; text-align: center; font-weight: 700;">' + res.data + '</div>';
-        }
-    });
-}
-
-
-function atUpdateSections() {
+window.atUpdateSections = function() {
     const gradeSelect = document.getElementById('at-grade-select');
     const sectionSelect = document.getElementById('at-section-select');
     const gradeNum = gradeSelect.options[gradeSelect.selectedIndex].getAttribute('data-grade-num');
 
     sectionSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
-    isSubmitted = false; // Reset on change
+    isSubmitted = false;
 
     if (!gradeNum) {
         sectionSelect.disabled = true;
@@ -226,9 +192,9 @@ function atUpdateSections() {
     sectionSelect.disabled = false;
     document.getElementById('at-students-container').style.display = 'none';
     document.getElementById('at-no-selection').style.display = 'block';
-}
+};
 
-function atLoadStudents() {
+window.atLoadStudents = function() {
     const gradeSelect = document.getElementById('at-grade-select');
     const sectionSelect = document.getElementById('at-section-select');
     if (!gradeSelect || !sectionSelect) return;
@@ -236,14 +202,12 @@ function atLoadStudents() {
     const className = gradeSelect.value;
     const section = sectionSelect.value;
 
-    // Clear security code when changing class
     const codeInput = document.getElementById('at-security-code');
     if (codeInput) {
         codeInput.value = '';
         checkSecurityCode();
     }
 
-    const listContainer = document.getElementById('at-students-list');
     const container = document.getElementById('at-students-container');
     const noSel = document.getElementById('at-no-selection');
 
@@ -253,37 +217,18 @@ function atLoadStudents() {
         return;
     }
 
-    noSel.style.display = 'none';
-    container.style.display = 'block';
-    listContainer.innerHTML = '<div style="text-align: center; padding: 60px;"><div class="at-spinner"></div><p style="margin-top: 20px; color: #718096; font-weight: 700;">جاري تحميل قائمة الطلاب...</p></div>';
+    container.style.display = 'none';
+    noSel.style.display = 'block';
+};
 
-    const date = new Date().toISOString().split('T')[0];
-    const formData = new FormData();
-    formData.append('action', 'sm_get_students_attendance_ajax');
-    formData.append('class_name', className);
-    formData.append('section', section);
-    formData.append('date', date);
-
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>', { method: 'POST', body: formData })
-    .then(r => r.json())
-    .then(res => {
-        if (res.success) {
-            currentStudents = res.data;
-            atRenderList();
-        } else {
-            listContainer.innerHTML = '<div style="color: #e53e3e; padding: 25px; background: #fff5f5; border-radius: 10px; text-align: center; font-weight: 700;">' + res.data + '</div>';
-        }
-    });
-}
-
-function atRenderList() {
+window.atRenderList = function() {
     const listContainer = document.getElementById('at-students-list');
     const bulkArea = document.getElementById('at-bulk-actions');
     const submitBtn = document.getElementById('at-submit-btn');
     const note = document.getElementById('at-post-submit-note');
 
     if (currentStudents.length === 0) {
-        listContainer.innerHTML = '<div style="padding: 60px; text-align: center; background: #fcfcfc; border-radius: 15px;">لا يوجد طلاب مسجلين في هذه الشعبة.</div>';
+        listContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--sm-text-gray); font-size:11px; font-weight:700;">لا يوجد طلاب مسجلون في هذا الصف والشعبة حالياً.</div>';
         return;
     }
 
@@ -297,39 +242,37 @@ function atRenderList() {
         note.style.display = 'none';
     }
 
-    let html = '<div style="display: grid; grid-template-columns: 1fr; gap: 15px;">';
+    let html = '';
     currentStudents.forEach(s => {
-        const photo = s.photo_url ? `<img src="${s.photo_url}" style="width: 55px; height: 55px; border-radius: 12px; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">` : `<div style="width: 55px; height: 55px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #cbd5e0; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">👤</div>`;
+        const photo = s.photo_url ? `<img src="${s.photo_url}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--sm-border-color); flex-shrink: 0;">` : `<div style="width: 44px; height: 44px; border-radius: 50%; background: var(--sm-bg-light); border: 1px solid var(--sm-border-color); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--sm-text-gray); flex-shrink: 0;">👤</div>`;
 
         const status = s.status || 'present';
 
-        // If submitted, hide "present" students
         if (isSubmitted && status === 'present') return;
 
         html += `
-            <div class="at-student-row animated fadeIn" data-student-id="${s.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 18px 25px; border: 1px solid #e2e8f0; border-radius: 15px; background: #fff; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="at-student-row animated fadeIn" data-student-id="${s.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border: 1px solid var(--sm-border-color); border-radius: 12px; background: #ffffff; transition: all 0.2s ease; gap: 15px; flex-wrap: wrap; box-shadow: var(--sm-shadow);">
+                <div style="display: flex; align-items: center; gap: 15px; min-width: 180px;">
                     ${photo}
                     <div>
-                        <div style="font-weight: 800; font-size: 1.1em; color: var(--sm-dark-color);">${s.name}</div>
-                        <div style="font-size: 0.85em; color: var(--sm-text-gray); font-weight: 700; margin-top: 4px;">ID: ${s.student_code}</div>
+                        <div style="font-weight: 800; font-size: 12px; color: var(--sm-dark-color);">${s.name}</div>
+                        <div style="font-size: 10px; color: var(--sm-text-gray); font-weight: 700; margin-top: 3px;">كود الطالب: ${s.student_code}</div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 12px; align-items: center;">
-
-                    <div style="display: flex; gap: 12px;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="display: flex; gap: 6px;">
                         ${!isSubmitted ? `
                             <button onclick="atSetStatus(this, 'present')" class="at-choice-btn ${status === 'present' ? 'active' : ''}" data-status="present" title="حاضر">
-                                <span class="dashicons dashicons-yes-alt"></span>
+                                <span class="dashicons dashicons-yes-alt" style="font-size:14px; width:14px; height:14px; margin:0;"></span>
                                 <span class="btn-lbl">حاضر</span>
                             </button>
                         ` : ''}
                         <button onclick="atSetStatus(this, 'late')" class="at-choice-btn ${status === 'late' ? 'active' : ''}" data-status="late" title="متأخر">
-                            <span class="dashicons dashicons-clock"></span>
+                            <span class="dashicons dashicons-clock" style="font-size:14px; width:14px; height:14px; margin:0;"></span>
                             <span class="btn-lbl">تأخير</span>
                         </button>
                         <button onclick="atSetStatus(this, 'absent')" class="at-choice-btn ${status === 'absent' ? 'active' : ''}" data-status="absent" title="غائب">
-                            <span class="dashicons dashicons-no"></span>
+                            <span class="dashicons dashicons-no" style="font-size:14px; width:14px; height:14px; margin:0;"></span>
                             <span class="btn-lbl">غياب</span>
                         </button>
                     </div>
@@ -337,39 +280,36 @@ function atRenderList() {
             </div>
         `;
     });
-    html += '</div>';
     listContainer.innerHTML = html;
-}
+};
 
-function atSetStatus(btn, status) {
+window.atSetStatus = function(btn, status) {
     const row = btn.closest('.at-student-row');
     const sid = row.getAttribute('data-student-id');
 
-    // Update local data
     const stu = currentStudents.find(s => s.id == sid);
     if (stu) stu.status = status;
 
     row.querySelectorAll('.at-choice-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // If already submitted, update single record immediately
     if (isSubmitted) {
         saveAttendanceToDB(sid, status);
     }
-}
+};
 
-function atSetAll(status) {
+window.atSetAll = function(status) {
     currentStudents.forEach(s => s.status = status);
     atRenderList();
-}
+};
 
-async function atSubmitAttendance() {
+window.atSubmitAttendance = function() {
     const btn = document.getElementById('at-submit-btn');
     const date = new Date().toISOString().split('T')[0];
     const nonce = '<?php echo wp_create_nonce("sm_attendance_action"); ?>';
 
     btn.disabled = true;
-    btn.innerHTML = '<div class="at-spinner-sm"></div> جاري حفظ البيانات...';
+    btn.innerHTML = '<div class="at-spinner-sm"></div> جاري حفظ الكشف وإرسال الإشعارات...';
 
     const batch = currentStudents.map(s => ({
         student_id: s.id,
@@ -388,18 +328,17 @@ async function atSubmitAttendance() {
     .then(r => r.json())
     .then(res => {
         if (res.success) {
-            smShowNotification('تم حفظ كشف الحضور بنجاح لعدد ' + res.data + ' طالب');
+            smShowNotification('تم حفظ كشف حضور الفصل بنجاح عبر النظام');
 
-        // Show submission confirmation notification
-        const confirmNotif = document.createElement('div');
-        confirmNotif.style.cssText = "position:fixed; top:80px; left:50%; transform:translateX(-50%); background:#38a169; color:white; padding:15px 30px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:10002; font-weight:800; animation: smFadeIn 0.3s ease-out;";
-        confirmNotif.innerHTML = '✅ تم إرسال كشف الحضور بنجاح';
-        document.body.appendChild(confirmNotif);
-        setTimeout(() => {
-            confirmNotif.style.opacity = '0';
-            confirmNotif.style.transition = '0.5s';
-            setTimeout(() => confirmNotif.remove(), 500);
-        }, 3000);
+            const confirmNotif = document.createElement('div');
+            confirmNotif.style.cssText = "position:fixed; top:80px; left:50%; transform:translateX(-50%); background:#16a34a; color:white; padding:12px 25px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:10002; font-weight:800; font-family:'Cairo',sans-serif; font-size:12px; animation: smFadeIn 0.3s ease-out;";
+            confirmNotif.innerHTML = '✅ تم إرسال وحفظ كشف الحضور بنجاح';
+            document.body.appendChild(confirmNotif);
+            setTimeout(() => {
+                confirmNotif.style.opacity = '0';
+                confirmNotif.style.transition = '0.5s';
+                setTimeout(() => confirmNotif.remove(), 500);
+            }, 3000);
 
             isSubmitted = true;
             atRenderList();
@@ -414,9 +353,9 @@ async function atSubmitAttendance() {
         btn.disabled = false;
         btn.innerText = 'تأكيد وإرسال الكشف للنظام';
     });
-}
+};
 
-function saveAttendanceToDB(sid, status) {
+window.saveAttendanceToDB = function(sid, status) {
     const date = new Date().toISOString().split('T')[0];
     const code = document.getElementById('at-security-code').value;
     const formData = new FormData();
@@ -431,43 +370,38 @@ function saveAttendanceToDB(sid, status) {
     .then(r => r.json())
     .then(res => {
         if (res.success) {
-            smShowNotification('تم التحديث بنجاح');
-            // If it was changed to absent/late from something else, or vice-versa
-            // In this specific UI, we just keep the filtered view if submitted
+            smShowNotification('تم تحديث حالة الطالب السلوكية بنجاح');
             atRenderList();
         }
     });
-}
+};
 </script>
 
 <style>
-.at-spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--sm-primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
-.at-spinner-sm { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-left: 10px; vertical-align: middle; }
+.at-spinner-sm { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-left: 8px; vertical-align: middle; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.at-student-row:hover { border-color: var(--sm-primary-color); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+.at-student-row:hover { border-color: var(--sm-primary-color); transform: translateY(-2px); }
 
 .at-choice-btn {
-    height: 48px; min-width: 100px; padding: 0 20px;
-    border-radius: 12px; border: 1px solid #e2e8f0; background: #fff;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: 0.2s; color: #718096; font-weight: 700; font-size: 0.9em;
+    height: 32px; min-width: 75px; padding: 0 12px;
+    border-radius: 6px; border: 1px solid var(--sm-border-color); background: #ffffff;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    transition: all 0.2s ease; color: var(--sm-text-gray); font-weight: 700; font-size: 11px;
 }
-.at-choice-btn .dashicons { font-size: 20px; width: 20px; height: 20px; }
-.at-choice-btn[data-status="present"].active { background: #38a169; color: #fff; border-color: #38a169; box-shadow: 0 4px 10px rgba(56, 161, 105, 0.3); }
-.at-choice-btn[data-status="late"].active { background: #ecc94b; color: #fff; border-color: #ecc94b; box-shadow: 0 4px 10px rgba(236, 201, 75, 0.3); }
-.at-choice-btn[data-status="absent"].active { background: #e53e3e; color: #fff; border-color: #e53e3e; box-shadow: 0 4px 10px rgba(229, 62, 62, 0.3); }
+.at-choice-btn[data-status="present"].active { background: #16a34a; color: #fff; border-color: #16a34a; }
+.at-choice-btn[data-status="late"].active { background: #d97706; color: #fff; border-color: #d97706; }
+.at-choice-btn[data-status="absent"].active { background: #dc2626; color: #fff; border-color: #dc2626; }
 
-.animated { animation-duration: 0.4s; animation-fill-mode: both; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.animated { animation-duration: 0.3s; animation-fill-mode: both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 .fadeIn { animation-name: fadeIn; }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .sm-class-attendance-shortcode { padding: 20px; }
-    #at-selection-area { grid-template-columns: 1fr; }
-    .at-student-row { flex-direction: column; gap: 15px; align-items: flex-start; }
+    .at-student-row { flex-direction: column; gap: 10px; align-items: flex-start; }
     .at-student-row > div:last-child { width: 100%; justify-content: flex-end; }
-    .at-choice-btn { flex: 1; min-width: 0; padding: 0 10px; }
+    .at-choice-btn { flex: 1; min-width: 0; }
     .btn-lbl { display: none; }
 }
 </style>
