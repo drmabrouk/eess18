@@ -1367,8 +1367,9 @@ class SM_Public {
             'teachers'        => 'teachers',
             'parents'         => 'parents',
             'grades'          => 'grades',
-            'hr-affairs'      => 'hr-affairs',
+            'work-profile'    => 'work-profile',
             'hr-management'   => 'hr-management',
+            'hr-evaluation'   => 'hr-evaluation',
             'attendance'      => 'attendance',
             'lesson-plans'    => 'lesson-plans',
             'assignments'     => 'assignments',
@@ -1410,6 +1411,7 @@ class SM_Public {
         if ($active_tab === 'students' && !current_user_can('إدارة_الطلاب')) $active_tab = 'summary';
         if ($active_tab === 'teachers' && !current_user_can('إدارة_المستخدمين')) $active_tab = 'summary';
         if ($active_tab === 'hr-management' && !($is_admin || $is_sys_admin || in_array('sm_hr', $roles) || current_user_can('manage_hr'))) $active_tab = 'summary';
+        if ($active_tab === 'hr-evaluation' && !($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || in_array('sm_hr', $roles) || current_user_can('manage_hr'))) $active_tab = 'summary';
         if ($active_tab === 'confiscated' && !current_user_can('إدارة_المخالفات')) $active_tab = 'summary';
         if ($active_tab === 'attendance' && !current_user_can('إدارة_الطلاب')) $active_tab = 'summary';
         if ($active_tab === 'clinic' && !current_user_can('إدارة_العيادة')) $active_tab = 'summary';
@@ -3562,14 +3564,23 @@ class SM_Public {
         return wp_mail($to, $subject, $html, $headers);
     }
 
-    // Block Pending Approval users from logging in
+    // Block Pending Approval & Restricted users from logging in
     public function block_pending_users_login($user, $password) {
         if ($user instanceof WP_User) {
             $status = get_user_meta($user->ID, 'eess_approval_status', true);
+            $restricted = get_user_meta($user->ID, 'eess_access_restricted', true);
+            $reason = get_user_meta($user->ID, 'eess_restriction_reason', true) ?: 'غير محدد';
+
             if ($status === 'pending') {
                 return new WP_Error(
                     'pending_approval',
                     'حسابك قيد المراجعة الإدارية. يرجى الانتظار لحين اعتماد وتفعيل الحساب من قبل قسم إدارة المستخدمين.'
+                );
+            }
+            if ($status === 'restricted' || $restricted === 'yes') {
+                return new WP_Error(
+                    'restricted_access',
+                    'عذراً، تم تقييد دخولك إلى المنصة من قبل إدارة الموارد البشرية لسبب: ' . esc_html($reason)
                 );
             }
         }

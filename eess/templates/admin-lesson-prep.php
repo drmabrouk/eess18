@@ -252,13 +252,37 @@ $unique_subjects = array_unique(array_map(function($s){ return $s->name; }, $all
             <p style="margin: 3px 0 0 0; font-size: 11px; color: #64748b;">متابعة، إعداد واعتماد التحضيرات الأكاديمية والخطصية المعتمدة.</p>
         </div>
 
-        <!-- Gear settings icon positioned upper-left -->
-        <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor): ?>
-            <button type="button" onclick="document.getElementById('prep-settings-modal').style.display='flex'" class="sm-btn sm-btn-outline" style="width: auto; height: 32px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px;">
-                <span class="dashicons dashicons-admin-generic" style="font-size: 16px; width: 16px; height: 16px; margin: 0;"></span>
-                <span>إعدادات التحضير</span>
-            </button>
-        <?php endif; ?>
+        <!-- Gear settings icon and Reports dropdown positioned upper-left -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor): ?>
+                <!-- Reports Dropdown Container -->
+                <div style="position: relative; display: inline-block;">
+                    <button type="button" onclick="eessTogglePrepReportsDropdown(event)" class="sm-btn sm-btn-outline" style="width: auto; height: 32px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155;">
+                        <span class="dashicons dashicons-analytics" style="font-size: 16px; width: 16px; height: 16px; margin: 0; color: #475569;"></span>
+                        <span>تقارير التحضير</span>
+                        <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 10px; width: 10px; height: 10px; margin: 0;"></span>
+                    </button>
+                    <div id="eess-prep-reports-dropdown" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; width: 250px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 99999; padding: 5px 0; text-align: right;">
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('submitted')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📝 تقرير التحضيرات المقدمة</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('not_submitted')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">❌ تقرير التحضيرات المتأخرة/غير المقدمة</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('by_institution')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">🏫 الإحصائيات حسب المؤسسة</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('by_department')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📂 الإحصائيات حسب الأقسام</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('by_subject')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📚 الإحصائيات حسب المواد</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('periodical')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📅 تقرير دوري (يومي/أسبوعي/شهري)</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('ranking')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">🏆 تصنيف المدارس والمعلمين</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('compliance')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📊 متوسطات الامتثال لنسب التقديم</a>
+                        <a href="javascript:void(0)" onclick="eessShowPrepReport('late_stats')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">⏱️ إحصائيات التأخر والمهل الزمنية</a>
+                        <a href="javascript:void(0)" onclick="eessExportPrepReport()" style="display: block; padding: 8px 15px; color: #0d9488; font-size: 12px; font-weight: bold; text-decoration: none;">📥 تصدير التقرير الموحد (Excel/CSV)</a>
+                    </div>
+                </div>
+
+                <!-- Settings Gear Icon Button -->
+                <button type="button" onclick="document.getElementById('prep-settings-modal').style.display='flex'" class="sm-btn sm-btn-outline" style="width: auto; height: 32px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155;">
+                    <span class="dashicons dashicons-admin-generic" style="font-size: 16px; width: 16px; height: 16px; margin: 0;"></span>
+                    <span>إعدادات التحضير</span>
+                </button>
+            <?php endif; ?>
+        </div>
     </div>
 
     <!-- Administrative Statistics Dashboard (Compact layout) -->
@@ -886,4 +910,298 @@ function smOpenReviewModal(id, title) {
     document.getElementById('review-prep-title').value = title;
     document.getElementById('prep-review-modal').style.display = 'flex';
 }
+
+// Reports Dropdown and Viewer Logic
+function eessTogglePrepReportsDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('eess-prep-reports-dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close dropdown when clicking outside
+window.addEventListener('click', function() {
+    const dropdown = document.getElementById('eess-prep-reports-dropdown');
+    if (dropdown) {
+        dropdown.style.display = 'none';
+    }
+});
+
+function eessShowPrepReport(type) {
+    // Hide all report sections inside modal
+    document.querySelectorAll('.eess-report-section').forEach(el => el.style.display = 'none');
+
+    // Show active report section
+    const targetSection = document.getElementById('rep-' + type);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+
+    // Open the report viewer modal
+    document.getElementById('eess-prep-report-modal').style.display = 'flex';
+}
+
+function eessExportPrepReport() {
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    const activeSection = document.querySelector('.eess-report-section[style*="display: block"]');
+    if (!activeSection) {
+        alert("يرجى عرض تقرير أولاً قبل الضغط على التصدير.");
+        return;
+    }
+    const table = activeSection.querySelector('table');
+    if (!table) {
+        alert("هذا التقرير لا يحتوي على جدول بيانات لتصديره.");
+        return;
+    }
+
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(function(row) {
+        const cols = row.querySelectorAll('th, td');
+        const rowData = [];
+        cols.forEach(function(col) {
+            rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
+        });
+        csvContent += rowData.join(",") + "\r\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "report_" + typeOfActiveReport() + "_" + new Date().toISOString().slice(0,10) + ".csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function typeOfActiveReport() {
+    const activeSection = document.querySelector('.eess-report-section[style*="display: block"]');
+    return activeSection ? activeSection.id : 'lesson_prep';
+}
 </script>
+
+<!-- Dynamic Lesson Preparation Reporting & Compliance Modal -->
+<?php
+$prep_report_teachers = get_users(array('role' => 'sm_teacher'));
+$prep_report_submitted = $wpdb->get_results("SELECT p.*, u.display_name as teacher_name FROM {$wpdb->prefix}sm_lesson_preps p LEFT JOIN {$wpdb->users} u ON p.teacher_id = u.ID WHERE p.status IN ('submitted', 'approved', 'late') ORDER BY p.id DESC LIMIT 30");
+
+$prep_report_inst = $wpdb->get_results("SELECT COALESCE((SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id = p.teacher_id AND meta_key = 'eess_school_name'), 'خدمات الأنظمة الإلكترونية التعليمية') as inst, COUNT(*) as cnt FROM {$wpdb->prefix}sm_lesson_preps p GROUP BY inst ORDER BY cnt DESC");
+$prep_report_dept = $wpdb->get_results("SELECT COALESCE((SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id = p.teacher_id AND meta_key = 'eess_department'), 'غير محدد') as dept, COUNT(*) as cnt FROM {$wpdb->prefix}sm_lesson_preps p GROUP BY dept ORDER BY cnt DESC");
+$prep_report_subject = $wpdb->get_results("SELECT subject as name, COUNT(*) as cnt FROM {$wpdb->prefix}sm_lesson_preps GROUP BY subject ORDER BY cnt DESC");
+
+$prep_report_daily = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE DATE(lesson_date) = CURDATE()") ?: 0;
+$prep_report_weekly = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE YEARWEEK(lesson_date, 1) = YEARWEEK(CURDATE(), 1)") ?: 0;
+$prep_report_monthly = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE MONTH(lesson_date) = MONTH(CURDATE()) AND YEAR(lesson_date) = YEAR(CURDATE())") ?: 0;
+
+$prep_report_ranking = $wpdb->get_results("SELECT p.teacher_id, u.display_name, COUNT(*) as total, SUM(CASE WHEN p.status = 'approved' THEN 1 ELSE 0 END) as approved_count FROM {$wpdb->prefix}sm_lesson_preps p JOIN {$wpdb->users} u ON p.teacher_id = u.ID GROUP BY p.teacher_id ORDER BY approved_count DESC, total DESC LIMIT 10");
+$prep_report_avg_late = $wpdb->get_var("SELECT AVG(delay_minutes) FROM {$wpdb->prefix}sm_lesson_preps WHERE delay_minutes > 0") ?: 0;
+$prep_report_total_late = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE status = 'late'") ?: 0;
+?>
+
+<div id="eess-prep-report-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99999; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); direction: rtl;">
+    <div style="background: #fff; width: 100%; max-width: 850px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; font-family: 'Cairo', sans-serif;">
+        <!-- Modal Header -->
+        <div style="background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="eess-report-modal-title" style="margin: 0; font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <span class="dashicons dashicons-analytics"></span> تقارير تحضير الدروس والامتثال الأكاديمي
+            </h3>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="window.print()" class="sm-btn" style="background: #475569; color: white; border: none; font-size: 11px; padding: 4px 12px; height: auto; cursor:pointer;">🖨️ طباعة التقرير</button>
+                <button type="button" onclick="document.getElementById('eess-prep-report-modal').style.display='none'" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 20px; overflow-y: auto; flex: 1;">
+
+            <!-- Report 1: Submitted -->
+            <div id="rep-submitted" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📝 التحضيرات المقدمة والمعتمدة مؤخراً</h4>
+                <div class="sm-table-container">
+                    <table class="sm-table" id="table-rep-submitted" style="width: 100%;">
+                        <thead>
+                            <tr><th>المعلم</th><th>عنوان التحضير</th><th>المادة</th><th>الصف والفرقة</th><th>تاريخ الدرس</th><th>حالة الاعتماد</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($prep_report_submitted)): ?>
+                                <tr><td colspan="6" style="text-align: center; color: #94a3b8;">لا توجد تحضيرات مقدمة حتى الآن.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($prep_report_submitted as $p): ?>
+                                    <tr>
+                                        <td style="font-weight: 700;"><?php echo esc_html($p->teacher_name); ?></td>
+                                        <td><?php echo esc_html($p->title); ?></td>
+                                        <td><?php echo esc_html($p->subject); ?></td>
+                                        <td><?php echo esc_html($p->grade_level); ?> (<?php echo esc_html($p->class_section); ?>)</td>
+                                        <td style="font-weight: bold;"><?php echo esc_html($p->lesson_date); ?></td>
+                                        <td><span style="background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;"><?php echo esc_html($p->status); ?></span></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Report 2: Not Submitted -->
+            <div id="rep-not_submitted" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">❌ المعلمون المتأخرون عن التحضير والمستثنين اليوم</h4>
+                <div class="sm-table-container">
+                    <table class="sm-table" id="table-rep-not-submitted" style="width: 100%;">
+                        <thead>
+                            <tr><th>المعلم</th><th>المادة/التخصص</th><th>القسم</th><th>الحالة العامة</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php $has_late_teachers = false;
+                            foreach ($prep_report_teachers as $t):
+                                $has_prep = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}sm_lesson_preps WHERE teacher_id = %d AND DATE(lesson_date) = CURDATE()", $t->ID));
+                                if (!$has_prep):
+                                    $has_late_teachers = true;
+                            ?>
+                                <tr>
+                                    <td style="font-weight: 700; color: #dc2626;"><?php echo esc_html($t->display_name); ?></td>
+                                    <td><?php echo esc_html(get_user_meta($t->ID, 'sm_specialization', true) ?: 'غير محدد'); ?></td>
+                                    <td><?php echo esc_html(get_user_meta($t->ID, 'eess_department', true) ?: 'غير محدد'); ?></td>
+                                    <td><span style="background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;">لم يقدّم اليوم</span></td>
+                                </tr>
+                            <?php endif; endforeach;
+                            if (!$has_late_teachers): ?>
+                                <tr><td colspan="4" style="text-align: center; color: #16a34a; font-weight: bold;">جميع المعلمين قاموا بالتحضير اليوم بنجاح! 🎉</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Report 3: By Institution -->
+            <div id="rep-by_institution" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">🏫 إحصائيات التحضيرات حسب المؤسسة التعليمية</h4>
+                <div class="sm-table-container">
+                    <table class="sm-table" id="table-rep-by-institution" style="width: 100%;">
+                        <thead>
+                            <tr><th>اسم المؤسسة / المدرسة</th><th>عدد التحضيرات المرفوعة</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($prep_report_inst)): ?>
+                                <tr><td colspan="2" style="text-align: center; color: #94a3b8;">لا توجد بيانات متاحة.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($prep_report_inst as $inst): ?>
+                                    <tr><td style="font-weight: 700;"><?php echo esc_html($inst->inst); ?></td><td style="font-weight: bold; font-family: monospace; color: var(--sm-primary-color);"><?php echo $inst->cnt; ?> تحضير</td></tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Report 4: By Department -->
+            <div id="rep-by_department" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📂 إحصائيات التحضيرات حسب الأقسام التعليمية</h4>
+                <div class="sm-table-container">
+                    <table class="sm-table" id="table-rep-by-department" style="width: 100%;">
+                        <thead>
+                            <tr><th>القسم / الإدارة</th><th>عدد التحضيرات المرفوعة</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($prep_report_dept)): ?>
+                                <tr><td colspan="2" style="text-align: center; color: #94a3b8;">لا توجد بيانات متاحة.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($prep_report_dept as $dept): ?>
+                                    <tr><td style="font-weight: 700;"><?php echo esc_html($dept->dept); ?></td><td style="font-weight: bold; font-family: monospace; color: var(--sm-primary-color);"><?php echo $dept->cnt; ?> تحضير</td></tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Report 5: By Subject -->
+            <div id="rep-by_subject" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📚 إحصائيات التحضيرات حسب المواد الدراسية</h4>
+                <div class="sm-table-container">
+                    <table class="sm-table" id="table-rep-by-subject" style="width: 100%;">
+                        <thead>
+                            <tr><th>المادة الدراسية</th><th>عدد التحضيرات المرفوعة</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($prep_report_subject)): ?>
+                                <tr><td colspan="2" style="text-align: center; color: #94a3b8;">لا توجد بيانات متاحة للمواد الدراسية.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($prep_report_subject as $sub): ?>
+                                    <tr><td style="font-weight: 700; color: var(--sm-primary-color);"><?php echo esc_html($sub->name); ?></td><td style="font-weight: bold; font-family: monospace;"><?php echo $sub->cnt; ?> تحضير</td></tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Report 6: Periodical -->
+            <div id="rep-periodical" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📅 التقرير الدوري والمؤشرات الموقوتة</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: bold; display: block; margin-bottom: 5px;">التحضيرات المرفوعة اليوم</span>
+                        <strong style="font-size: 28px; color: #1e293b; font-family: monospace;"><?php echo $prep_report_daily; ?></strong>
+                    </div>
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: bold; display: block; margin-bottom: 5px;">التحضيرات هذا الأسبوع</span>
+                        <strong style="font-size: 28px; color: #1e293b; font-family: monospace;"><?php echo $prep_report_weekly; ?></strong>
+                    </div>
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: bold; display: block; margin-bottom: 5px;">التحضيرات هذا الشهر</span>
+                        <strong style="font-size: 28px; color: #1e293b; font-family: monospace;"><?php echo $prep_report_monthly; ?></strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report 7: Ranking -->
+            <div id="rep-ranking" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">🏆 تصنيف المدارس والمعلمين المتميزين (الأكثر التزاماً بالمنظومة)</h4>
+                <div class="sm-table-container">
+                    <table class="sm-table" id="table-rep-ranking" style="width: 100%;">
+                        <thead>
+                            <tr><th>تصنيف التميز</th><th>المعلم المتميز</th><th>إجمالي التحضيرات المعتمدة</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($prep_report_ranking)): ?>
+                                <tr><td colspan="3" style="text-align: center; color: #94a3b8;">لا توجد تحضيرات معتمدة بعد لتصنيفها.</td></tr>
+                            <?php else: ?>
+                                <?php $rank = 1; foreach ($prep_report_ranking as $teacher): ?>
+                                    <tr>
+                                        <td style="font-weight: 800; color: #b7791f;">⭐ المرتبة <?php echo $rank++; ?></td>
+                                        <td style="font-weight: 700;"><?php echo esc_html($teacher->display_name); ?></td>
+                                        <td style="font-weight: bold; font-family: monospace; color: #16a34a;"><?php echo $teacher->approved_count; ?> معتمد من <?php echo $teacher->total; ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Report 8: Compliance -->
+            <div id="rep-compliance" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📊 متوسطات الامتثال لنسب التقديم السنوية والدورية</h4>
+                <div style="background: #f8fafc; padding: 30px; border-radius: 12px; border: 1px solid #cbd5e1; text-align: center; max-width: 500px; margin: 0 auto;">
+                    <span style="font-size: 15px; color: #475569; font-weight: bold; display: block; margin-bottom: 10px;">📊 متوسط امتثال المعلمين والمؤسسات العام</span>
+                    <strong style="font-size: 3.5rem; color: #16a34a; font-family: monospace;"><?php echo $submission_pct; ?>%</strong>
+                    <p style="margin: 15px 0 0 0; font-size: 13px; color: #64748b; line-height: 1.6;">تُقاس هذه النسبة بناءً على عدد التحضيرات المقدمة مقارنةً بإجمالي التحضيرات المترقبة من الكادر الأكاديمي والتعليمي النشط بالمنظومة.</p>
+                </div>
+            </div>
+
+            <!-- Report 9: Late Statistics -->
+            <div id="rep-late_stats" class="eess-report-section" style="display: none;">
+                <h4 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">⏱️ إحصائيات التأخر ومهل التسليم للتحضيرات</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f8fafc; padding: 25px; border-radius: 8px; border: 1px solid #cbd5e1; text-align: center;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: bold; display: block; margin-bottom: 5px;">متوسط زمن تأخير التسليم</span>
+                        <strong style="font-size: 26px; color: #dc2626; font-family: monospace;"><?php echo round($prep_report_avg_late); ?> دقيقة</strong>
+                    </div>
+                    <div style="background: #f8fafc; padding: 25px; border-radius: 8px; border: 1px solid #cbd5e1; text-align: center;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: bold; display: block; margin-bottom: 5px;">التحضيرات المتأخرة المرفوعة</span>
+                        <strong style="font-size: 26px; color: #dc2626; font-family: monospace;"><?php echo $prep_report_total_late; ?> تحضير</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

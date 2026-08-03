@@ -400,11 +400,11 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
             <div class="sm-user-dropdown" style="position: relative;">
                 <div class="sm-user-profile-nav" onclick="smToggleUserDropdown()" style="display: flex; align-items: center; gap: 8px; background: white; padding: 4px 10px; border-radius: 50px; border: 1px solid var(--sm-border-color); cursor: pointer;">
+                    <?php echo get_avatar($user->ID, 28, '', '', array('style' => 'border-radius: 50% !important; border: 1.5px solid var(--sm-primary-color); width: 28px; height: 28px; display: block;')); ?>
                     <div style="text-align: right;">
                         <div style="font-size: 0.8em; font-weight: 700; color: var(--sm-dark-color); line-height: 1.1;"><?php echo $greeting . '، ' . $user->display_name; ?></div>
                         <div style="font-size: 0.65em; color: #38a169; line-height: 1;">متصل الآن <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 8px; width: 8px; height: 8px;"></span></div>
                     </div>
-                    <?php echo get_avatar($user->ID, 28, '', '', array('style' => 'border-radius: 50% !important; border: 1.5px solid var(--sm-primary-color); width: 28px; height: 28px; display: block;')); ?>
                 </div>
                 <div id="sm-user-dropdown-menu" style="display: none; position: absolute; top: 110%; left: 0; background: white; border: 1px solid var(--sm-border-color); border-radius: 8px; width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; animation: smFadeIn 0.2s ease-out; padding: 10px 0;">
                     <div id="sm-profile-view">
@@ -497,9 +497,17 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
 
                 <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher || in_array('sm_hr', $roles) || in_array('sm_discipline_supervisor', $roles) || in_array('sm_activities_supervisor', $roles) || in_array('sm_transportation_supervisor', $roles) || in_array('sm_bus_supervisor', $roles) || in_array('sm_clinic', $roles)): ?>
-                    <li class="sm-sidebar-item <?php echo $active_tab == 'hr-affairs' ? 'sm-active' : ''; ?>">
-                        <a href="<?php echo add_query_arg('sm_tab', 'hr-affairs'); ?>" class="sm-sidebar-link">
-                            <span class="dashicons dashicons-businessman"></span> شؤون الموظفين (HR Affairs)
+                    <li class="sm-sidebar-item <?php echo $active_tab == 'work-profile' ? 'sm-active' : ''; ?>">
+                        <a href="<?php echo add_query_arg('sm_tab', 'work-profile'); ?>" class="sm-sidebar-link">
+                            <span class="dashicons dashicons-businessman"></span> ملف العمل (Work Profile)
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || in_array('sm_hr', $roles) || current_user_can('manage_hr')): ?>
+                    <li class="sm-sidebar-item <?php echo $active_tab == 'hr-evaluation' ? 'sm-active' : ''; ?>">
+                        <a href="<?php echo add_query_arg('sm_tab', 'hr-evaluation'); ?>" class="sm-sidebar-link">
+                            <span class="dashicons dashicons-awards"></span> تقييم الموظفين (Evaluations)
                         </a>
                     </li>
                 <?php endif; ?>
@@ -595,12 +603,16 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 
 
 
-                case 'hr-affairs':
-                    include SM_PLUGIN_DIR . 'templates/admin-hr-affairs.php';
+                case 'work-profile':
+                    include SM_PLUGIN_DIR . 'templates/admin-work-profile.php';
                     break;
 
                 case 'hr-management':
                     include SM_PLUGIN_DIR . 'templates/admin-hr-management.php';
+                    break;
+
+                case 'hr-evaluation':
+                    include SM_PLUGIN_DIR . 'templates/admin-hr-evaluation.php';
                     break;
 
                 case 'attendance':
