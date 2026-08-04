@@ -39,6 +39,11 @@ register_activation_hook(__FILE__, 'activate_school_management');
 register_deactivation_hook(__FILE__, 'deactivate_school_management');
 
 /**
+ * Load Centralized Organization Structure Helper
+ */
+require_once SM_PLUGIN_DIR . 'includes/class-eess-org-helper.php';
+
+/**
  * Core class used to maintain the plugin.
  */
 require_once SM_PLUGIN_DIR . 'includes/class-school-management.php';
