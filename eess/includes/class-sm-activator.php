@@ -27,11 +27,87 @@ class SM_Activator {
             sort_order int(11) DEFAULT 0,
             behavior_points int(11) DEFAULT 0,
             case_file_active tinyint(1) DEFAULT 0,
+            institution_id bigint(20) DEFAULT NULL,
+            school_id bigint(20) DEFAULT NULL,
+            grade_id bigint(20) DEFAULT NULL,
+            class_id bigint(20) DEFAULT NULL,
+            department_id bigint(20) DEFAULT NULL,
             PRIMARY KEY  (id),
             KEY student_code (student_code),
             KEY teacher_id (teacher_id),
             KEY sort_order (sort_order),
             UNIQUE KEY national_id (national_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_institutions (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            status varchar(50) DEFAULT 'active' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_schools (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            institution_id bigint(20) NOT NULL,
+            name varchar(255) NOT NULL,
+            status varchar(50) DEFAULT 'active' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY institution_id (institution_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_grades (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            school_id bigint(20) NOT NULL,
+            name varchar(100) NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY school_id (school_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_classes (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            grade_id bigint(20) NOT NULL,
+            name varchar(50) NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY grade_id (grade_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_departments (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            school_id bigint(20) NOT NULL,
+            name varchar(100) NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY school_id (school_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_subjects (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            school_id bigint(20) NOT NULL,
+            department_id bigint(20) DEFAULT NULL,
+            name varchar(255) NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY school_id (school_id),
+            KEY department_id (department_id)
+        ) $charset_collate;
+
+        CREATE TABLE {$wpdb->prefix}eess_user_assignments (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            institution_id bigint(20) DEFAULT NULL,
+            school_id bigint(20) DEFAULT NULL,
+            grade_id bigint(20) DEFAULT NULL,
+            class_id bigint(20) DEFAULT NULL,
+            subject_id bigint(20) DEFAULT NULL,
+            department_id bigint(20) DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id),
+            KEY school_id (school_id)
         ) $charset_collate;
 
         CREATE TABLE $table_records (
