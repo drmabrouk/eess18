@@ -3341,6 +3341,39 @@ class SM_Public {
         }
     }
 
+    public function ajax_export_students_csv() {
+        if (!current_user_can('إدارة_الطلاب')) {
+            wp_die('Unauthorized');
+        }
+        if (!wp_verify_nonce($_GET['nonce'] ?? '', 'sm_admin_action')) {
+            wp_die('Security check failed');
+        }
+
+        global $wpdb;
+        $records = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}sm_students ORDER BY name ASC");
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=students_export_'.date('Y-m-d').'.csv');
+        $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM for Excel
+
+        fputcsv($output, array('الاسم الكامل', 'الصف', 'الشعبة', 'الجنسية', 'البريد الإلكتروني لولي الأمر', 'رقم هاتف ولي الأمر', 'رقم الهوية الوطنية / الكود'));
+
+        foreach ($records as $r) {
+            fputcsv($output, array(
+                $r->name,
+                $r->class_name,
+                $r->section,
+                $r->nationality,
+                $r->parent_email,
+                $r->guardian_phone,
+                $r->student_code
+            ));
+        }
+        fclose($output);
+        exit;
+    }
+
     public function ajax_upload_import_csv() {
         if (!current_user_can('إدارة_الطلاب')) wp_send_json_error('Unauthorized');
         if (!wp_verify_nonce($_POST['nonce'], 'sm_admin_action')) wp_send_json_error('Security check failed');

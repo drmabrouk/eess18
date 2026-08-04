@@ -443,12 +443,6 @@ if (isset($_GET['manage_employee_id'])) {
     <!-- MAIN DASHBOARD VIEW -->
     <?php if (!$edit_emp): ?>
         <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: var(--sm-shadow);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-                <div>
-                    <h2 style="margin: 0; font-weight: 800; color: #1e293b; font-size: 1.5rem;">إدارة شؤون الموظفين والموارد البشرية</h2>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: #64748b;">إدارة شاملة لملفات العاملين، الرواتب، الترقيات، المستندات الرسمية والانضباط.</p>
-                </div>
-            </div>
 
             <!-- Advanced Filters -->
             <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
