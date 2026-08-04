@@ -9,18 +9,6 @@ if ($import_results) {
 <div class="sm-content-wrapper" dir="rtl" style="font-family: 'Cairo', sans-serif !important;">
     <!-- Standardized header is rendered globally in public-admin-panel.php, so we omit any local headers here -->
 
-    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
-        <?php if ($is_admin): ?>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <button onclick="document.getElementById('add-single-student-modal').style.display='flex'" class="sm-btn" style="min-width: 140px; height: 38px; font-size: 12px; font-family: 'Cairo', sans-serif !important;">+ إضافة طالب جديد</button>
-            <button onclick="document.getElementById('csv-import-form').style.display='block'" class="sm-btn sm-btn-secondary" style="min-width: 140px; height: 38px; font-size: 12px; font-family: 'Cairo', sans-serif !important;">استيراد طلاب (Excel)</button>
-            <a href="<?php echo admin_url('admin-ajax.php?action=sm_export_students_csv&nonce=' . wp_create_nonce('sm_admin_action')); ?>" class="sm-btn sm-btn-outline" style="text-decoration:none; min-width: 140px; height: 38px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'Cairo', sans-serif !important;">📥 تصدير الطلاب (Excel)</a>
-            <a href="data:text/csv;charset=utf-8,<?php echo rawurlencode("الاسم الكامل,الصف,الشعبة,الجنسية,البريد,الهاتف,رقم الهوية\nأحمد محمد,الصف 12,أ,إماراتي,parent@example.com,0501234567,784-1234-1234567-1"); ?>" download="student_template.csv" class="sm-btn sm-btn-outline" style="text-decoration:none; min-width: 140px; height: 38px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'Cairo', sans-serif !important;">تحميل نموذج CSV</a>
-            <a href="<?php echo admin_url('admin-ajax.php?action=sm_print&print_type=id_card'); ?>" target="_blank" class="sm-btn sm-btn-accent" style="background: #27ae60; text-decoration:none; min-width: 140px; height: 38px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'Cairo', sans-serif !important; color: white !important;">طباعة كافة البطاقات</a>
-        </div>
-        <?php endif; ?>
-    </div>
-
     <?php if ($import_results): ?>
         <div style="background: #fff; border-radius: 12px; border: 1px solid var(--sm-border-color); margin-bottom: 30px; overflow: hidden; box-shadow: var(--sm-shadow);">
             <div style="background: var(--sm-bg-light); padding: 15px 25px; border-bottom: 1px solid var(--sm-border-color); display: flex; justify-content: space-between; align-items: center;">

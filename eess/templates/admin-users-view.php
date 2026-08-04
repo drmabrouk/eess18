@@ -90,20 +90,6 @@ $unique_subjects = array_unique(array_map(function($s){ return $s->name; }, $all
             </form>
         </div>
 
-        <!-- Upper Control Toolbar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-            <h3 style="margin:0; border:none; padding:0; font-weight: 800; font-size: 18px; color: #1e293b;">إدارة مستخدمي النظام</h3>
-            <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                <button onclick="document.getElementById('user-csv-import-box').style.display = document.getElementById('user-csv-import-box').style.display === 'none' ? 'block' : 'none'" class="sm-btn sm-btn-outline" style="width:auto; font-size:12px; height: 36px; display: inline-flex; align-items: center; gap: 5px;">
-                    <span class="dashicons dashicons-upload" style="font-size: 15px; width: 15px; height: 15px;"></span> استيراد مستخدمين (CSV)
-                </button>
-                <a href="<?php echo admin_url('admin-ajax.php?action=sm_export_users_csv&nonce=' . wp_create_nonce('eess_admin_action')); ?>" class="sm-btn sm-btn-outline" style="width:auto; font-size:12px; height: 36px; display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: inherit;">
-                    <span class="dashicons dashicons-download" style="font-size: 15px; width: 15px; height: 15px;"></span> تصدير مستخدمين (CSV)
-                </a>
-                <button onclick="document.getElementById('add-user-modal').style.display='flex'" class="sm-btn" style="width:auto; font-size:12px; height: 36px; font-weight: 700;">+ إضافة مستخدم جديد</button>
-            </div>
-        </div>
-
         <!-- Search and Advanced Filtering Panel -->
         <div style="background: #f8fafc; padding: 18px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">

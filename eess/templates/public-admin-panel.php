@@ -638,20 +638,79 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
             );
 
             // Populate buttons dynamically to avoid string nesting quote errors
-            if ($active_tab === 'stats' && ($is_admin || current_user_can('تسجيل_مخالفة'))) {
-                $header_map['stats']['button'] = '<button onclick="smOpenViolationModal()" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> تسـجيل مخالفة سلوكية</button>';
+            if ($active_tab === 'stats') {
+                $btn_html = '<div style="display: flex; align-items: center; gap: 10px;">';
+                if (!$is_parent) {
+                    $btn_html .= '<button onclick="smOpenViolationModal()" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> تسـجيل مخالفة</button>';
+                    $btn_html .= '<button type="button" onclick="document.getElementById(\'violation-import-form\').style.display=\'block\'" class="sm-btn sm-btn-outline" style="height: 38px; font-size: 13px; cursor:pointer; border-radius: 8px;">📥 استيراد</button>';
+                    $btn_html .= '
+                    <!-- Export Dropdown -->
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" onclick="jQuery(\'#eess-violation-export-dropdown\').toggle(); event.stopPropagation();" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155; border-radius: 8px;">
+                            <span class="dashicons dashicons-download" style="font-size: 16px; width: 16px; height: 16px; margin: 0; color: #475569;"></span>
+                            <span>تصدير التقارير</span>
+                            <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 10px; width: 10px; height: 10px; margin: 0;"></span>
+                        </button>
+                        <div id="eess-violation-export-dropdown" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 99999; padding: 5px 0; text-align: right;">
+                            <div style="padding: 5px 15px; font-size: 10px; color: #94a3b8; font-weight: bold; border-bottom: 1px solid #f1f5f9;">تحميل ملفات PDF</div>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_print&print_type=violation_report&range=today') . '" target="_blank" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📄 مخالفات اليوم (PDF)</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_print&print_type=violation_report&range=week') . '" target="_blank" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📄 مخالفات الأسبوع (PDF)</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_print&print_type=violation_report&range=month') . '" target="_blank" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📄 مخالفات الشهر (PDF)</a>
+                            <div style="padding: 5px 15px; font-size: 10px; color: #94a3b8; font-weight: bold; border-bottom: 1px solid #f1f5f9;">تصدير بيانات CSV</div>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_export_violations_csv&range=today&nonce='.wp_create_nonce('sm_export_action')) . '" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📊 مخالفات اليوم (CSV)</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_export_violations_csv&range=week&nonce='.wp_create_nonce('sm_export_action')) . '" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none;">📊 مخالفات الأسبوع (CSV)</a>
+                        </div>
+                    </div>
+                    ';
+                }
+                $btn_html .= '</div>';
+                $header_map['stats']['button'] = $btn_html;
             }
-            if ($active_tab === 'students' && $is_admin) {
-                $header_map['students']['button'] = '<button onclick="document.getElementById(\'add-single-student-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة طالب جديد</button>';
+            if ($active_tab === 'students') {
+                $header_map['students']['button'] = '
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ' . (($is_admin || current_user_can('إدارة_الطلاب')) ? '<button onclick="document.getElementById(\'add-single-student-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة طالب جديد</button>' : '') . '
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" onclick="jQuery(\'#eess-student-actions-dropdown\').toggle(); event.stopPropagation();" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155; border-radius: 8px;">
+                            <span class="dashicons dashicons-menu-alt" style="font-size: 16px; width: 16px; height: 16px; margin: 0; color: #475569;"></span>
+                            <span>خيارات الطلاب</span>
+                            <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 10px; width: 10px; height: 10px; margin: 0;"></span>
+                        </button>
+                        <div id="eess-student-actions-dropdown" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 99999; padding: 5px 0; text-align: right;">
+                            <a href="javascript:void(0)" onclick="document.getElementById(\'csv-import-form\').style.display=\'block\'; jQuery(\'#eess-student-actions-dropdown\').hide();" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📥 استيراد طلاب (Excel)</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_export_students_csv&nonce=' . wp_create_nonce('sm_admin_action')) . '" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📤 تصدير الطلاب (Excel)</a>
+                            <a href="data:text/csv;charset=utf-8,' . rawurlencode("الاسم الكامل,الصف,الشعبة,الجنسية,البريد,الهاتف,رقم الهوية\nأحمد محمد,الصف 12,أ,إماراتي,parent@example.com,0501234567,784-1234-1234567-1") . '" download="student_template.csv" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📄 تحميل نموذج استيراد CSV</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_print&print_type=id_card') . '" target="_blank" style="display: block; padding: 8px 15px; color: #16a34a; font-size: 12px; font-weight: bold; text-decoration: none;">🖨️ طباعة بطاقات الطلاب</a>
+                        </div>
+                    </div>
+                </div>';
             }
-            if ($active_tab === 'teachers' && $is_admin) {
-                $header_map['teachers']['button'] = '<button onclick="document.getElementById(\'add-user-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة مستخدم جديد</button>';
+            if ($active_tab === 'teachers') {
+                $header_map['teachers']['button'] = '
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ' . ($is_admin ? '<button onclick="document.getElementById(\'add-user-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة مستخدم جديد</button>' : '') . '
+                    <button onclick="document.getElementById(\'user-csv-import-box\').style.display = document.getElementById(\'user-csv-import-box\').style.display === \'none\' ? \'block\' : \'none\'" class="sm-btn sm-btn-outline" style="height:38px; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; border-radius: 8px;"><span class="dashicons dashicons-upload"></span> استيراد مستخدمين (CSV)</button>
+                    <a href="' . admin_url('admin-ajax.php?action=sm_export_users_csv&nonce=' . wp_create_nonce('eess_admin_action')) . '" class="sm-btn sm-btn-outline" style="height:38px; font-size:12px; text-decoration:none; color:inherit; display:inline-flex; align-items:center; gap:5px; border-radius: 8px;"><span class="dashicons dashicons-download"></span> تصدير مستخدمين (CSV)</a>
+                </div>';
             }
             if ($active_tab === 'parents' && ($is_admin || current_user_can('إدارة_أولياء_الأمور'))) {
-                $header_map['parents']['button'] = '<button onclick="document.getElementById(\'add-parent-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة ولي أمر</button>';
+                $header_map['parents']['button'] = '<button onclick="document.getElementById(\'add-parent-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة ولي أمر جديد</button>';
             }
             if ($active_tab === 'grades' && ($is_admin || $is_coordinator || $is_teacher)) {
                 $header_map['grades']['button'] = '<button onclick="document.getElementById(\'add-grade-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة نتيجة أكاديمية</button>';
+            }
+            if ($active_tab === 'attendance') {
+                $att_date = isset($_GET['attendance_date']) ? sanitize_text_field($_GET['attendance_date']) : current_time('Y-m-d');
+                $header_map['attendance']['button'] = '
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <a href="' . home_url('/attendance/') . '" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff !important; border-radius:8px; font-weight:700; height:38px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;"><span class="dashicons dashicons-edit"></span> تسجيل الحضور</a>
+                    <button onclick="printAbsenceReport(\'daily\')" class="sm-btn sm-btn-outline" style="height:38px; display:inline-flex; align-items:center; gap:5px; cursor:pointer; border-radius: 8px;"><span class="dashicons dashicons-printer"></span> غيابات اليوم</button>
+                    <button onclick="printAbsenceReport(\'term\')" class="sm-btn sm-btn-outline" style="height:38px; display:inline-flex; align-items:center; gap:5px; cursor:pointer; border-radius: 8px;"><span class="dashicons dashicons-chart-bar"></span> الأكثر غياباً (الفصل)</button>
+                    <div class="sm-form-group" style="margin-bottom: 0; display:inline-block;">
+                        <input type="date" id="attendance-filter-date" class="sm-input" value="' . esc_attr($att_date) . '" onchange="window.location.href=\'' . add_query_arg('attendance_date', '', $_SERVER['REQUEST_URI']) . '\' + this.value" style="height:38px; border-radius: 8px; padding:0 8px; font-family:\'Cairo\';">
+                    </div>
+                    <button onclick="location.reload()" class="sm-btn sm-btn-outline" title="تحديث" style="height:38px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; width:38px; min-width:38px; padding:0; cursor:pointer;"><span class="dashicons dashicons-update" style="margin:0;"></span></button>
+                </div>';
             }
             if ($active_tab === 'work-profile') {
                 $header_map['work-profile']['button'] = '<button type="button" onclick="eessOpenProfileEditModal()" class="sm-btn" style="background: #000; border: 1px solid #000; color: #fff; border-radius: 8px; font-weight: 700; height: 38px; display: inline-flex; align-items: center; gap: 8px; cursor:pointer;"><span class="dashicons dashicons-edit"></span> تعديل وتزامن البيانات</button>';
@@ -700,11 +759,36 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
             if ($active_tab === 'assignments' && $is_teacher) {
                 $header_map['assignments']['button'] = '<button onclick="document.getElementById(\'add-assignment-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة واجب جديد</button>';
             }
-            if ($active_tab === 'documents' && $is_admin) {
-                $header_map['documents']['button'] = '<button onclick="document.getElementById(\'add-document-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> رفع وثيقة جديدة</button>';
+            if ($active_tab === 'documents') {
+                $header_map['documents']['button'] = '<button onclick="document.getElementById(\'add-doc-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة مستند جديد</button>';
             }
-            if ($active_tab === 'clinic' && ($is_admin || $is_sys_admin || $is_clinic)) {
-                $header_map['clinic']['button'] = '<button onclick="document.getElementById(\'add-referral-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> تسجيل زيارة جديدة</button>';
+            if ($active_tab === 'clinic') {
+                $btn_html = '<div style="display: flex; align-items: center; gap: 10px;">';
+                if ($is_admin || current_user_can('manage_options') || in_array('sm_system_admin', $roles) || in_array('sm_principal', $roles) || in_array('sm_supervisor', $roles)) {
+                    $btn_html .= '<button onclick="document.getElementById(\'referral-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> تحويل جديد للعيادة</button>';
+                }
+                if ($is_clinic_staff) {
+                    $c_nonce = wp_create_nonce('sm_clinic_action');
+                    $btn_html .= '
+                    <!-- Clinic Reports Dropdown -->
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" onclick="jQuery(\'#eess-clinic-reports-dropdown\').toggle(); event.stopPropagation();" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155; border-radius: 8px;">
+                            <span class="dashicons dashicons-download" style="font-size: 16px; width: 16px; height: 16px; margin: 0; color: #475569;"></span>
+                            <span>تحميل التقارير</span>
+                            <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 10px; width: 10px; height: 10px; margin: 0;"></span>
+                        </button>
+                        <div id="eess-clinic-reports-dropdown" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 99999; padding: 5px 0; text-align: right;">
+                            <a href="' . admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=day&nonce='.$c_nonce) . '" class="sm-dropdown-item">تقرير اليوم</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=week&nonce='.$c_nonce) . '" class="sm-dropdown-item">تقرير الأسبوع</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=month&nonce='.$c_nonce) . '" class="sm-dropdown-item">تقرير الشهر</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=term&nonce='.$c_nonce) . '" class="sm-dropdown-item">تقرير الفصل</a>
+                            <a href="' . admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=year&nonce='.$c_nonce) . '" class="sm-dropdown-item">تقرير السنة</a>
+                        </div>
+                    </div>
+                    ';
+                }
+                $btn_html .= '</div>';
+                $header_map['clinic']['button'] = $btn_html;
             }
 
             $cur_header = $header_map[$active_tab] ?? null;

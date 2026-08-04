@@ -8,12 +8,6 @@
     </div>
 
     <div id="doc-library-tab" class="sm-internal-tab">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h2 style="margin:0; font-weight: 900; color: #111F35;">مكتبة الوثائق والتقارير الرسمية</h2>
-            <?php if (current_user_can('إدارة_النظام')): ?>
-                <button onclick="document.getElementById('add-doc-modal').style.display='flex'" class="sm-btn" style="width: auto; padding: 0 25px;">+ إضافة مستند جديد</button>
-            <?php endif; ?>
-        </div>
 
     <?php
     global $wpdb;

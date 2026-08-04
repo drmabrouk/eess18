@@ -14,9 +14,6 @@ $students = SM_DB::get_students();
 ?>
 
 <div class="sm-grades-management" dir="rtl">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h3 style="margin: 0; font-weight: 800;">إدارة الدرجات والنتائج الأكاديمية</h3>
-    </div>
 
     <div class="sm-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
         <button class="sm-tab-btn sm-active" onclick="smOpenInternalTab('individual-grading', this)">رصد فردي</button>
