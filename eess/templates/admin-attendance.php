@@ -10,24 +10,6 @@ if (!isset($attendance_summary)) {
 }
 ?>
 <div class="sm-attendance-page" dir="rtl">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h3 style="margin: 0; font-weight: 800;">سجل الحضور والغياب</h3>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <a href="<?php echo home_url('/attendance/'); ?>" class="sm-btn" style="background: var(--sm-accent-color); height: 45px; min-width: 180px; padding: 0 25px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; color: white !important; font-weight: 700; border-radius: 10px;">
-                <span class="dashicons dashicons-edit"></span> تسجيل الحضور
-            </a>
-            <button onclick="printAbsenceReport('daily')" class="sm-btn sm-btn-secondary" style="height: 45px; min-width: 180px; padding: 0 25px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: white !important; font-weight: 700; border-radius: 10px;">
-                <span class="dashicons dashicons-printer"></span> غيابات اليوم
-            </button>
-            <button onclick="printAbsenceReport('term')" class="sm-btn sm-btn-accent" style="height: 45px; min-width: 180px; padding: 0 25px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: white !important; font-weight: 700; border-radius: 10px;">
-                <span class="dashicons dashicons-chart-bar"></span> الأكثر غياباً (الفصل)
-            </button>
-            <div class="sm-form-group" style="margin-bottom: 0;">
-                <input type="date" id="attendance-filter-date" class="sm-input" value="<?php echo esc_attr($attendance_date); ?>" onchange="window.location.href='<?php echo add_query_arg('attendance_date', '', $_SERVER['REQUEST_URI']); ?>' + this.value">
-            </div>
-            <button onclick="location.reload()" class="sm-btn sm-btn-outline" title="تحديث"><span class="dashicons dashicons-update"></span></button>
-        </div>
-    </div>
 
     <!-- Stats Summary -->
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px;">

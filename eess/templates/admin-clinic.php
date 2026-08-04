@@ -31,28 +31,6 @@ $history = $wpdb->get_results("
 ?>
 
 <div class="sm-clinic-module" dir="rtl">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h3 style="margin: 0; font-weight: 800;">العيادة المدرسية</h3>
-        <div style="display: flex; gap: 10px;">
-            <?php if ($is_staff_who_can_send): ?>
-                <button onclick="document.getElementById('referral-modal').style.display='flex'" class="sm-btn" style="background: var(--sm-primary-color);">+ تحويل جديد للعيادة</button>
-            <?php endif; ?>
-
-            <?php if ($is_clinic_staff): ?>
-                <div class="sm-dropdown" style="position: relative;">
-                    <button class="sm-btn sm-btn-secondary" onclick="toggleClinicReportDropdown()">تحميل التقارير <span class="dashicons dashicons-arrow-down-alt2"></span></button>
-                    <div id="clinic-report-menu" style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 150px; margin-top: 5px;">
-                        <?php $c_nonce = wp_create_nonce('sm_clinic_action'); ?>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=day&nonce='.$c_nonce); ?>" class="sm-dropdown-item">تقرير اليوم</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=week&nonce='.$c_nonce); ?>" class="sm-dropdown-item">تقرير الأسبوع</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=month&nonce='.$c_nonce); ?>" class="sm-dropdown-item">تقرير الشهر</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=term&nonce='.$c_nonce); ?>" class="sm-dropdown-item">تقرير الفصل</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_get_clinic_reports&report_type=year&nonce='.$c_nonce); ?>" class="sm-dropdown-item">تقرير السنة</a>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
 
     <!-- PENDING REFERRALS -->
     <div style="margin-bottom: 40px;">

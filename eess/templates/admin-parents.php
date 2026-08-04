@@ -1,11 +1,5 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <div class="sm-content-wrapper" dir="rtl">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h3 style="margin:0; border:none; padding:0;">إدارة شؤون أولياء الأمور</h3>
-        <?php if (current_user_can('إدارة_أولياء_الأمور')): ?>
-            <button onclick="document.getElementById('add-parent-modal').style.display='flex'" class="sm-btn" style="width:auto;">+ إضافة ولي أمر جديد</button>
-        <?php endif; ?>
-    </div>
 
     <div style="background: var(--sm-bg-light); padding: 25px; border: 1px solid var(--sm-border-color); border-radius: 8px; margin-bottom: 30px;">
         <form method="get" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">

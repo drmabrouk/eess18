@@ -5,33 +5,6 @@
     $is_parent = in_array('sm_parent', $user_roles) || in_array('sm_student', $user_roles);
     ?>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h3 style="margin:0; font-weight: 800;">سجل سجلات الطلاب</h3>
-
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <?php if (!$is_parent): ?>
-                <button type="button" onclick="document.getElementById('violation-import-form').style.display='block'" class="sm-btn sm-btn-secondary" style="padding: 0 15px; height: 38px; min-width: 90px; font-size: 13px;" title="استيراد">استيراد</button>
-
-                <div class="sm-dropdown" style="position: relative;">
-                    <button type="button" class="sm-btn" style="background:#2d3748; padding: 0 15px; height: 38px; min-width: 120px; font-size: 13px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">تصدير تقارير <span class="dashicons dashicons-arrow-down-alt2"></span></button>
-                    <div style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 200px; margin-top: 5px;">
-                        <div style="padding: 10px 15px; font-size: 11px; color: #111F35; border-bottom: 2px solid #eee; font-weight: 800; background: #f8fafc; border-radius: 8px 8px 0 0;">تحميل ملفات PDF</div>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_print&print_type=violation_report&range=today'); ?>" target="_blank" class="sm-dropdown-item">مخالفات اليوم (PDF)</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_print&print_type=violation_report&range=week'); ?>" target="_blank" class="sm-dropdown-item">مخالفات الأسبوع (PDF)</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_print&print_type=violation_report&range=month'); ?>" target="_blank" class="sm-dropdown-item">مخالفات الشهر (PDF)</a>
-
-                        <div style="padding: 10px 15px; font-size: 11px; color: #111F35; border-bottom: 2px solid #eee; border-top: 1px solid #eee; font-weight: 800; background: #f8fafc;">تصدير بيانات CSV</div>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_export_violations_csv&range=today&nonce='.wp_create_nonce('sm_export_action')); ?>" class="sm-dropdown-item">مخالفات اليوم (CSV)</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_export_violations_csv&range=week&nonce='.wp_create_nonce('sm_export_action')); ?>" class="sm-dropdown-item">مخالفات الأسبوع (CSV)</a>
-                        <a href="<?php echo admin_url('admin-ajax.php?action=sm_export_violations_csv&range=month&nonce='.wp_create_nonce('sm_export_action')); ?>" class="sm-dropdown-item">مخالفات الشهر (CSV)</a>
-
-                        <hr style="margin:0; border:none; border-top:1px solid #eee;">
-                        <button onclick="exportViolationPDF()" class="sm-dropdown-item" style="width:100%; text-align:right; background:none; border:none; cursor:pointer; font-weight:700;">تقرير المخالفات الشامل (المفلتر)</button>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
 
     <div style="background: white; padding: 30px; border: 1px solid var(--sm-border-color); border-radius: var(--sm-radius); margin-bottom: 30px; box-shadow: var(--sm-shadow);">
         <form id="violation-filter-form" method="get" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
