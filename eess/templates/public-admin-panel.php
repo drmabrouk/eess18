@@ -499,7 +499,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher || in_array('sm_hr', $roles) || in_array('sm_discipline_supervisor', $roles) || in_array('sm_activities_supervisor', $roles) || in_array('sm_transportation_supervisor', $roles) || in_array('sm_bus_supervisor', $roles) || in_array('sm_clinic', $roles)): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'work-profile' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'work-profile'); ?>" class="sm-sidebar-link">
-                            <span class="dashicons dashicons-businessman"></span> ملف العمل (Work Profile)
+                            <span class="dashicons dashicons-businessman"></span> ملف العمل
                         </a>
                     </li>
                 <?php endif; ?>
@@ -507,7 +507,7 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <?php if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || in_array('sm_hr', $roles) || current_user_can('manage_hr')): ?>
                     <li class="sm-sidebar-item <?php echo $active_tab == 'hr-evaluation' ? 'sm-active' : ''; ?>">
                         <a href="<?php echo add_query_arg('sm_tab', 'hr-evaluation'); ?>" class="sm-sidebar-link">
-                            <span class="dashicons dashicons-awards"></span> تقييم الموظفين (Evaluations)
+                            <span class="dashicons dashicons-awards"></span> تقييم الموظفين
                         </a>
                     </li>
                 <?php endif; ?>
@@ -557,6 +557,176 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
         <!-- CONTENT AREA -->
         <div class="sm-main-panel" style="flex: 1; min-width: 0; padding: 40px; background: #fff;">
             
+            <?php
+            // Unified Page Headers Map
+            $header_map = array(
+                'summary' => array(
+                    'title' => 'لوحة المعلومات',
+                    'desc' => 'متابعة إحصائيات النظام ومؤشرات الأداء العامة والأنشطة والعمليات الجارية في المنظومة.',
+                    'button' => ''
+                ),
+                'stats' => array(
+                    'title' => 'سجل المخالفات',
+                    'desc' => 'رصد ومتابعة السلوك الطلابي وتسجيل المخالفات وتطبيق اللوائح السلوكية والتربوية المعتمدة.',
+                    'button' => ''
+                ),
+                'students' => array(
+                    'title' => 'إدارة الطلاب',
+                    'desc' => 'إدارة سجلات الطلاب، الملفات الشخصية والأكاديمية، وعمليات استيراد وتصدير بيانات الطلاب.',
+                    'button' => ''
+                ),
+                'teachers' => array(
+                    'title' => 'إدارة مستخدمي النظام',
+                    'desc' => 'إدارة الحسابات، الأذونات والصلاحيات للمشرفين والمعلمين وكافة مستخدمي المنصة الإلكترونية.',
+                    'button' => ''
+                ),
+                'parents' => array(
+                    'title' => 'إدارة أولياء الأمور',
+                    'desc' => 'إدارة سجلات وبيانات الاتصال لأولياء الأمور وربطهم بحسابات أبنائهم الطلاب المعتمدين.',
+                    'button' => ''
+                ),
+                'grades' => array(
+                    'title' => 'إدارة الدرجات والنتائج',
+                    'desc' => 'رصد وتوثيق الدرجات الأكاديمية والشهادات والتقارير الدورية للفصول الدراسية.',
+                    'button' => ''
+                ),
+                'attendance' => array(
+                    'title' => 'سجل الحضور والغياب',
+                    'desc' => 'تسجيل ورصد الحضور والغياب اليومي للطلاب ومتابعة الإحصائيات العامة المعتمدة.',
+                    'button' => ''
+                ),
+                'work-profile' => array(
+                    'title' => 'ملف العمل',
+                    'desc' => 'الملف المهني والوظيفي المتكامل للموظف ومتابعة السجلات الإدارية والمالية والتقييمات السنوية.',
+                    'button' => ''
+                ),
+                'hr-evaluation' => array(
+                    'title' => 'تقييم الموظفين',
+                    'desc' => 'المنظومة الاحترافية الشاملة لتقييم الأداء السنوي، الفصلي والدوري لمنتسبي الهيئة الأكاديمية والإدارية والقيادية.',
+                    'button' => ''
+                ),
+                'hr-management' => array(
+                    'title' => 'إدارة الموارد البشرية',
+                    'desc' => 'إدارة شاملة لملفات العاملين، الرواتب، الترقيات، المستندات الرسمية والانضباط السلوكي والوظيفي.',
+                    'button' => ''
+                ),
+                'lesson-plans' => array(
+                    'title' => 'تحضير الدروس',
+                    'desc' => 'متابعة وإعداد واعتماد التحضيرات والخطط الأكاديمية والتعليمية للكادر التدريسي والأكاديمي.',
+                    'button' => ''
+                ),
+                'assignments' => array(
+                    'title' => 'الواجبات المدرسية',
+                    'desc' => 'إنشاء وتوزيع ومتابعة الواجبات المدرسية والمهام المنزلية المقررة على الطلاب لمتابعة الأداء الأكاديمي.',
+                    'button' => ''
+                ),
+                'documents' => array(
+                    'title' => 'مكتبة الوثائق والتقارير',
+                    'desc' => 'مكتبة وأرشيف الوثائق والتقارير المدرسية الرسمية والقرارات والتعاميم المعتمدة للمؤسسة.',
+                    'button' => ''
+                ),
+                'clinic' => array(
+                    'title' => 'العيادة المدرسية',
+                    'desc' => 'سجل الحالات والزيارات اليومية للعيادة المدرسية والتقارير الصحية والمراجعات الطبية للطلاب.',
+                    'button' => ''
+                ),
+                'global-settings' => array(
+                    'title' => 'إعدادات النظام',
+                    'desc' => 'تخصيص اللوائح السلوكية، المظهر، صلاحيات القوائم وإعدادات الهيكل المدرسي العام والنسخ الاحتياطي.',
+                    'button' => ''
+                )
+            );
+
+            // Populate buttons dynamically to avoid string nesting quote errors
+            if ($active_tab === 'stats' && ($is_admin || current_user_can('تسجيل_مخالفة'))) {
+                $header_map['stats']['button'] = '<button onclick="smOpenViolationModal()" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> تسـجيل مخالفة سلوكية</button>';
+            }
+            if ($active_tab === 'students' && $is_admin) {
+                $header_map['students']['button'] = '<button onclick="document.getElementById(\'add-single-student-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة طالب جديد</button>';
+            }
+            if ($active_tab === 'teachers' && $is_admin) {
+                $header_map['teachers']['button'] = '<button onclick="document.getElementById(\'add-user-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة مستخدم جديد</button>';
+            }
+            if ($active_tab === 'parents' && ($is_admin || current_user_can('إدارة_أولياء_الأمور'))) {
+                $header_map['parents']['button'] = '<button onclick="document.getElementById(\'add-parent-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة ولي أمر</button>';
+            }
+            if ($active_tab === 'grades' && ($is_admin || $is_coordinator || $is_teacher)) {
+                $header_map['grades']['button'] = '<button onclick="document.getElementById(\'add-grade-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة نتيجة أكاديمية</button>';
+            }
+            if ($active_tab === 'work-profile') {
+                $header_map['work-profile']['button'] = '<button type="button" onclick="eessOpenProfileEditModal()" class="sm-btn" style="background: #000; border: 1px solid #000; color: #fff; border-radius: 8px; font-weight: 700; height: 38px; display: inline-flex; align-items: center; gap: 8px; cursor:pointer;"><span class="dashicons dashicons-edit"></span> تعديل وتزامن البيانات</button>';
+            }
+            if ($active_tab === 'hr-evaluation') {
+                $header_map['hr-evaluation']['button'] = '<button onclick="jQuery(\'#eess-new-eval-container\').slideToggle();" class="sm-btn" style="background: #000; border: 1px solid #000; color: #fff; border-radius: 8px; font-weight: 700; height: 38px; display: inline-flex; align-items: center; gap: 8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إجراء تقييم جديد</button>';
+            }
+            if ($active_tab === 'lesson-plans') {
+                $btn_html = '<div style="display: flex; align-items: center; gap: 10px;">';
+                if ($is_teacher) {
+                    $btn_html .= '<button onclick="document.getElementById(\'prep-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة تحضير جديد</button>';
+                }
+                if ($is_admin || $is_sys_admin || $is_principal || $is_supervisor) {
+                    $btn_html .= '
+                        <!-- Reports Dropdown Container -->
+                        <div style="position: relative; display: inline-block;">
+                            <button type="button" onclick="eessTogglePrepReportsDropdown(event)" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155; border-radius: 8px;">
+                                <span class="dashicons dashicons-analytics" style="font-size: 16px; width: 16px; height: 16px; margin: 0; color: #475569;"></span>
+                                <span>تقارير التحضير</span>
+                                <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 10px; width: 10px; height: 10px; margin: 0;"></span>
+                            </button>
+                            <div id="eess-prep-reports-dropdown" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; width: 250px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 99999; padding: 5px 0; text-align: right;">
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'submitted\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📝 تقرير التحضيرات المقدمة</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'not_submitted\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">❌ تقرير التحضيرات المتأخرة/غير المقدمة</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'by_institution\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">🏫 الإحصائيات حسب المؤسسة</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'by_department\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📂 الإحصائيات حسب الأقسام</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'by_subject\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📚 الإحصائيات حسب المواد</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'periodical\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📅 تقرير دوري (يومي/أسبوعي/شهري)</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'ranking\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">🏆 تصنيف المدارس والمعلمين</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'compliance\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">📊 متوسطات الامتثال لنسب التقديم</a>
+                                <a href="javascript:void(0)" onclick="eessShowPrepReport(\'late_stats\')" style="display: block; padding: 8px 15px; color: #334155; font-size: 12px; text-decoration: none; border-bottom: 1px solid #f1f5f9;">⏱️ إحصائيات التأخر والمهل الزمنية</a>
+                                <a href="javascript:void(0)" onclick="eessExportPrepReport()" style="display: block; padding: 8px 15px; color: #0d9488; font-size: 12px; font-weight: bold; text-decoration: none;">📥 تصدير التقرير الموحد (Excel/CSV)</a>
+                            </div>
+                        </div>
+
+                        <!-- Settings Gear Icon Button -->
+                        <button type="button" onclick="document.getElementById(\'prep-settings-modal\').style.display=\'flex\'" class="sm-btn sm-btn-outline" style="width: auto; height: 38px; display: inline-flex; align-items: center; gap: 5px; border-color: #cbd5e1; cursor: pointer; padding: 0 10px; font-size: 12px; background: #fff; color: #334155; border-radius: 8px;">
+                            <span class="dashicons dashicons-admin-generic" style="font-size: 16px; width: 16px; height: 16px; margin: 0;"></span>
+                            <span>إعدادات التحضير</span>
+                        </button>
+                    ';
+                }
+                $btn_html .= '</div>';
+                $header_map['lesson-plans']['button'] = $btn_html;
+            }
+            if ($active_tab === 'assignments' && $is_teacher) {
+                $header_map['assignments']['button'] = '<button onclick="document.getElementById(\'add-assignment-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة واجب جديد</button>';
+            }
+            if ($active_tab === 'documents' && $is_admin) {
+                $header_map['documents']['button'] = '<button onclick="document.getElementById(\'add-document-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> رفع وثيقة جديدة</button>';
+            }
+            if ($active_tab === 'clinic' && ($is_admin || $is_sys_admin || $is_clinic)) {
+                $header_map['clinic']['button'] = '<button onclick="document.getElementById(\'add-referral-modal\').style.display=\'flex\'" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> تسجيل زيارة جديدة</button>';
+            }
+
+            $cur_header = $header_map[$active_tab] ?? null;
+            if ($cur_header && !isset($_GET['manage_employee_id']) && !isset($_GET['eess_print_eval']) && !isset($_GET['eess_print_report'])):
+            ?>
+                <!-- Standardized Enterprise Page Header -->
+                <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; font-family: 'Cairo', sans-serif !important;">
+                    <div>
+                        <h1 style="font-weight: 900; font-size: 1.8rem; color: #1e293b; margin: 0 0 5px 0; display: flex; align-items: center; gap: 10px;">
+                            <?php echo esc_html($cur_header['title']); ?>
+                        </h1>
+                        <p style="margin: 0; color: #64748b; font-size: 0.9rem; font-weight: 500;"><?php echo esc_html($cur_header['desc']); ?></p>
+                    </div>
+
+                    <?php if (!empty($cur_header['button'])): ?>
+                        <div>
+                            <?php echo $cur_header['button']; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
             <?php 
             switch ($active_tab) {
                 case 'summary':
@@ -652,20 +822,6 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                             <form method="post">
                                 <?php wp_nonce_field('sm_admin_action', 'sm_admin_nonce'); ?>
                                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                                    <!-- Creator Entity & System Information Section (EESS) -->
-                                    <div class="sm-form-group" style="grid-column: span 2; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                                            <span class="dashicons dashicons-external" style="color: var(--sm-accent-color); font-size: 24px; width: 24px; height: 24px;"></span>
-                                            <h4 style="margin: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.1em;">الجهة المطورة: خدمات الأنظمة الإلكترونية التعليمية (EESS)</h4>
-                                        </div>
-                                        <p style="margin: 5px 0; font-size: 13px; color: var(--sm-text-gray); line-height: 1.6;">
-                                            تم تصميم وتطوير لوحة الإدارة هذه بواسطة <strong>خدمات الأنظمة الإلكترونية التعليمية (Educational Electronic Systems Services - EESS)</strong> كجزء من الأنظمة التعليمية الإلكترونية المتكاملة التي تدعم المؤسسات التعليمية بفعالية واحترافية.
-                                        </p>
-                                        <div style="margin-top: 15px; display: flex; gap: 20px; font-size: 13px; font-weight: 700;">
-                                            <div>الموقع الرسمي للجهة المطورة: <a href="https://eess.online" target="_blank" style="color: var(--sm-primary-color); text-decoration: none;">eess.online</a></div>
-                                            <div>الدعم الفني والبريد الرسمي: <a href="mailto:info@eess.online" style="color: var(--sm-primary-color); text-decoration: none;">info@eess.online</a></div>
-                                        </div>
-                                    </div>
                                     <div class="sm-form-group" style="grid-column: span 2;"><label class="sm-label">اسم المدرسة:</label><input type="text" name="school_name" value="<?php echo esc_attr($school['school_name']); ?>" class="sm-input"></div>
                                     <div class="sm-form-group"><label class="sm-label">رقم الهاتف:</label><input type="text" name="school_phone" value="<?php echo esc_attr($school['phone']); ?>" class="sm-input"></div>
                                     <div class="sm-form-group"><label class="sm-label">البريد الإلكتروني:</label><input type="email" name="school_email" value="<?php echo esc_attr($school['email']); ?>" class="sm-input"></div>
@@ -677,7 +833,22 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" name="sm_save_settings_unified" class="sm-btn" style="width:auto;">حفظ الإعدادات</button>
+                                <button type="submit" name="sm_save_settings_unified" class="sm-btn" style="width:auto; margin-bottom: 25px;">حفظ الإعدادات</button>
+
+                                <!-- Creator Entity & System Information Section (EESS) - Positioned at the bottom of the section -->
+                                <div class="sm-form-group" style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 25px;">
+                                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                                        <span class="dashicons dashicons-external" style="color: var(--sm-accent-color); font-size: 24px; width: 24px; height: 24px;"></span>
+                                        <h4 style="margin: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.1em;">الجهة المطورة: خدمات الأنظمة الإلكترونية التعليمية (EESS)</h4>
+                                    </div>
+                                    <p style="margin: 5px 0; font-size: 13px; color: var(--sm-text-gray); line-height: 1.6;">
+                                        تم تصميم وتطوير لوحة الإدارة هذه بواسطة <strong>خدمات الأنظمة الإلكترونية التعليمية (Educational Electronic Systems Services - EESS)</strong> كجزء من الأنظمة التعليمية الإلكترونية المتكاملة التي تدعم المؤسسات التعليمية بفعالية واحترافية.
+                                    </p>
+                                    <div style="margin-top: 15px; display: flex; gap: 20px; font-size: 13px; font-weight: 700;">
+                                        <div>الموقع الرسمي للجهة المطورة: <a href="https://eess.online" target="_blank" style="color: var(--sm-primary-color); text-decoration: none;">eess.online</a></div>
+                                        <div>الدعم الفني والبريد الرسمي: <a href="mailto:info@eess.online" style="color: var(--sm-primary-color); text-decoration: none;">info@eess.online</a></div>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                         <div id="design-settings" class="sm-internal-tab" style="display:none;">
@@ -1088,4 +1259,176 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
 .sm-quick-btn { background: #48bb78 !important; color: white !important; padding: 8px 15px; border-radius: 6px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; display: inline-block; }
 .sm-refresh-btn { background: #718096; color: white; padding: 8px 15px; border-radius: 6px; font-size: 13px; border: none; cursor: pointer; }
 .sm-logout-btn { background: #e53e3e; color: white; padding: 8px 15px; border-radius: 6px; font-size: 13px; text-decoration: none; font-weight: 700; display: inline-block; }
+
+/* Unified Premium Enterprise Data Tables */
+.sm-main-panel table.sm-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    margin: 15px 0 !important;
+    font-family: 'Cairo', sans-serif !important;
+    font-size: 13px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+}
+.sm-main-panel table.sm-table th {
+    background-color: #334155 !important; /* Premium Slate Charcoal */
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 15px !important;
+    text-align: right !important;
+    font-size: 12px !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+.sm-main-panel table.sm-table td {
+    padding: 10px 15px !important;
+    color: #334155 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    transition: background-color 0.2s !important;
+}
+.sm-main-panel table.sm-table tr:last-child td {
+    border-bottom: none !important;
+}
+.sm-main-panel table.sm-table tr:hover td {
+    background-color: #f8fafc !important; /* Sleek Hover effect */
+}
+
+/* Standardized Premium Action Buttons (styled exactly like Lesson Prep's buttons) */
+.sm-main-panel .sm-btn,
+.sm-main-panel button[type="submit"],
+.sm-main-panel input[type="submit"] {
+    background-color: #334155 !important; /* Primary Monochromatic Slate */
+    color: #ffffff !important;
+    border: 1px solid #334155 !important;
+    padding: 8px 18px !important;
+    border-radius: 8px !important; /* Slightly increased border-radius */
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    font-family: 'Cairo', sans-serif !important;
+    height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+    text-decoration: none !important;
+}
+.sm-main-panel .sm-btn:hover,
+.sm-main-panel button[type="submit"]:hover {
+    background-color: #1E293B !important;
+    border-color: #1E293B !important;
+    color: #ffffff !important;
+}
+.sm-main-panel .sm-btn-outline {
+    background-color: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    font-family: 'Cairo', sans-serif !important;
+    height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+}
+.sm-main-panel .sm-btn-outline:hover {
+    background-color: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    color: #1e293b !important;
+}
+
+/* Inputs border radius and style */
+.sm-main-panel .sm-input,
+.sm-main-panel .sm-select,
+.sm-main-panel input[type="text"],
+.sm-main-panel input[type="email"],
+.sm-main-panel input[type="password"],
+.sm-main-panel input[type="number"],
+.sm-main-panel input[type="tel"],
+.sm-main-panel input[type="date"],
+.sm-main-panel textarea,
+.sm-main-panel select {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important; /* Slightly increased border-radius */
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    font-family: 'Cairo', sans-serif !important;
+    background-color: #ffffff !important;
+    color: #1E293B !important;
+    height: 40px !important;
+    transition: border-color 0.2s !important;
+}
+.sm-main-panel .sm-input:focus,
+.sm-main-panel select:focus {
+    border-color: #64748B !important;
+    outline: none !important;
+}
 </style>
+
+<!-- Automatic Placeholder Standardizer Snippet -->
+<script>
+jQuery(document).ready(function($) {
+    function eessStandardizePlaceholders() {
+        $('form, .sm-container, .modal, .sm-content-wrapper').find('input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="tel"], input[type="date"], textarea, select').each(function() {
+            const input = $(this);
+            let placeholder = input.attr('placeholder');
+
+            // Try to find matching label
+            let label = null;
+            if (input.attr('id')) {
+                label = $('label[for="' + input.attr('id') + '"]');
+            }
+            if (!label || label.length === 0) {
+                label = input.closest('.sm-form-group').find('label');
+            }
+            if (!label || label.length === 0) {
+                label = input.prev('label');
+            }
+            if (!label || label.length === 0) {
+                label = input.parent().find('label');
+            }
+
+            if (label && label.length > 0) {
+                let text = label.text().replace(/:/g, '').replace(/\*/g, '').trim();
+                if (text && (!placeholder || placeholder === text)) {
+                    if (input.is('select')) {
+                        // For select elements, update the first default option text
+                        const firstOpt = input.find('option').first();
+                        if (firstOpt && (firstOpt.val() === '' || firstOpt.text().includes('--') || firstOpt.text().includes('اختر'))) {
+                            firstOpt.text(text);
+                        }
+                    } else {
+                        input.attr('placeholder', text);
+                    }
+                }
+
+                // Hide label except for checkboxes/radios
+                if (label.find('input[type="checkbox"], input[type="radio"]').length === 0) {
+                    label.css({
+                        'display': 'none',
+                        'visibility': 'hidden',
+                        'height': '0',
+                        'margin': '0',
+                        'padding': '0'
+                    });
+                }
+            }
+        });
+    }
+
+    // Run initially and on AJAX completions
+    eessStandardizePlaceholders();
+    $(document).ajaxComplete(function() {
+        eessStandardizePlaceholders();
+    });
+});
+</script>

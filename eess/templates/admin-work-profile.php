@@ -155,15 +155,6 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
 <div class="sm-container" style="padding: 10px 0; font-family: 'Cairo', sans-serif !important; direction: rtl;">
 
-    <!-- Breadcrumbs / Page Header -->
-    <div style="margin-bottom: 25px;">
-        <h1 style="font-weight: 900; font-size: 1.8rem; color: #1e293b; margin: 0 0 5px 0; display: flex; align-items: center; gap: 10px;">
-            <span class="dashicons dashicons-businessman" style="font-size: 2rem; width: 32px; height: 32px; line-height: 32px; color: #475569;"></span>
-            ملف العمل الرقمي (Work Profile)
-        </h1>
-        <p style="margin: 0; color: #64748b; font-size: 0.9rem;">الملف المهني والوظيفي المتكامل للموظف ومتابعة السجلات الإدارية، المالية والتقييمات السنوية.</p>
-    </div>
-
     <!-- Employee Overview Top Header -->
     <div style="background: #fff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: var(--sm-shadow);">
         <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">

@@ -74,6 +74,7 @@ class School_Management {
         $this->loader->add_action('wp_ajax_nopriv_sm_save_attendance_batch_ajax', $plugin_public, 'ajax_save_attendance_batch');
         $this->loader->add_action('wp_ajax_sm_upload_import_csv', $plugin_public, 'ajax_upload_import_csv');
         $this->loader->add_action('wp_ajax_sm_process_import_chunk', $plugin_public, 'ajax_process_import_chunk');
+        $this->loader->add_action('wp_ajax_sm_export_students_csv', $plugin_public, 'ajax_export_students_csv');
         $this->loader->add_action('wp_ajax_sm_reset_class_code_ajax', $plugin_public, 'ajax_reset_class_code');
         $this->loader->add_action('wp_ajax_sm_toggle_attendance_status_ajax', $plugin_public, 'ajax_toggle_attendance_status');
         $this->loader->add_action('wp_ajax_sm_filter_violations', $plugin_public, 'ajax_filter_violations');
