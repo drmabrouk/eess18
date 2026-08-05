@@ -101,6 +101,7 @@ class School_Management {
         $this->loader->add_action('wp_ajax_sm_bulk_delete_students_ajax', $plugin_public, 'ajax_bulk_delete_students');
         $this->loader->add_action('wp_ajax_sm_download_plans_zip', $plugin_public, 'ajax_download_plans_zip');
         $this->loader->add_action('wp_ajax_sm_refresh_system_cache_ajax', $plugin_public, 'ajax_refresh_system');
+        $this->loader->add_action('wp_ajax_eess_hr_add_employee', $plugin_public, 'ajax_hr_add_employee');
 
         // Forgot password AJAX actions
         $this->loader->add_action('wp_ajax_nopriv_eess_forgot_otp', $plugin_public, 'ajax_forgot_otp');

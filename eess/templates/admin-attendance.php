@@ -133,9 +133,9 @@ if (!isset($attendance_summary)) {
                 </button>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button onclick="printAttendance('section', '<?php echo esc_js($card['class_name']); ?>', '<?php echo esc_js($card['section']); ?>')" class="sm-btn sm-btn-outline" style="width: 38px; height: 38px; padding: 0;" title="طباعة الكشف">
-                    <span class="dashicons dashicons-printer"></span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="printAttendance('section', '<?php echo esc_js($card['class_name']); ?>', '<?php echo esc_js($card['section']); ?>')" class="sm-btn" style="padding: 0 !important; width: 32px !important; min-width: 32px !important; height: 32px !important; background: #3182ce !important; border: 1px solid #3182ce !important; color: white !important; border-radius: 6px !important; cursor: pointer; display: inline-flex !important; align-items: center !important; justify-content: center !important;" title="طباعة الكشف">
+                    <span class="dashicons dashicons-printer" style="font-size:16px; margin:0;"></span>
                 </button>
                 <button onclick="openAttendanceModal('<?php echo esc_js($card['class_name']); ?>', '<?php echo esc_js($card['section']); ?>')" class="sm-btn" style="height: 38px; font-size: 11px;">تحديث</button>
             </div>

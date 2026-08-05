@@ -518,22 +518,25 @@ if (isset($_GET['manage_employee_id'])) {
                         </div>
 
                         <!-- Right block: Quick Action Buttons -->
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; min-width: 250px;">
-                            <a href="<?php echo add_query_arg('manage_employee_id', $emp->ID); ?>" class="sm-btn" style="padding: 0 10px; font-size: 11px; height: 30px; width: auto; background: var(--sm-primary-color); text-decoration: none; color: white !important; display: inline-flex; align-items: center; gap: 4px;">
-                                <span class="dashicons dashicons-admin-generic" style="font-size:14px; margin:0; line-height:30px;"></span> إدارة الملف
+                        <div style="display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: nowrap; min-width: 180px;">
+                            <a href="<?php echo add_query_arg('manage_employee_id', $emp->ID); ?>" class="sm-btn" style="padding: 0 10px !important; font-size: 11px !important; height: 32px !important; line-height: 32px !important; background: #334155 !important; border: 1px solid #334155 !important; color: white !important; border-radius: 6px !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; text-decoration: none !important;" title="إدارة الملف المهني">
+                                <span class="dashicons dashicons-admin-generic" style="font-size:14px; margin:0;"></span>
+                                <span>إدارة الملف</span>
                             </a>
 
-                            <button type="button" onclick="eessPrintEmployeeReport(<?php echo $emp->ID; ?>)" class="sm-btn" style="padding: 0 10px; font-size: 11px; height: 30px; width: auto; background: #475569; color: white; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                                <span class="dashicons dashicons-printer" style="font-size:14px; margin:0; line-height:30px;"></span> طباعة التقرير
+                            <!-- Print Employee Report (Blue Printer Icon only, without text) -->
+                            <button type="button" onclick="eessPrintEmployeeReport(<?php echo $emp->ID; ?>)" class="sm-btn" style="padding: 0 !important; width: 32px !important; min-width: 32px !important; height: 32px !important; background: #3182ce !important; border: 1px solid #3182ce !important; color: white !important; border-radius: 6px !important; cursor: pointer; display: inline-flex !important; align-items: center !important; justify-content: center !important;" title="طباعة التقرير المهني">
+                                <span class="dashicons dashicons-printer" style="font-size:16px; margin:0;"></span>
                             </button>
 
+                            <!-- Restrict Platform Access (Red Lock Icon only, without text) -->
                             <?php if (get_user_meta($emp->ID, 'eess_access_restricted', true) === 'yes'): ?>
-                                <button type="button" onclick="eessOpenUnrestrictModal(<?php echo $emp->ID; ?>, '<?php echo esc_attr($emp->display_name); ?>')" class="sm-btn" style="padding: 0 10px; font-size: 11px; height: 30px; width: auto; background: #16a34a; color: white; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                                    <span class="dashicons dashicons-unlock" style="font-size:14px; margin:0; line-height:30px;"></span> إلغاء التقييد
+                                <button type="button" onclick="eessOpenUnrestrictModal(<?php echo $emp->ID; ?>, '<?php echo esc_attr($emp->display_name); ?>')" class="sm-btn" style="padding: 0 !important; width: 32px !important; min-width: 32px !important; height: 32px !important; background: #16a34a !important; border: 1px solid #16a34a !important; color: white !important; border-radius: 6px !important; cursor: pointer; display: inline-flex !important; align-items: center !important; justify-content: center !important;" title="إلغاء تقييد الدخول">
+                                    <span class="dashicons dashicons-unlock" style="font-size:16px; margin:0;"></span>
                                 </button>
                             <?php else: ?>
-                                <button type="button" onclick="eessOpenRestrictModal(<?php echo $emp->ID; ?>, '<?php echo esc_attr($emp->display_name); ?>')" class="sm-btn" style="padding: 0 10px; font-size: 11px; height: 30px; width: auto; background: #dc2626; color: white; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                                    <span class="dashicons dashicons-lock" style="font-size:14px; margin:0; line-height:30px;"></span> تقييد الدخول
+                                <button type="button" onclick="eessOpenRestrictModal(<?php echo $emp->ID; ?>, '<?php echo esc_attr($emp->display_name); ?>')" class="sm-btn" style="padding: 0 !important; width: 32px !important; min-width: 32px !important; height: 32px !important; background: #dc2626 !important; border: 1px solid #dc2626 !important; color: white !important; border-radius: 6px !important; cursor: pointer; display: inline-flex !important; align-items: center !important; justify-content: center !important;" title="تقييد الدخول">
+                                    <span class="dashicons dashicons-lock" style="font-size:16px; margin:0;"></span>
                                 </button>
                             <?php endif; ?>
                         </div>
@@ -542,7 +545,114 @@ if (isset($_GET['manage_employee_id'])) {
             </div>
         </div>
 
+        <!-- ADD EMPLOYEE MODAL -->
+        <div id="eessAddEmployeeModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99999; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); direction: rtl;">
+            <div style="background: #fff; width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; font-family: 'Cairo', sans-serif;">
+                <div style="background: #334155; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: white !important;">➕ إضافة موظف جديد (حساب معلق)</h3>
+                    <button type="button" onclick="eessCloseAddEmployeeModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+                <form id="eess-add-employee-form" style="padding: 20px; margin: 0;" onsubmit="eessSubmitAddEmployee(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">الاسم الكامل:</label>
+                            <input type="text" name="display_name" class="sm-input" required placeholder="الاسم ثلاثي" style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">اسم المستخدم (Login):</label>
+                            <input type="text" name="user_login" class="sm-input" required placeholder="login_name" style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">البريد الإلكتروني:</label>
+                            <input type="email" name="user_email" class="sm-input" required placeholder="name@company.com" style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">المسمى الوظيفي / الرتبة:</label>
+                            <select name="user_role" class="sm-select" required style="height: 38px; padding: 0 10px;">
+                                <option value="sm_teacher">معلم</option>
+                                <option value="sm_coordinator">منسق مادة</option>
+                                <option value="sm_supervisor">مشرف تربوي</option>
+                                <option value="sm_principal">مدير المدرسة</option>
+                                <option value="sm_hr">الموارد البشرية (HR)</option>
+                                <option value="sm_clinic">العيادة المدرسية</option>
+                                <option value="sm_discipline_supervisor">مشرف سلوك / انضباط</option>
+                                <option value="sm_activities_supervisor">مشرف أنشطة</option>
+                                <option value="sm_transportation_supervisor">مشرف نقل ومواصلات</option>
+                                <option value="sm_bus_supervisor">مشرف حافلة</option>
+                            </select>
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">الرقم الوظيفي:</label>
+                            <input type="text" name="employee_number" class="sm-input" placeholder="EESS-00000" style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">المؤسسة / المدرسة المنتسب لها:</label>
+                            <input type="text" name="institution" class="sm-input" placeholder="اسم المدرسة أو الإدارة" style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">القسم التابع له:</label>
+                            <input type="text" name="department" class="sm-input" placeholder="قسم العلوم، الإدارة..." style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group">
+                            <label class="sm-label" style="font-size: 11px;">المادة التخصصية:</label>
+                            <select name="specialization" class="sm-select" style="height: 38px; padding: 0 10px;">
+                                <option value="">-- اختر المادة --</option>
+                                <?php foreach($unique_subjects as $sub_name): ?>
+                                    <option value="<?php echo esc_attr($sub_name); ?>"><?php echo esc_html($sub_name); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="sm-form-group" style="grid-column: span 2;">
+                            <label class="sm-label" style="font-size: 11px;">كلمة المرور:</label>
+                            <input type="password" name="user_pass" class="sm-input" required placeholder="أدخل كلمة مرور قوية" style="height: 38px;">
+                        </div>
+                        <div class="sm-form-group" style="grid-column: span 2; margin-bottom: 0;">
+                            <label class="sm-label" style="font-size: 11px;">الصورة الشخصية:</label>
+                            <input type="file" name="profile_photo" class="sm-input" accept="image/*" style="height: auto; padding: 5px;">
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                        <button type="button" onclick="eessCloseAddEmployeeModal()" class="sm-btn sm-btn-outline" style="height: 38px;">إلغاء</button>
+                        <button type="submit" class="sm-btn" style="background: #334155; color: white; height: 38px; padding: 0 25px;">إضافة كمعلق والمزامنة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <script>
+        function eessOpenAddEmployeeModal() {
+            document.getElementById('eessAddEmployeeModal').style.display = 'flex';
+        }
+        function eessCloseAddEmployeeModal() {
+            document.getElementById('eessAddEmployeeModal').style.display = 'none';
+        }
+        function eessSubmitAddEmployee(e) {
+            e.preventDefault();
+            const form = document.getElementById('eess-add-employee-form');
+            const formData = new FormData(form);
+            formData.append('action', 'eess_hr_add_employee');
+            formData.append('sm_nonce', '<?php echo wp_create_nonce("eess_hr_add_employee_nonce"); ?>');
+
+            fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    smShowNotification('تمت إضافة الموظف بنجاح كحساب معلق لمراجعته في إدارة الحسابات.');
+                    eessCloseAddEmployeeModal();
+                    form.reset();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    smShowNotification('خطأ: ' + res.data, true);
+                }
+            })
+            .catch(err => {
+                smShowNotification('حدث خطأ أثناء معالجة الطلب.', true);
+            });
+        }
+
         function filterHREmployees() {
             const search = document.getElementById('hr-search').value.toLowerCase().trim();
             const dept = document.getElementById('hr-dept-filter').value.toLowerCase().trim();

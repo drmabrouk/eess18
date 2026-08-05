@@ -1816,6 +1816,74 @@ class SM_Public {
         }
     }
 
+    public function ajax_hr_add_employee() {
+        $user = wp_get_current_user();
+        $roles = (array) $user->roles;
+        $is_admin = in_array('administrator', $roles) || current_user_can('manage_options');
+        $is_sys_admin = in_array('sm_system_admin', $roles);
+        $is_hr = in_array('sm_hr', $roles) || current_user_can('manage_hr');
+
+        if (!$is_admin && !$is_sys_admin && !$is_hr) {
+            wp_send_json_error('غير مصرح لك بالوصول.');
+        }
+
+        if (!wp_verify_nonce($_POST['sm_nonce'], 'eess_hr_add_employee_nonce')) {
+            wp_send_json_error('انتهت صلاحية الجلسة، يرجى تحديث الصفحة.');
+        }
+
+        $username = sanitize_user($_POST['user_login']);
+        $email = (!empty($_POST['user_email']) && is_email($_POST['user_email'])) ? sanitize_email($_POST['user_email']) : ($username . '@school-system.local');
+
+        if (username_exists($username)) {
+            wp_send_json_error('اسم المستخدم مسجل مسبقاً في النظام.');
+        }
+
+        if (email_exists($email)) {
+            wp_send_json_error('البريد الإلكتروني مسجل مسبقاً في النظام.');
+        }
+
+        $user_data = array(
+            'user_login' => $username,
+            'user_email' => $email,
+            'display_name' => sanitize_text_field($_POST['display_name']),
+            'user_pass' => $_POST['user_pass'],
+            'role' => sanitize_text_field($_POST['user_role'])
+        );
+
+        $user_id = wp_insert_user($user_data);
+        if (is_wp_error($user_id)) {
+            wp_send_json_error($user_id->get_error_message());
+        }
+
+        // Save as pending!
+        update_user_meta($user_id, 'eess_approval_status', 'pending');
+        update_user_meta($user_id, 'eess_employee_number', sanitize_text_field($_POST['employee_number']));
+        update_user_meta($user_id, 'eess_school_name', sanitize_text_field($_POST['institution']));
+        update_user_meta($user_id, 'eess_department', sanitize_text_field($_POST['department']));
+        if (!empty($_POST['specialization'])) {
+            update_user_meta($user_id, 'sm_specialization', sanitize_text_field($_POST['specialization']));
+        }
+
+        // Handle profile photo upload if provided
+        if (!empty($_FILES['profile_photo']['name'])) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $attachment_id = media_handle_upload('profile_photo', 0);
+            if (!is_wp_error($attachment_id)) {
+                $photo_url = wp_get_attachment_url($attachment_id);
+                update_user_meta($user_id, 'eess_profile_photo', $photo_url);
+            }
+        }
+
+        clean_user_cache($user_id);
+        wp_cache_flush();
+
+        SM_Logger::log('إضافة موظف معلق', "تم إنشاء حساب موظف معلق باسم: {$_POST['display_name']} للرتبة: {$_POST['user_role']}");
+        wp_send_json_success(array('user_id' => $user_id));
+    }
+
     public function ajax_update_generic_user() {
         if (!current_user_can('إدارة_المستخدمين')) wp_send_json_error('Unauthorized');
         if (!wp_verify_nonce($_POST['sm_nonce'], 'sm_user_action')) wp_send_json_error('Security check failed');
