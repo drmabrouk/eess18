@@ -1,11 +1,5 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <div class="sm-assignments-container" dir="rtl">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h3 style="margin: 0; font-weight: 800;">الواجبات المدرسية والمرفقات</h3>
-        <?php if ($is_teacher || $is_student): ?>
-            <button onclick="document.getElementById('add-assignment-modal').style.display='flex'" class="sm-btn" style="width: auto;">+ إضافة واجب / تسليم</button>
-        <?php endif; ?>
-    </div>
 
     <div class="sm-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee;">
         <button class="sm-tab-btn sm-active" onclick="smOpenInternalTab('received-assignments', this)">الواجبات المستلمة</button>

@@ -791,6 +791,10 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 $header_map['clinic']['button'] = $btn_html;
             }
 
+            if ($active_tab === 'hr-management' && ($is_admin || $is_sys_admin || in_array('sm_hr', $roles) || current_user_can('manage_hr'))) {
+                $header_map['hr-management']['button'] = '<button type="button" onclick="eessOpenAddEmployeeModal()" class="sm-btn" style="background:#000; border:1px solid #000; color:#fff; border-radius:8px; font-weight:700; height:38px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;"><span class="dashicons dashicons-plus-alt"></span> إضافة موظف جديد</button>';
+            }
+
             $cur_header = $header_map[$active_tab] ?? null;
             if ($cur_header && !isset($_GET['manage_employee_id']) && !isset($_GET['eess_print_eval']) && !isset($_GET['eess_print_report'])):
             ?>

@@ -62,10 +62,10 @@ $unique_subjects = array_unique(array_map(function($s){ return $s->name; }, $all
     <!-- User Management Tabs -->
     <div style="display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
         <button onclick="switchUsersTab('users-list-tab', this)" class="sm-tab-btn sm-active" style="border: none; font-size: 14px; font-weight: 800; padding: 8px 20px; border-radius: 6px; cursor: pointer;">
-            👥 إدارة المستخدمين النشطين
+            إدارة المستخدمين النشطين
         </button>
         <button onclick="switchUsersTab('registration-requests-tab', this)" class="sm-tab-btn" style="border: none; font-size: 14px; font-weight: 800; padding: 8px 20px; border-radius: 6px; cursor: pointer; position: relative;">
-            📥 طلبات التسجيل المعلقة
+            طلبات التسجيل المعلقة
             <?php if (!empty($pending_users)): ?>
                 <span style="background: #e53e3e; color: white; border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 800; margin-right: 5px; position: absolute; top: -5px; left: -5px;">
                     <?php echo count($pending_users); ?>

@@ -191,36 +191,17 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
                 </div>
             </div>
 
-            <!-- Action Area: Edit Profile Details Dialog Trigger -->
-            <div>
-                <button type="button" onclick="eessOpenProfileEditModal()" class="sm-btn" style="background: #000; border: 1px solid #000; color: #fff; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
-                    <span class="dashicons dashicons-edit" style="margin-top:2px;"></span> تعديل وتزامن البيانات
-                </button>
-            </div>
         </div>
     </div>
 
-    <!-- Main Workspace with Tabs -->
-    <div style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--sm-shadow); padding: 25px; min-height: 500px;">
+    <!-- Main Workspace with Tabs in Left-Sidebar Vertical Format (RTL compliant) -->
+    <div style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--sm-shadow); padding: 25px; min-height: 500px; display: flex; gap: 25px; direction: rtl; align-items: flex-start;">
 
-        <!-- Tab Navigation (11 Distinct Sections) -->
-        <div style="display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
-            <button onclick="switchWorkProfileTab('wp-personal', this)" class="sm-tab-btn sm-active">👤 البيانات الشخصية</button>
-            <button onclick="switchWorkProfileTab('wp-employment', this)" class="sm-tab-btn">💼 بيانات المباشرة</button>
-            <button onclick="switchWorkProfileTab('wp-position', this)" class="sm-tab-btn">⚙️ تفاصيل المنصب والمهام</button>
-            <button onclick="switchWorkProfileTab('wp-salaries', this)" class="sm-tab-btn">📊 معلومات الرواتب</button>
-            <button onclick="switchWorkProfileTab('wp-disciplinary', this)" class="sm-tab-btn">⚠️ السجلات التأديبية</button>
-            <button onclick="switchWorkProfileTab('wp-evaluations', this)" class="sm-tab-btn">📈 تقييم الأداء</button>
-            <button onclick="switchWorkProfileTab('wp-docs', this)" class="sm-tab-btn">📄 الوثائق الرسمية</button>
-            <button onclick="switchWorkProfileTab('wp-history', this)" class="sm-tab-btn">⏳ السجل المهني</button>
-            <button onclick="switchWorkProfileTab('wp-leaves', this)" class="sm-tab-btn">📅 سجل الإجازات</button>
-            <button onclick="switchWorkProfileTab('wp-notes', this)" class="sm-tab-btn">📝 الملاحظات الإدارية</button>
-            <button onclick="switchWorkProfileTab('wp-timeline', this)" class="sm-tab-btn">🕒 سجل الأنشطة</button>
-        </div>
-
-        <!-- Section 1: Personal Information -->
-        <div id="wp-personal" class="wp-tab-content" style="display: block;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">👤 البيانات الشخصية وتفاصيل الاتصال</h4>
+        <!-- Right side: Content Panels (flex: 1) -->
+        <div style="flex: 1; min-width: 0;">
+            <!-- Section 1: Personal Information -->
+            <div id="wp-personal" class="wp-tab-content" style="display: block;">
+                <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">البيانات الشخصية وتفاصيل الاتصال</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #f1f5f9;">
                     <span style="color: #64748b; font-size: 12px; display: block;">الاسم الأول:</span>
@@ -247,7 +228,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 2: Employment Information -->
         <div id="wp-employment" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">💼 بيانات المباشرة والتعيين الرسمي</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">بيانات المباشرة والتعيين الرسمي</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #f1f5f9;">
                     <span style="color: #64748b; font-size: 12px; display: block;">تاريخ مباشرة العمل:</span>
@@ -270,7 +251,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 3: Position Details -->
         <div id="wp-position" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⚙️ تفاصيل المنصب الحالي والمسؤوليات والمهام المسندة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">تفاصيل المنصب الحالي والمسؤوليات والمهام المسندة</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #f1f5f9;">
                     <span style="color: #64748b; font-size: 12px; display: block;">المنصب الحالي في النظام:</span>
@@ -293,7 +274,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 4: Salary Information -->
         <div id="wp-salaries" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📊 معلومات الرواتب والتعويضات والبدلات</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">معلومات الرواتب والتعويضات والبدلات</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -330,9 +311,9 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 5: Disciplinary Records -->
         <div id="wp-disciplinary" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⚠️ السجلات التأديبية، التنبيهات والإنذارات الرسمية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">السجلات التأديبية، التنبيهات والإنذارات الرسمية</h4>
             <div style="margin-bottom: 30px;">
-                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">⚠️ التنبيهات والإنذارات الرسمية</h5>
+                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">التنبيهات والإنذارات الرسمية</h5>
                 <div class="sm-table-container">
                     <table class="sm-table" style="margin:0;">
                         <thead>
@@ -366,7 +347,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
             </div>
 
             <div>
-                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">🛑 محاضر مجالس الانضباط والجزاءات</h5>
+                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">محاضر مجالس الانضباط والجزاءات</h5>
                 <div class="sm-table-container">
                     <table class="sm-table" style="margin:0;">
                         <thead>
@@ -398,7 +379,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 6: Performance Evaluations -->
         <div id="wp-evaluations" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📈 تقييم الأداء والتقارير والتقييمات السنوية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">تقييم الأداء والتقارير والتقييمات السنوية</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -435,7 +416,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 7: Official Documents -->
         <div id="wp-docs" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📄 الوثائق الرسمية، الهويات، المؤهلات والشهادات المؤرشفة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">الوثائق الرسمية، الهويات، المؤهلات والشهادات المؤرشفة</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -468,7 +449,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 8: Employment History -->
         <div id="wp-history" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⏳ السجل التاريخي والترقيات والخبرات السابقة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">السجل التاريخي والترقيات والخبرات السابقة</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -499,7 +480,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 9: Leave Records -->
         <div id="wp-leaves" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📅 سجل الإجازات الرسمية، العارضة والمغادرات اليومية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">سجل الإجازات الرسمية، العارضة والمغادرات اليومية</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -538,7 +519,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 10: Administrative Notes -->
         <div id="wp-notes" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📝 الملاحظات الإدارية المعتمدة والتوصيات المباشرة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">الملاحظات الإدارية المعتمدة والتوصيات المباشرة</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -567,7 +548,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 11: Activity Timeline -->
         <div id="wp-timeline" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">🕒 سجل الأنشطة والعمليات التاريخية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">سجل الأنشطة والعمليات التاريخية</h4>
             <div style="padding: 10px 15px;">
                 <?php if (empty($timeline)): ?>
                     <p style="color: #94a3b8; text-align: center; padding: 20px;">لا يوجد سجل أنشطة أو عمليات تاريخية مسجلة في هذا الملف بعد.</p>
@@ -585,6 +566,23 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
                     </div>
                 <?php endif; ?>
             </div>
+        </div>
+
+        </div>
+
+        <!-- Left side: Vertical Sidebar Navigation (width: 250px) -->
+        <div style="width: 250px; flex-shrink: 0; border-right: 1px solid #cbd5e0; padding-right: 15px; display: flex; flex-direction: column; gap: 8px;">
+            <button onclick="switchWorkProfileTab('wp-personal', this)" class="sm-tab-btn sm-active" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #334155; color: white;">البيانات الشخصية</button>
+            <button onclick="switchWorkProfileTab('wp-employment', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">بيانات المباشرة</button>
+            <button onclick="switchWorkProfileTab('wp-position', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">تفاصيل المنصب والمهام</button>
+            <button onclick="switchWorkProfileTab('wp-salaries', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">معلومات الرواتب</button>
+            <button onclick="switchWorkProfileTab('wp-disciplinary', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">السجلات التأديبية</button>
+            <button onclick="switchWorkProfileTab('wp-evaluations', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">تقييم الأداء</button>
+            <button onclick="switchWorkProfileTab('wp-docs', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">الوثائق الرسمية</button>
+            <button onclick="switchWorkProfileTab('wp-history', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">السجل المهني</button>
+            <button onclick="switchWorkProfileTab('wp-leaves', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">سجل الإجازات</button>
+            <button onclick="switchWorkProfileTab('wp-notes', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">الملاحظات الإدارية</button>
+            <button onclick="switchWorkProfileTab('wp-timeline', this)" class="sm-tab-btn" style="text-align: right; width: 100%; border: none; font-size: 13px; font-weight: 700; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; background: #f8fafc; color: #475569;">سجل الأنشطة</button>
         </div>
 
     </div>
