@@ -1417,7 +1417,7 @@ class SM_Public {
         if ($active_tab === 'clinic' && !current_user_can('إدارة_العيادة')) $active_tab = 'summary';
         if ($active_tab === 'global-settings' && !current_user_can('إدارة_النظام')) $active_tab = 'summary';
         if ($active_tab === 'lesson-plans' && !($is_admin || $is_sys_admin || $is_principal || $is_supervisor || $is_coordinator || $is_teacher)) $active_tab = 'summary';
-        if ($active_tab === 'assignments' && !($is_teacher || $is_student)) $active_tab = 'summary';
+        if ($active_tab === 'assignments' && !($is_teacher || $is_student || $is_admin || $is_sys_admin)) $active_tab = 'summary';
 
         // Fetch data based on tab
         switch ($active_tab) {
@@ -2204,6 +2204,7 @@ class SM_Public {
             'description' => sanitize_textarea_field($_POST['description']),
             'file_url' => esc_url_raw($_POST['file_url']),
             'status' => sanitize_text_field($_POST['status']),
+            'category' => sanitize_text_field($_POST['category'] ?? 'الوثائق الإدارية'),
             'created_by' => get_current_user_id()
         ));
 
@@ -2220,7 +2221,8 @@ class SM_Public {
             'title' => sanitize_text_field($_POST['title']),
             'description' => sanitize_textarea_field($_POST['description']),
             'file_url' => esc_url_raw($_POST['file_url']),
-            'status' => sanitize_text_field($_POST['status'])
+            'status' => sanitize_text_field($_POST['status']),
+            'category' => sanitize_text_field($_POST['category'] ?? 'الوثائق الإدارية')
         ), array('id' => intval($_POST['doc_id'])));
 
         if ($result !== false) wp_send_json_success();

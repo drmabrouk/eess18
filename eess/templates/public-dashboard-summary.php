@@ -23,30 +23,7 @@ if (in_array('sm_student', (array)wp_get_current_user()->roles)) {
         <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">الإجراءات المتخذة</div>
         <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-dark-color); line-height: 1.2;"><?php echo esc_html($stats['total_actions'] ?? 0); ?></div>
     </div>
-    <?php if ($is_wp_admin || !empty($my_visibility['attendance'])): ?>
-    <div class="sm-stat-card" style="border-top: 4px solid var(--sm-accent-color); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-        <div style="font-size: 0.9em; color: var(--sm-text-gray); margin-bottom: 8px; font-weight: 700;">غياب الطلاب (اليوم)</div>
-        <div style="font-size: 2.6em; font-weight: 800; color: var(--sm-accent-color); line-height: 1.2;"><?php echo esc_html($stats['absent_today'] ?? 0); ?></div>
-    </div>
-    <?php endif; ?>
 </div>
-
-<?php if ($is_wp_admin || !empty($my_visibility['attendance'])): ?>
-<div style="background: #fff; padding: 20px 30px; border-radius: 12px; border: 1px solid var(--sm-border-color); margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; gap: 40px; align-items: center;">
-        <div>
-            <div style="font-size: 11px; color: #718096; font-weight: 700;">إجمالي الحضور اليوم</div>
-            <div style="font-size: 1.8em; font-weight: 900; color: #38a169;"><?php echo esc_html($stats['present_today'] ?? 0); ?> <span style="font-size: 0.5em; color: #a0aec0; font-weight: 400;">طالب</span></div>
-        </div>
-        <div style="width: 1px; height: 40px; background: #eee;"></div>
-        <div>
-            <div style="font-size: 11px; color: #718096; font-weight: 700;">إجمالي الغياب اليوم</div>
-            <div style="font-size: 1.8em; font-weight: 900; color: #e53e3e;"><?php echo esc_html($stats['absent_today'] ?? 0); ?> <span style="font-size: 0.5em; color: #a0aec0; font-weight: 400;">طالب</span></div>
-        </div>
-    </div>
-    <a href="<?php echo add_query_arg('sm_tab', 'attendance'); ?>" class="sm-btn sm-btn-outline" style="width: auto; font-size: 12px;">عرض سجل الحضور التفصيلي</a>
-</div>
-<?php endif; ?>
 
 
 

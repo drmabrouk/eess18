@@ -25,6 +25,10 @@ define('SM_PLUGIN_URL', plugin_dir_url(__FILE__));
 function activate_school_management() {
     require_once SM_PLUGIN_DIR . 'includes/class-sm-activator.php';
     SM_Activator::activate();
+
+    // Non-destructive inline column migration
+    global $wpdb;
+    $wpdb->query("ALTER TABLE {$wpdb->prefix}sm_documents ADD COLUMN IF NOT EXISTS category varchar(100) DEFAULT 'الوثائق الإدارية'");
 }
 
 /**

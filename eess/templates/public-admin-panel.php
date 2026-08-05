@@ -373,17 +373,38 @@ $greeting = ($hour >= 5 && $hour < 12) ? 'صباح الخير' : 'مساء ال�
                 <h1 style="margin:0; border: none; padding: 0; color: var(--sm-dark-color); font-weight: 800; font-size: 1.05em; text-decoration: none; line-height: 1;">
                     <?php echo esc_html($school['school_name']); ?>
                 </h1>
-                <div style="display: inline-block; padding: 1px 6px; background: #fee2e2; color: #991b1b; border-radius: 50px; font-size: 9px; font-weight: 700; margin-top: 2px; border: 1px solid #fca5a5; line-height: 1;">
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 4px;">
+                    <!-- Enlarge Role Badge -->
+                    <div style="display: inline-block; padding: 2px 10px; background: #fee2e2; color: #991b1b; border-radius: 50px; font-size: 11px; font-weight: 700; border: 1px solid #fca5a5; line-height: 1;">
+                        <?php
+                        if ($is_admin) echo 'مدير النظام';
+                        elseif ($is_sys_admin) echo 'مدير النظام التقني';
+                        elseif ($is_principal) echo 'مدير المدرسة';
+                        elseif ($is_supervisor) echo 'مشرف تربوي';
+                        elseif ($is_coordinator) echo 'منسق مادة';
+                        elseif ($is_teacher) echo 'معلم';
+                        elseif ($is_student) echo 'طالب';
+                        else echo 'مستخدم النظام';
+                        ?>
+                    </div>
+
+                    <!-- Subject Badge for Teacher/Coordinator -->
+                    <?php
+                    $my_subject = get_user_meta($user->ID, 'sm_specialization', true);
+                    if (($is_teacher || $is_coordinator) && !empty($my_subject)): ?>
+                        <div style="display: inline-block; padding: 2px 10px; background: #e0f2fe; color: #0369a1; border-radius: 50px; font-size: 11px; font-weight: 700; border: 1px solid #bae6fd; line-height: 1;">
+                            <?php echo esc_html($my_subject); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Assigned Institution/School Badge -->
                     <?php 
-                    if ($is_admin) echo 'مدير النظام';
-                    elseif ($is_sys_admin) echo 'مدير النظام التقني';
-                    elseif ($is_principal) echo 'مدير المدرسة';
-                    elseif ($is_supervisor) echo 'مشرف تربوي';
-                    elseif ($is_coordinator) echo 'منسق مادة';
-                    elseif ($is_teacher) echo 'معلم';
-                    elseif ($is_student) echo 'طالب';
-                    else echo 'مستخدم النظام';
-                    ?>
+                    $my_school = get_user_meta($user->ID, 'eess_school_name', true) ?: ($school['school_name'] ?? '');
+                    if (!$is_student && !$is_parent && !empty($my_school)): ?>
+                        <div style="display: inline-block; padding: 2px 10px; background: #f1f5f9; color: #475569; border-radius: 50px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e1; line-height: 1;">
+                            <?php echo esc_html($my_school); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

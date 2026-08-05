@@ -220,6 +220,7 @@ class SM_Activator {
             description text,
             file_url varchar(255) NOT NULL,
             status varchar(20) DEFAULT 'published',
+            category varchar(100) DEFAULT 'الوثائق الإدارية',
             created_by bigint(20) NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id)
