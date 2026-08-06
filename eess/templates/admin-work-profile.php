@@ -228,7 +228,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 2: Employment Information -->
         <div id="wp-employment" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">بيانات المباشرة والتعيين الرسمي</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">💼 بيانات المباشرة والتعيين الرسمي</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #f1f5f9;">
                     <span style="color: #64748b; font-size: 12px; display: block;">تاريخ مباشرة العمل:</span>
@@ -251,7 +251,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 3: Position Details -->
         <div id="wp-position" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">تفاصيل المنصب الحالي والمسؤوليات والمهام المسندة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⚙️ تفاصيل المنصب الحالي والمسؤوليات والمهام المسندة</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #f1f5f9;">
                     <span style="color: #64748b; font-size: 12px; display: block;">المنصب الحالي في النظام:</span>
@@ -274,7 +274,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 4: Salary Information -->
         <div id="wp-salaries" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">معلومات الرواتب والتعويضات والبدلات</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📊 معلومات الرواتب والتعويضات والبدلات</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -311,9 +311,9 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 5: Disciplinary Records -->
         <div id="wp-disciplinary" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">السجلات التأديبية، التنبيهات والإنذارات الرسمية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⚠️ السجلات التأديبية، التنبيهات والإنذارات الرسمية</h4>
             <div style="margin-bottom: 30px;">
-                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">التنبيهات والإنذارات الرسمية</h5>
+                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">⚠️ التنبيهات والإنذارات الرسمية</h5>
                 <div class="sm-table-container">
                     <table class="sm-table" style="margin:0;">
                         <thead>
@@ -347,7 +347,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
             </div>
 
             <div>
-                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">محاضر مجالس الانضباط والجزاءات</h5>
+                <h5 style="margin: 0 0 10px 0; font-weight: bold; color: #475569;">🛑 محاضر مجالس الانضباط والجزاءات</h5>
                 <div class="sm-table-container">
                     <table class="sm-table" style="margin:0;">
                         <thead>
@@ -379,7 +379,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 6: Performance Evaluations -->
         <div id="wp-evaluations" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">تقييم الأداء والتقارير والتقييمات السنوية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📈 تقييم الأداء والتقارير والتقييمات السنوية</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -416,7 +416,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 7: Official Documents -->
         <div id="wp-docs" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">الوثائق الرسمية، الهويات، المؤهلات والشهادات المؤرشفة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📄 الوثائق الرسمية، الهويات، المؤهلات والشهادات المؤرشفة</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -449,7 +449,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 8: Employment History -->
         <div id="wp-history" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">السجل التاريخي والترقيات والخبرات السابقة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⏳ السجل التاريخي والترقيات والخبرات السابقة</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -480,7 +480,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 9: Leave Records -->
         <div id="wp-leaves" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">سجل الإجازات الرسمية، العارضة والمغادرات اليومية</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📅 سجل الإجازات الرسمية، العارضة والمغادرات اليومية</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>
@@ -519,7 +519,7 @@ if (!is_array($timeline)) $timeline = json_decode($timeline, true) ?: array();
 
         <!-- Section 10: Administrative Notes -->
         <div id="wp-notes" class="wp-tab-content" style="display: none;">
-            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">الملاحظات الإدارية المعتمدة والتوصيات المباشرة</h4>
+            <h4 style="margin: 0 0 20px 0; font-weight: 800; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">📝 الملاحظات الإدارية المعتمدة والتوصيات المباشرة</h4>
             <div class="sm-table-container">
                 <table class="sm-table" style="margin: 0; width: 100%;">
                     <thead>

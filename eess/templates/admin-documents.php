@@ -17,9 +17,37 @@
     }
     $query .= " ORDER BY created_at DESC";
     $docs = $wpdb->get_results($query);
+
+    $doc_categories = array(
+        'الوثائق الإدارية',
+        'مستندات الموارد البشرية',
+        'شؤون الطلاب',
+        'الوثائق الأكاديمية',
+        'التعاميم الرسمية',
+        'النماذج والقوالب',
+        'السياسات واللوائح',
+        'أخرى'
+    );
     ?>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px;">
+    <!-- Instant Search and Filter Bar -->
+    <div style="background: #f8fafc; padding: 18px; border-radius: 12px; border: 1px solid #cbd5e0; margin-bottom: 25px; display: grid; grid-template-columns: 2fr 1fr; gap: 15px; direction: rtl;">
+        <div>
+            <label class="sm-label" style="font-weight: 700; font-size: 12px;">البحث الفوري عن وثيقة</label>
+            <input type="text" id="doc-instant-search" onkeyup="eessFilterDocuments()" placeholder="ابحث باسم الوثيقة أو الوصف..." class="sm-input" style="height: 38px; font-size: 12px; width: 100%;">
+        </div>
+        <div>
+            <label class="sm-label" style="font-weight: 700; font-size: 12px;">تصنيف الوثيقة</label>
+            <select id="doc-category-filter" onchange="eessFilterDocuments()" class="sm-select" style="height: 38px; font-size: 12px; width: 100%;">
+                <option value="">كل التصنيفات</option>
+                <?php foreach ($doc_categories as $cat): ?>
+                    <option value="<?php echo esc_attr($cat); ?>"><?php echo esc_html($cat); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="sm-docs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px;">
         <?php if (empty($docs)): ?>
             <div style="grid-column: 1 / -1; background: #f8fafc; padding: 60px; border-radius: 12px; text-align: center; border: 2px dashed #e2e8f0;">
                 <span class="dashicons dashicons-media-document" style="font-size: 50px; width: 50px; height: 50px; color: #cbd5e0; margin-bottom: 15px;"></span>
@@ -27,14 +55,17 @@
             </div>
         <?php else: ?>
             <?php foreach ($docs as $doc): ?>
-                <div class="sm-doc-card" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s;">
-                    <div style="padding: 20px; border-bottom: 1px solid #f0f4f8; background: #f8fafc; display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 45px; height: 45px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #e53e3e; border: 1px solid #edf2f7;">
-                            <span class="dashicons dashicons-pdf" style="font-size: 24px; width: 24px; height: 24px;"></span>
+                <div class="sm-doc-card" data-title="<?php echo esc_attr(strtolower($doc->title)); ?>" data-desc="<?php echo esc_attr(strtolower($doc->description)); ?>" data-category="<?php echo esc_attr($doc->category); ?>" style="background: white; border: 1px solid #cbd5e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                    <div style="padding: 20px; border-bottom: 1px solid #cbd5e0; background: #f8fafc; display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 45px; height: 45px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3182ce; border: 1px solid #edf2f7;">
+                            <span class="dashicons dashicons-media-document" style="font-size: 24px; width: 24px; height: 24px;"></span>
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <h4 style="margin: 0; font-weight: 800; color: #1a202c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($doc->title); ?></h4>
-                            <div style="font-size: 11px; color: #718096; margin-top: 2px;"><?php echo date('Y-m-d', strtotime($doc->created_at)); ?></div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                                <span style="font-size: 10px; color: #475569; font-weight: 800; background: #e2e8f0; padding: 1px 6px; border-radius: 4px;"><?php echo esc_html($doc->category ?: 'الوثائق الإدارية'); ?></span>
+                                <span style="font-size: 11px; color: #718096;"><?php echo date('Y-m-d', strtotime($doc->created_at)); ?></span>
+                            </div>
                         </div>
                         <?php if (current_user_can('إدارة_النظام')): ?>
                             <div style="display: flex; gap: 5px;">
@@ -94,6 +125,14 @@
                     </div>
                 </div>
                 <div class="sm-form-group">
+                    <label class="sm-label">تصنيف المستند:</label>
+                    <select name="category" class="sm-select">
+                        <?php foreach ($doc_categories as $cat): ?>
+                            <option value="<?php echo esc_attr($cat); ?>"><?php echo esc_html($cat); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="sm-form-group">
                     <label class="sm-label">حالة الظهور:</label>
                     <select name="status" class="sm-select">
                         <option value="published">منشور للجميع</option>
@@ -132,6 +171,14 @@
                         <input type="text" name="file_url" id="edit_doc_file_url" class="sm-input" required>
                         <button type="button" onclick="smOpenMediaUploader('edit_doc_file_url')" class="sm-btn sm-btn-secondary" style="width: auto;">تغيير</button>
                     </div>
+                </div>
+                <div class="sm-form-group">
+                    <label class="sm-label">تصنيف المستند:</label>
+                    <select name="category" id="edit_doc_category" class="sm-select">
+                        <?php foreach ($doc_categories as $cat): ?>
+                            <option value="<?php echo esc_attr($cat); ?>"><?php echo esc_html($cat); ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="sm-form-group">
                     <label class="sm-label">حالة الظهور:</label>
@@ -181,7 +228,31 @@
         document.getElementById('edit_doc_description').value = doc.description;
         document.getElementById('edit_doc_file_url').value = doc.file_url;
         document.getElementById('edit_doc_status').value = doc.status;
+        if (document.getElementById('edit_doc_category')) {
+            document.getElementById('edit_doc_category').value = doc.category || 'الوثائق الإدارية';
+        }
         document.getElementById('edit-doc-modal').style.display = 'flex';
+    };
+
+    window.eessFilterDocuments = function() {
+        const query = document.getElementById('doc-instant-search').value.toLowerCase().trim();
+        const cat = document.getElementById('doc-category-filter').value;
+
+        const cards = document.querySelectorAll('.sm-doc-card');
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const desc = card.getAttribute('data-desc') || '';
+            const category = card.getAttribute('data-category') || '';
+
+            const matchesSearch = !query || title.includes(query) || desc.includes(query);
+            const matchesCat = !cat || category === cat;
+
+            if (matchesSearch && matchesCat) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
     };
 
     document.getElementById('edit-doc-form').addEventListener('submit', function(e) {
